@@ -11,6 +11,10 @@ import { spawnSync } from "node:child_process";
 
 const POSTGRES_SCHEMA = "prisma/postgres/schema.prisma";
 
+// Moteurs Prisma (génération, migrations, pages lues pendant le build) : peu de fils d'exécution, pour
+// tenir dans la limite de processus des hébergements mutualisés (voir src/lib/prisma.ts).
+process.env.TOKIO_WORKER_THREADS ??= "2";
+
 function run(command) {
   console.log(`\n> ${command}`);
   const { status } = spawnSync(command, { stdio: "inherit", shell: true });

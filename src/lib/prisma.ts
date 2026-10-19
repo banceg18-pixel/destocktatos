@@ -1,5 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 
+// Moteur Prisma : par défaut, autant de fils d'exécution que de processeurs du serveur. Sur un hébergement
+// mutualisé (Hostinger), le serveur en annonce des dizaines alors que le nombre de processus est limité :
+// le moteur ne peut plus démarrer (« OS can't spawn worker thread »). Deux suffisent pour ce site.
+process.env.TOKIO_WORKER_THREADS ??= "2";
+
 // Un seul client Prisma par processus (le rechargement à chaud de Next.js recrée les modules).
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
