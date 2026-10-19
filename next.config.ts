@@ -17,6 +17,20 @@ function wordpressMedia(): NonNullable<NonNullable<NextConfig["images"]>["remote
   }
 }
 
+/**
+ * www.<domaine> → <domaine> (adresse de NEXT_PUBLIC_SITE_URL) : une seule adresse pour le référencement,
+ * et pour la connexion des clients (la session n'est valable que sur le domaine de NEXTAUTH_URL).
+ */
+function wwwRedirect(): Awaited<ReturnType<NonNullable<NextConfig["redirects"]>>> {
+  try {
+    const site = new URL(process.env.NEXT_PUBLIC_SITE_URL || "");
+    if (site.hostname.startsWith("www.") || !site.hostname.includes(".")) return [];
+    return [{ source: "/:path*", has: [{ type: "host", value: `www.${site.hostname}` }], destination: `${site.origin}/:path*`, permanent: true }];
+  } catch {
+    return [];
+  }
+}
+
 const nextConfig: NextConfig = {
   // Dossier de build séparable (ex. NEXT_DIST_DIR=.next-dev pour un serveur de dev à côté d'un serveur de production).
   distDir: process.env.NEXT_DIST_DIR || ".next",
@@ -36,6 +50,9 @@ const nextConfig: NextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1280, 1600, 1920],
     // Toutes les images sont locales (/public/assets) ; ajoutez ici l'hôte des médias WordPress si besoin.
     remotePatterns: [...wordpressMedia(), ...(process.env.WORDPRESS_MEDIA_HOST ? [{ protocol: "https" as const, hostname: process.env.WORDPRESS_MEDIA_HOST }] : [])],
+  },
+  async redirects() {
+    return wwwRedirect();
   },
   async headers() {
     return [
