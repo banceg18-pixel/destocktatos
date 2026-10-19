@@ -102,6 +102,29 @@ npm run docs:plugin
 Exemple de noms de domaine : `www.votre-boutique.fr` pour le site, `admin.votre-boutique.fr` pour
 WordPress.
 
+### Déploiement actuel : Vercel + Neon
+
+Le site est déployé sur Vercel (projet `electro`, adresse https://electro-boutique.vercel.app) avec
+une base PostgreSQL Neon reliée au projet (variables `DATABASE_URL` et `DATABASE_URL_UNPOOLED`
+ajoutées par l'intégration).
+
+- `prisma/schema.prisma` (SQLite) reste la référence ; `node scripts/prisma-postgres.mjs` en dérive
+  `prisma/postgres/schema.prisma`. Après un changement de modèle, régénérez ce fichier puis créez la
+  migration PostgreSQL :
+  `npx prisma migrate diff --from-schema-datasource prisma/postgres/schema.prisma --to-schema-datamodel prisma/postgres/schema.prisma --script`
+  (base à jour) dans un nouveau dossier de `prisma/postgres/migrations/`.
+- Build Vercel (`vercel.json` → `npm run vercel-build`) : vérification du schéma, client PostgreSQL,
+  `prisma migrate deploy`, `next build`.
+- Données initiales (une fois) : avec les variables de production dans l'environnement,
+  `npm run db:seed:postgres`.
+- Fichiers écrits par le site : `UPLOAD_DIR=/tmp/uploads`, `MAIL_OUTBOX_DIR=/tmp/outbox` (temporaires
+  sur Vercel : configurez le SMTP pour que les emails partent réellement).
+- Déployer une nouvelle version : `npx vercel deploy --prod`, ou reliez le dépôt GitHub au projet
+  (Vercel → Settings → Git) pour un déploiement à chaque `git push`.
+- WordPress ne peut pas s'exécuter sur Vercel (ni PHP ni MySQL) : il s'installe chez un hébergeur
+  PHP, l'extension se téléverse depuis https://electro-boutique.vercel.app/telechargements/tatos-headless.zip
+  et les contenus s'importent depuis **Réglages → Site et magasin → Importer les contenus du site**.
+
 ### 1. Base de données
 
 SQLite (par défaut) : `DATABASE_URL="file:./prod.db"` sur un disque persistant, une seule instance.

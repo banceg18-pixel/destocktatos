@@ -13,6 +13,7 @@ utilisé : toute visite y est redirigée vers le site Next.js.
 | `includes/editors.php` | Écrans d'édition : fiche produit structurée et stock en direct, champs des catégories, éditeur structuré des pages (`tatos_data`), liens « Voir sur le site ↗ », barre d'administration, menus retirés. |
 | `includes/admin-shop.php` | Rubrique **Boutique** : tableau de bord, commandes, clients, stock, codes promo, avis, messages, newsletter, widget d'accueil ; actions `admin-post.php` protégées par nonce et capacité. |
 | `includes/admin-help.php` | **Guide d'utilisation** et **Documentation technique** dans l'administration (rendu Markdown des fichiers `docs/` de l'extension). |
+| `includes/importer.php` | Import des contenus (`tatos_import`), partagé par WP-CLI et par le bouton **Importer les contenus du site** des réglages (import par étapes via `admin-ajax`, données lues sur `/api/admin/export`). |
 | `includes/class-tatos-cli.php` | Commande WP-CLI `wp tatos import`. |
 | `assets/admin.css`, `assets/admin.js` | Styles et comportements de l'administration (médiathèque, listes répétables, confirmations). |
 | `docs/` | Copie de la documentation du projet (`npm run docs:plugin`). |
