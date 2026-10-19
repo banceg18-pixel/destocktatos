@@ -23,7 +23,9 @@ const out =
   );
 const target = path.join(root, "prisma/postgres/schema.prisma");
 if (process.argv.includes("--check")) {
-  if (!existsSync(target) || readFileSync(target, "utf8") !== out) {
+  // Fins de ligne ignorées : un dépôt extrait sous Windows (CRLF) reste à jour.
+  const lf = (s) => s.replace(/\r\n/g, "\n");
+  if (!existsSync(target) || lf(readFileSync(target, "utf8")) !== lf(out)) {
     console.error("prisma/postgres/schema.prisma n'est pas à jour : lancez node scripts/prisma-postgres.mjs");
     process.exit(1);
   }
