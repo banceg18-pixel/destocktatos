@@ -66,7 +66,7 @@ export default async function CategoryPage({ params, searchParams }: { params: P
     <>
       <PageHeader
         title={name}
-        intro={description ?? `Tous nos modèles de ${category.nom} disponibles, livrés et installés chez vous ou à retirer en magasin.`}
+        intro={description ?? `Tous nos modèles de ${category.nom} disponibles, livrés gratuitement partout en France et installés chez vous.`}
         meta={
           <p className="t-spec text-graphite">
             {category.count} modèle{(category.count ?? 0) > 1 ? "s" : ""} disponible{(category.count ?? 0) > 1 ? "s" : ""}

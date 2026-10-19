@@ -4,6 +4,7 @@ import type { Order, OrderItem, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { toEuros } from "@/lib/money";
 import { STORE_COORDINATES, calculateDeliveryFee, calculateDistance, type DeliveryMethod } from "@/lib/delivery";
+import { offerUnitCents } from "@/lib/offers";
 import { geocodeAddress, type LatLng } from "@/lib/geocode";
 import { invalidateCatalog } from "@/lib/catalog/repository";
 import { notifyOrderPaid } from "./notifications";
@@ -74,7 +75,8 @@ export async function quoteOrder(
         { productId: p.id, available: p.stock },
       );
     }
-    const unit = p.promotionPrixCents && p.promotionPrixCents > 0 ? p.promotionPrixCents : p.prixCents;
+    // Prix de vente (déstockage), puis l'offre -10 % au-delà de 1 000 €.
+    const unit = offerUnitCents(p.promotionPrixCents && p.promotionPrixCents > 0 ? p.promotionPrixCents : p.prixCents);
     const carac = (p.caracteristiques ?? {}) as { poids?: number };
     lines.push({
       productId: p.id,
@@ -103,11 +105,16 @@ export async function quoteOrder(
     couponMessage = c.message;
   }
 
+  // Retrait en magasin retiré de l'offre (réactivable avec STORE_PICKUP_ENABLED=true).
+  if (req.isPickupInStore && process.env.STORE_PICKUP_ENABLED !== "true") {
+    throw new ApiError(422, "Le retrait en magasin n'est plus proposé : la livraison est offerte partout en France.");
+  }
+
   let deliveryFeeCents = 0;
   let deliveryDistanceKm = 0;
   if (!req.isPickupInStore) {
     const a = req.shippingAddress;
-    if (!a) throw new ApiError(400, "Adresse de livraison incomplète. Veuillez remplir tous les champs obligatoires ou choisir le retrait en magasin.");
+    if (!a) throw new ApiError(400, "Adresse de livraison incomplète. Veuillez remplir tous les champs obligatoires.");
     if (!req.deliveryMethod) throw new ApiError(400, "Veuillez sélectionner une méthode de livraison.");
     // Livraison offerte partout en France : la distance (adresse géocodée) reste enregistrée pour la tournée.
     deliveryDistanceKm = opts.distanceKm ?? (await distanceTo(a, opts.geocoder ?? geocodeAddress));

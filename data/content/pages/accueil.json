@@ -2,7 +2,7 @@
   "slug": "accueil",
   "title": "Accueil",
   "metaTitle": "Destocktatos | Électroménager livré, installé et garanti",
-  "metaDescription": "Réfrigérateurs, lave-linge, fours, plaques et petit électroménager : livraison gratuite partout en France, installation à domicile, reprise de l'ancien appareil, retrait gratuit en magasin.",
+  "metaDescription": "Réfrigérateurs, lave-linge, fours, plaques et petit électroménager : livraison gratuite partout en France, installation à domicile et reprise de l'ancien appareil.",
   "data": {
     "hero": {
       "slides": [
@@ -53,9 +53,9 @@
         "text": "Raccordement, mise en service et reprise de l'ancien appareil le même jour, sans supplément."
       },
       {
-        "icon": "store",
-        "title": "Retrait en magasin",
-        "text": "Gratuit, sous 24 h, avec un conseiller pour vous présenter l'appareil."
+        "icon": "shield",
+        "title": "Garantie constructeur",
+        "text": "Chaque appareil est couvert par la garantie du fabricant ; en cas de panne, nous gérons les démarches pour vous."
       }
     ],
     "promo": {

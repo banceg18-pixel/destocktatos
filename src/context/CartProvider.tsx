@@ -3,6 +3,7 @@
 import { createContext, startTransition, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useSession } from "next-auth/react";
 import { calculateDeliveryFee, type DeliveryMethod } from "@/lib/delivery";
+import { offerUnitEuros } from "@/lib/offers";
 import { useError } from "@/context/PopUpProvider";
 import { validateCoupon } from "@/services/loyalty";
 import type { CartItem, ShippingAddress, AppliedCoupon } from "@/types/cart";
@@ -143,7 +144,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [deliveryMethod, deliveryDistance, includeOldItemPickup, isPickupInStore]);
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = cart.reduce((sum, item) => sum + (item.promotionPrix || item.prix) * item.quantity, 0);
+  // Même calcul que le serveur : prix de vente, puis l'offre -10 % au-delà de 1 000 € (en centimes).
+  const totalPrice = cart.reduce((sum, item) => sum + Math.round(offerUnitEuros(item.promotionPrix || item.prix) * 100) * item.quantity, 0) / 100;
 
   const calculateTotalWithDelivery = useCallback(() => Math.max(0, totalPrice - (appliedCoupon?.discount || 0) + deliveryFee), [totalPrice, deliveryFee, appliedCoupon]);
   const getTotalWithDiscount = useCallback(() => Math.max(0, totalPrice - (appliedCoupon?.discount || 0)), [totalPrice, appliedCoupon]);

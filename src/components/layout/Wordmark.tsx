@@ -18,18 +18,31 @@ export function Wordmark({ name, animated = false, className }: { name: string; 
     const outer = box.current;
     const inner = text.current;
     if (!outer || !inner) return;
+    const estimate = outer.style.fontSize;
     const fit = () => {
       outer.style.fontSize = "100px";
-      const ratio = outer.clientWidth / inner.scrollWidth;
-      outer.style.fontSize = `${Math.floor(100 * ratio * 10) / 10}px`;
+      const width = inner.scrollWidth;
+      // Plafond : l'estimation CSS + 6 %. Une mesure faussée (police de secours encore affichée,
+      // élément pas encore mis en page, Safari iOS) ne peut plus faire déborder le nom de l'écran.
+      const max = (outer.clientWidth / (letters.length * 0.9)) * 1.06;
+      const size = width > 0 ? Math.min((100 * outer.clientWidth) / width, max) : NaN;
+      outer.style.fontSize = Number.isFinite(size) && size > 0 ? `${Math.floor(size * 10) / 10}px` : estimate;
     };
     fit();
-    const ro = new ResizeObserver(fit);
+    // Le conteneur change de largeur, ou le texte change de chasse (la vraie police remplace la police de secours).
+    const ro = new ResizeObserver(() => requestAnimationFrame(fit));
     ro.observe(outer);
-    // Les polices web peuvent arriver après le premier calcul.
-    document.fonts?.ready.then(fit).catch(() => {});
-    return () => ro.disconnect();
-  }, [name]);
+    ro.observe(inner);
+    const fonts = document.fonts;
+    const family = getComputedStyle(outer).fontFamily;
+    fonts?.load(`600 100px ${family}`, name).then(fit).catch(() => {});
+    fonts?.ready.then(fit).catch(() => {});
+    fonts?.addEventListener?.("loadingdone", fit);
+    return () => {
+      ro.disconnect();
+      fonts?.removeEventListener?.("loadingdone", fit);
+    };
+  }, [name, letters.length]);
 
   return (
     <span

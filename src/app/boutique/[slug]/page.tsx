@@ -9,12 +9,13 @@ import { Rail } from "@/components/home/Rail";
 import { ImageComponent } from "@/components/ui/ImageComponent";
 import { Accordion, Price, StockBadge, Stars, Tag } from "@/components/ui/Primitives";
 import { Reveal } from "@/components/ui/Reveal";
-import { IconLock, IconShield, IconStore, IconTruck, IconWrench } from "@/components/ui/Icons";
+import { IconLock, IconShield, IconTruck, IconWrench } from "@/components/ui/Icons";
 import { getCategories, getProductBySlug, getSuggestions } from "@/lib/catalog/repository";
 import { DeliveryRates } from "@/components/common/DeliveryRates";
 import { discountPercent, formatEuros } from "@/lib/money";
 import { SITE_URL, jsonLd } from "@/lib/seo";
 import { displayTitle } from "@/lib/text";
+import { BIG_TICKET_OFFER, offerApplies, offerUnitEuros } from "@/lib/offers";
 
 // Pages pré-rendues à la première visite puis servies depuis le cache, régénérées au plus toutes les 60 s
 // (même rythme que le cache du catalogue). Le stock est de toute façon revérifié côté serveur à la commande.
@@ -140,9 +141,14 @@ export default async function ProductPage({ params }: { params: Params }) {
 
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <Price prix={p.prix} promotionPrix={p.promotionPrix} size="xl" />
-            {pct > 0 && <Tag tone="ink">-{pct} %</Tag>}
+            {pct > 0 && <Tag tone="promo">-{pct} %</Tag>}
           </div>
           {pct > 0 && <p className="mt-2 text-sm text-graphite">Vous économisez {formatEuros(p.prix - price)} par rapport au prix conseillé fabricant.</p>}
+          {offerApplies(price) && (
+            <p className="mt-2 text-sm font-semibold text-promo">
+              -{BIG_TICKET_OFFER.percent} % supplémentaires appliqués au panier (produits de plus de 1 000 €) : {formatEuros(offerUnitEuros(price))}.
+            </p>
+          )}
 
           <div className="mt-8">
             <PurchasePanel product={p} />
@@ -164,10 +170,10 @@ export default async function ProductPage({ params }: { params: Params }) {
               </span>
             </li>
             <li className="flex gap-3">
-              <IconStore className="mt-0.5 shrink-0" />
+              <IconShield className="mt-0.5 shrink-0" />
               <span>
-                <span className="block font-medium">Retrait gratuit</span>
-                <span className="text-graphite">en magasin sous 24 h</span>
+                <span className="block font-medium">En mains propres</span>
+                <span className="text-graphite">par nos agents de proximité</span>
               </span>
             </li>
             <li className="flex gap-3">

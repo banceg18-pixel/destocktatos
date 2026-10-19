@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useCart, type ShippingAddress } from "@/context/CartProvider";
 import { useError, useMessage } from "@/context/PopUpProvider";
-import type { SiteSettings } from "@/lib/cms/types";
 import { AddressAutocomplete } from "@/components/account/AddressAutocomplete";
 import { FLOOR_OPTIONS } from "@/components/account/floors";
 import { createAddress, fetchAddresses, type SavedAddress } from "@/services/account";
@@ -12,7 +11,7 @@ import { geocodeAddress } from "@/lib/geocode";
 import { STORE_COORDINATES, calculateDistance } from "@/lib/delivery";
 import { cn } from "@/lib/client/cn";
 import { Field, Input, NativeSelect, Spinner, Textarea } from "@/components/ui/Primitives";
-import { IconAlert, IconCheck, IconPin, IconStore, IconTruck } from "@/components/ui/Icons";
+import { IconAlert, IconCheck, IconPin, IconTruck } from "@/components/ui/Icons";
 import { rules } from "@/lib/client/form-rules";
 
 const EMPTY: ShippingAddress = { _id: "", fullName: "", address: "", city: "", postalCode: "", phone: "", additionalInfo: "", isDefault: false, floor: 0 };
@@ -82,9 +81,9 @@ export function ChoiceCard({
   );
 }
 
-/** Réception de la commande : retrait en magasin ou livraison (adresses enregistrées, saisie, distance). */
-export function ShippingAddressForm({ settings }: { settings: SiteSettings }) {
-  const { shippingAddress, setShippingAddress, isPickupInStore, setIsPickupInStore, isShippingAddressValid, setDeliveryDistance, deliveryDistance, resetDeliveryMethod } = useCart();
+/** Adresse de livraison (seul mode de réception) : adresses enregistrées, saisie, vérification par géocodage. */
+export function ShippingAddressForm() {
+  const { shippingAddress, setShippingAddress, isPickupInStore, isShippingAddressValid, setDeliveryDistance, deliveryDistance } = useCart();
   const { setError } = useError();
   const { setMessage } = useMessage();
   const { data: session } = useSession();
@@ -180,19 +179,6 @@ export function ShippingAddressForm({ settings }: { settings: SiteSettings }) {
     setTimeout(() => (updating.current = false), 100);
   };
 
-  const switchMode = (mode: "delivery" | "pickup") => {
-    setTouched(new Set());
-    if (mode === "pickup") {
-      setIsPickupInStore(true);
-      setGeoError(null);
-      setDeliveryDistance(0);
-      resetDeliveryMethod();
-    } else {
-      setIsPickupInStore(false);
-      if (Object.keys(validate(form)).length === 0) applyAddress(form);
-    }
-  };
-
   const onInput = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     const next = { ...form, [name]: name === "floor" ? parseInt(value) : value };
@@ -227,24 +213,15 @@ export function ShippingAddressForm({ settings }: { settings: SiteSettings }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="grid gap-3 md:grid-cols-2" role="radiogroup" aria-label="Mode de réception">
-        <ChoiceCard name="reception" checked={!isPickupInStore} onChange={() => switchMode("delivery")} icon={<IconTruck />} title="Livraison à domicile" text="Gratuite partout en France" />
-        <ChoiceCard name="reception" checked={isPickupInStore} onChange={() => switchMode("pickup")} icon={<IconStore />} title="Retrait en magasin" text="Gratuit, prêt sous 24 h" aside="Gratuit" />
+      <div className="flex gap-4 border border-ink p-5">
+        <IconTruck className="mt-0.5 shrink-0" />
+        <div className="text-sm">
+          <p className="font-medium">Livraison à domicile, offerte</p>
+          <p className="mt-1 text-graphite">Partout en France, en mains propres par nos agents de proximité.</p>
+        </div>
       </div>
 
-      {isPickupInStore ? (
-        <div className="flex gap-4 bg-mist p-5">
-          <IconPin className="mt-0.5 shrink-0" />
-          <div className="text-sm">
-            <p className="font-medium">
-              {settings.siteName} — {settings.addressLine}, {settings.postalCode} {settings.city}
-            </p>
-            <p className="mt-1 text-graphite">{settings.storeHours}</p>
-            <p className="mt-3 text-graphite">Nous vous prévenons dès que la commande est prête. Munissez-vous d&apos;une pièce d&apos;identité.</p>
-          </div>
-        </div>
-      ) : (
-        <>
+      <>
           {session?.user && saved.length > 0 && (
             <div>
               <div className="mb-3 flex items-center justify-between">
@@ -378,11 +355,10 @@ export function ShippingAddressForm({ settings }: { settings: SiteSettings }) {
             )}
           </div>
         </>
-      )}
 
       <p className={cn("flex items-center gap-2 text-sm", complete ? "text-success" : "text-graphite")} role="status">
         {complete ? <IconCheck size={16} /> : <IconAlert size={16} />}
-        <span>{complete ? (isPickupInStore ? "Retrait en magasin sélectionné" : "Adresse de livraison complète") : "Complétez l'adresse de livraison ou choisissez le retrait en magasin"}</span>
+        <span>{complete ? "Adresse de livraison complète" : "Complétez l'adresse de livraison"}</span>
       </p>
     </div>
   );

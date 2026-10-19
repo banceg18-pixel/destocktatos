@@ -7,11 +7,13 @@ import { displayTitle } from "@/lib/text";
 import { ImageComponent } from "@/components/ui/ImageComponent";
 import { QuantityStepper } from "@/components/ui/QuantityStepper";
 import { Price } from "@/components/ui/Primitives";
+import { BIG_TICKET_OFFER, offerApplies, offerUnitEuros } from "@/lib/offers";
 
 /** Ligne d'article du panier : photo, référence, prix unitaire, quantité, total de ligne, retrait. */
 export function CartItemRow({ item }: { item: CartItem }) {
   const { updateQuantity, removeFromCart } = useCart();
-  const unit = item.promotionPrix && item.promotionPrix < item.prix ? item.promotionPrix : item.prix;
+  const sale = item.promotionPrix && item.promotionPrix < item.prix ? item.promotionPrix : item.prix;
+  const unit = offerUnitEuros(sale);
   const href = item.slug ? `/boutique/${item.slug}` : "/boutique";
   const title = displayTitle(item.titre, item.marque);
   return (
@@ -24,7 +26,8 @@ export function CartItemRow({ item }: { item: CartItem }) {
         <Link href={href} className="line-clamp-2 font-medium hover:underline">
           {title}
         </Link>
-        <Price prix={item.prix} promotionPrix={item.promotionPrix} size="sm" className="mt-1" />
+        <Price prix={item.prix} promotionPrix={unit < item.prix ? unit : null} size="sm" className="mt-1" />
+        {offerApplies(sale) && <p className="text-xs font-semibold text-promo">Offre -{BIG_TICKET_OFFER.percent} % produits de plus de 1 000 € incluse</p>}
         <div className="mt-3 flex items-center gap-5">
           <QuantityStepper size="sm" value={item.quantity} max={10} onChange={(q) => updateQuantity(item._id, q)} label={`Quantité de ${title}`} />
           <button type="button" onClick={() => removeFromCart(item._id)} className="text-sm text-graphite underline-offset-4 hover:text-ink hover:underline">

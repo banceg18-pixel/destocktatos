@@ -26,6 +26,8 @@
   --color-danger: #b42318;
   /* Bandeau promotionnel : rouge vif, texte blanc lisible (contraste 5:1). */
   --color-promo: #d7261e;
+  /* Variante pour fond sombre (contraste 6:1 sur l'encre). */
+  --color-promo-light: #ff6b5e;
 
   --font-display: var(--font-archivo), "Archivo", ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-geist), "Geist", ui-sans-serif, system-ui, sans-serif;
@@ -67,6 +69,9 @@
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
+    /* Fond du « rebond » de défilement (Safari iOS) : sombre comme l'accueil et le pied de page,
+       pour que l'en-tête blanc reste lisible au-dessus. Le corps de page garde son fond clair. */
+    background-color: var(--color-ink);
     scroll-padding-top: calc(var(--header-h) + 16px);
   }
   body {

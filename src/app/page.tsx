@@ -137,7 +137,7 @@ export default async function HomePage() {
                 <p className="t-h3 mt-2 max-w-[22ch]">{bestPromo.titre}</p>
                 <Price prix={bestPromo.prix} promotionPrix={bestPromo.promotionPrix} size="lg" className="mt-3" />
               </div>
-              <Tag tone="ink">-{maxPct} %</Tag>
+              <Tag tone="promo">-{maxPct} %</Tag>
             </div>
             <div className="relative mx-auto mt-6 w-full max-w-[420px] flex-1">
               <ImageComponent
@@ -152,10 +152,10 @@ export default async function HomePage() {
           <div className="on-dark flex min-w-0 flex-col justify-between gap-12 bg-ink p-8 text-paper lg:p-12">
             <Reveal>
               <h2 id="promos" className="t-display">
-                Jusqu&apos;à −{maxPct} %
+                Jusqu&apos;à <span className="text-promo-light">−{maxPct} %</span>
               </h2>
               <p className="t-lead mt-6 max-w-md !text-white/75">
-                {promos.length} appareils à prix réduit, livrables ou à retirer en magasin, dans la limite des stocks.
+                {promos.length} appareils à prix réduit, livrés gratuitement partout en France, dans la limite des stocks.
               </p>
               <div className="mt-10">
                 <ButtonLink href="/promotions" variant="light" size="lg" icon={<Arrow />}>

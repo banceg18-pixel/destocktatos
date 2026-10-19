@@ -42,7 +42,7 @@ export function ProductCard({ product, priority = false, className }: { product:
           )}
         </div>
         <div className="pointer-events-none absolute left-2.5 top-2.5 flex flex-col items-start gap-1.5">
-          {pct > 0 && <Tag tone="ink">-{pct} %</Tag>}
+          {pct > 0 && <Tag tone="promo">-{pct} %</Tag>}
           {product.stock <= 0 && <Tag tone="paper">Épuisé</Tag>}
         </div>
         <QuickAdd

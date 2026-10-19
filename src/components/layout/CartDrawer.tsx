@@ -9,6 +9,7 @@ import { ImageComponent } from "@/components/ui/ImageComponent";
 import { ButtonLink } from "@/components/ui/Button";
 import { QuantityStepper } from "@/components/ui/QuantityStepper";
 import { Tag } from "@/components/ui/Primitives";
+import { offerUnitEuros } from "@/lib/offers";
 
 /** Mini-panier latéral : ouvert à chaque ajout, modification des quantités, accès à la commande. */
 export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -47,7 +48,7 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
       ) : (
         <ul className="divide-y divide-line px-6">
           {cart.map((item) => {
-            const unit = item.promotionPrix && item.promotionPrix < item.prix ? item.promotionPrix : item.prix;
+            const unit = offerUnitEuros(item.promotionPrix && item.promotionPrix < item.prix ? item.promotionPrix : item.prix);
             return (
               <li key={item._id} className="flex gap-4 py-5">
                 <Link href={item.slug ? `/boutique/${item.slug}` : "/boutique"} onClick={onClose} className="size-24 shrink-0 bg-mist p-2">

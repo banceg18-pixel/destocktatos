@@ -6,9 +6,9 @@ import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { useCart } from "@/context/CartProvider";
 import { useError } from "@/context/PopUpProvider";
-import type { SiteSettings } from "@/lib/cms/types";
 import { trackBeginCheckout } from "@/lib/client/analytics";
 import { formatEuros } from "@/lib/money";
+import { BIG_TICKET_OFFER } from "@/lib/offers";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Arrow, Checkbox, Spinner } from "@/components/ui/Primitives";
 import { IconAlert, IconLock } from "@/components/ui/Icons";
@@ -31,7 +31,7 @@ function Section({ n, title, children }: { n: number; title: string; children: R
 }
 
 /** Panier et préparation de la commande : articles, réception, options de livraison, récapitulatif. */
-export function ClientPanier({ settings }: { settings: SiteSettings }) {
+export function ClientPanier() {
   const {
     cart,
     clearCart,
@@ -67,6 +67,8 @@ export function ClientPanier({ settings }: { settings: SiteSettings }) {
   }
   if (!accepted) missing.push("Acceptez les conditions générales de vente.");
   const canCheckout = missing.length === 0;
+  // Économie de l'offre -10 % au-delà de 1 000 € (déjà comprise dans le total des articles).
+  const offerSavings = cart.reduce((s, i) => s + (i.promotionPrix || i.prix) * i.quantity, 0) - totalPrice;
 
   const checkout = () => {
     setAttempted(true);
@@ -150,7 +152,7 @@ export function ClientPanier({ settings }: { settings: SiteSettings }) {
         </Section>
 
         <Section n={2} title="Réception">
-          <ShippingAddressForm settings={settings} />
+          <ShippingAddressForm />
         </Section>
 
         {!isPickupInStore && (
@@ -170,6 +172,12 @@ export function ClientPanier({ settings }: { settings: SiteSettings }) {
               </dt>
               <dd>{formatEuros(totalPrice)}</dd>
             </div>
+            {offerSavings >= 0.01 && (
+              <div className="flex justify-between font-semibold text-promo">
+                <dt>Dont offre -{BIG_TICKET_OFFER.percent} % (plus de 1 000 €)</dt>
+                <dd>−{formatEuros(offerSavings)}</dd>
+              </div>
+            )}
             {appliedCoupon && (
               <div className="flex justify-between text-success">
                 <dt>Réduction {appliedCoupon.code}</dt>

@@ -24,7 +24,7 @@ export function DeliveryRates({ className }: { className?: string }) {
       </dl>
       <p className="mt-4 text-sm text-graphite">
         Partout en France, en mains propres par nos agents de proximité. Pas de frais d&apos;étage, reprise de l&apos;ancien appareil offerte avec
-        l&apos;installation, retrait en magasin gratuit.
+        l&apos;installation.
       </p>
     </div>
   );

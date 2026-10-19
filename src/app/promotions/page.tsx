@@ -13,7 +13,7 @@ import { discountPercent } from "@/lib/money";
 export const revalidate = 300;
 export const metadata: Metadata = {
   title: "Promotions",
-  description: "Tous les appareils électroménagers à prix réduit, disponibles en livraison, installation ou retrait en magasin.",
+  description: "Tous les appareils électroménagers à prix réduit, livrés gratuitement partout en France, avec installation sur demande.",
   alternates: { canonical: "/promotions" },
 };
 
@@ -37,7 +37,7 @@ export default async function PromotionsPage() {
         title={maxPct ? `Jusqu'à −${maxPct} %` : "Promotions"}
         intro={
           promos.length
-            ? `${promos.length} appareils à prix réduit en ce moment, dans la limite des stocks. Livraison, installation ou retrait en magasin, comme pour tout le catalogue.`
+            ? `${promos.length} appareils à prix réduit en ce moment, dans la limite des stocks. Livraison offerte partout en France et installation sur demande, comme pour tout le catalogue.`
             : "Aucune promotion en cours. Inscrivez-vous à la newsletter pour être prévenu des prochaines offres."
         }
       />

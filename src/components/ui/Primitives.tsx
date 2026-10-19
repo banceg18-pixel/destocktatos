@@ -3,7 +3,7 @@ import { cn } from "@/lib/client/cn";
 import { discountPercent, formatEuros } from "@/lib/money";
 
 /** Étiquette courte en majuscules, éventuellement entourée (pastille). */
-export function Tag({ children, tone = "line", className }: { children: ReactNode; tone?: "line" | "ink" | "paper" | "glass" | "mist"; className?: string }) {
+export function Tag({ children, tone = "line", className }: { children: ReactNode; tone?: "line" | "ink" | "paper" | "glass" | "mist" | "promo"; className?: string }) {
   return (
     <span
       className={cn(
@@ -13,6 +13,7 @@ export function Tag({ children, tone = "line", className }: { children: ReactNod
         tone === "paper" && "bg-paper text-ink",
         tone === "glass" && "border border-white/40 bg-white/10 text-paper backdrop-blur-md",
         tone === "mist" && "bg-mist text-ink",
+        tone === "promo" && "bg-promo font-semibold text-white",
         className,
       )}
     >
@@ -75,7 +76,8 @@ export function Price({
           size === "md" && "text-base",
           size === "lg" && "text-xl",
           size === "xl" && "font-display text-[clamp(1.75rem,2.6vw,2.4rem)] tracking-tight [font-stretch:110%]",
-          tone === "paper" ? "text-paper" : "text-ink",
+          // Prix de déstockage en rouge pour qu'il saute aux yeux ; prix normal en encre.
+          pct > 0 ? (tone === "paper" ? "font-semibold text-promo-light" : "font-semibold text-promo") : tone === "paper" ? "text-paper" : "text-ink",
         )}
       >
         {formatEuros(current)}
@@ -87,7 +89,7 @@ export function Price({
             Prix conseillé fabricant <s>{formatEuros(prix)}</s>
           </span>
           {showBadge && (
-            <span className={cn("t-spec rounded-xs px-1.5 py-0.5", tone === "paper" ? "bg-paper text-ink" : "bg-ink text-paper")}>-{pct} %</span>
+            <span className="t-spec rounded-xs bg-promo px-1.5 py-0.5 font-semibold text-white">-{pct} %</span>
           )}
         </>
       )}

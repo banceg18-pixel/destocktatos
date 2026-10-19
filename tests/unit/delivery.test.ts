@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { DELIVERY_METHODS, DELIVERY_OPTIONS, STORE_COORDINATES, calculateDeliveryFee, calculateDistance, calculateTotalWeight } from "@/lib/delivery";
 import { destockagePriceCents } from "@/lib/destockage";
+import { offerApplies, offerUnitCents, offerUnitEuros } from "@/lib/offers";
 
 describe("livraison offerte partout en France", () => {
   it.each(DELIVERY_METHODS)("%s : gratuit", (method) => {
@@ -38,6 +39,18 @@ describe("prix de déstockage", () => {
   it("prix stable pour un même produit et terminé par ,99", () => {
     expect(destockagePriceCents("abc", 89_900)).toBe(destockagePriceCents("abc", 89_900));
     expect(destockagePriceCents("abc", 89_900) % 100).toBe(99);
+  });
+});
+
+describe("offre -10 % sur les produits de plus de 1 000 €", () => {
+  it("s'applique au-delà de 1 000 € seulement", () => {
+    expect(offerUnitCents(100_000)).toBe(100_000);
+    expect(offerUnitCents(99_999)).toBe(99_999);
+    expect(offerUnitCents(100_099)).toBe(90_089);
+    expect(offerUnitCents(249_999)).toBe(224_999);
+    expect(offerUnitEuros(1499.99)).toBe(1349.99);
+    expect(offerApplies(1000)).toBe(false);
+    expect(offerApplies(1000.99)).toBe(true);
   });
 });
 

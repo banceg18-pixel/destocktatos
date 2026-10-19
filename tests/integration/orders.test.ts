@@ -68,6 +68,29 @@ describe("devis serveur (quoteOrder)", () => {
     expect(q.deliveryFeeCents).toBe(0);
   });
 
+  it("offre -10 % sur les produits de plus de 1 000 € appliquée par le serveur", async () => {
+    const user = await makeUser();
+    const cher = await makeProduct({ prixCents: 300_000, promotionPrixCents: 149_999 });
+    const petit = await makeProduct({ prixCents: 90_000, promotionPrixCents: 40_999 });
+    const q = await quoteOrder(prisma, user.id, orderRequest([{ _id: cher.id, quantity: 2 }, { _id: petit.id, quantity: 1 }], 0));
+    const line = (id: string) => q.lines.find((l) => l.productId === id)!;
+    expect(line(cher.id).unitPriceCents).toBe(134_999);
+    expect(line(petit.id).unitPriceCents).toBe(40_999);
+    expect(q.subtotalCents).toBe(2 * 134_999 + 40_999);
+  });
+
+  it("retrait en magasin refusé quand il est fermé (production)", async () => {
+    const user = await makeUser();
+    const p = await makeProduct();
+    const previous = process.env.STORE_PICKUP_ENABLED;
+    delete process.env.STORE_PICKUP_ENABLED;
+    try {
+      await expectApiError(quoteOrder(prisma, user.id, orderRequest([{ _id: p.id, quantity: 1 }], 0)), 422, /retrait en magasin/);
+    } finally {
+      process.env.STORE_PICKUP_ENABLED = previous;
+    }
+  });
+
   it("livraison partout en France, tous modes, sans limite de distance", async () => {
     const user = await makeUser();
     const p = await makeProduct();

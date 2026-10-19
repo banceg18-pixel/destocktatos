@@ -11,7 +11,7 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
   const title = q.recherche ? `Recherche « ${q.recherche} »` : "Boutique";
   return {
     title,
-    description: "Tout le catalogue d'électroménager disponible : réfrigérateurs, lave-linge, fours, plaques, petit électroménager. Livraison, installation ou retrait en magasin.",
+    description: "Tout le catalogue d'électroménager disponible : réfrigérateurs, lave-linge, fours, plaques, petit électroménager. Livraison gratuite partout en France, installation et reprise de l'ancien appareil.",
     alternates: { canonical: "/boutique" },
     // Les combinaisons de filtres ne sont pas indexées (contenu dupliqué) ; la boutique l'est.
     robots: q.recherche || q.categorie || q.page > 1 ? { index: false, follow: true } : undefined,
@@ -41,7 +41,7 @@ export default async function BoutiquePage({ searchParams }: { searchParams: Sea
         intro={
           q.recherche
             ? `${result.total} résultat${result.total > 1 ? "s" : ""} parmi les appareils disponibles.`
-            : "Tous les appareils disponibles, livrés gratuitement partout en France, à installer chez vous ou à retirer en magasin."
+            : "Tous les appareils disponibles, livrés gratuitement partout en France et installés chez vous si vous le souhaitez."
         }
       />
       <CatalogView

@@ -14,6 +14,7 @@ import { Toasts } from "@/components/layout/Popups";
 import { Analytics } from "@/components/layout/Analytics";
 import { NavigationProgress } from "@/components/layout/NavigationProgress";
 import { NetworkStatus } from "@/components/layout/NetworkStatus";
+import { OfferPopup } from "@/components/layout/OfferPopup";
 import { getMenus, getSiteSettings } from "@/lib/cms";
 import { getCategories } from "@/lib/catalog/repository";
 import { bannerMessagesOf } from "@/lib/banner";
@@ -56,6 +57,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   <Footer settings={settings} legal={menus.footerLegal} categories={categories} />
                 </FooterGate>
                 <CookieConsentModal />
+                <OfferPopup />
                 <Toasts />
               </UiProvider>
             </CartProvider>

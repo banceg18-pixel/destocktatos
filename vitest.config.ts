@@ -26,6 +26,8 @@ export default defineConfig({
       // Contenus locaux et cache du catalogue coupé : les tests écrivent directement en base.
       CMS_PROVIDER: "local",
       CATALOG_CACHE_TTL_MS: "0",
+      // Les commandes de test utilisent le retrait (pas de géocodage) ; il est fermé en production.
+      STORE_PICKUP_ENABLED: "true",
     },
     // Une seule base SQLite partagée : les fichiers s'exécutent l'un après l'autre.
     fileParallelism: false,

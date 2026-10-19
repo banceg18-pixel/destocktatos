@@ -74,7 +74,7 @@ export function Header({ menu, categories, settings }: { menu: MenuItem[]; categ
       <header
         className={cn(
           "fixed inset-x-0 top-0 z-[200] transition-[background-color,color,border-color,backdrop-filter] duration-500",
-          overHero ? "on-dark border-b border-transparent bg-transparent text-paper" : "border-b border-line bg-paper/92 text-ink backdrop-blur-xl",
+          overHero ? "on-dark border-b border-transparent bg-gradient-to-b from-ink/55 to-transparent text-paper" : "border-b border-line bg-paper/92 text-ink backdrop-blur-xl",
         )}
         onMouseLeave={closeMegaSoon}
       >

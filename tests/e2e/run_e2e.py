@@ -580,7 +580,7 @@ def _():
     ctx.close()
 
 
-@test("achat", "retrait en magasin : panier, commande, règlement au retrait, confirmation, commandes")
+@test("achat", "client connecté : livraison, règlement à la livraison, confirmation, commandes")
 def _():
     errors: list[str] = []
     ctx = new_context(consent="accepted")
@@ -589,13 +589,24 @@ def _():
     add_to_cart(page, CHEAP, quantity=2)
     open_cart(page)
     total = page.get_by_test_id("cart-total").inner_text()
-    page.get_by_text("Retrait en magasin", exact=True).click()
+    # Plus de retrait en magasin : livraison seulement (adresse via la Base Adresse Nationale).
+    check(page.get_by_text("Retrait en magasin", exact=True).count() == 0, "retrait en magasin non proposé")
+    page.locator("#ship-fullName").fill("Client Démo")
+    page.locator("#ship-phone").fill("0612345678")
+    page.locator("#ship-address").fill(STORE_ADDRESS)
+    try:
+        page.get_by_role("option").first.wait_for(timeout=15_000)
+    except Exception:
+        raise Skip("API Base Adresse Nationale injoignable depuis cet environnement")
+    page.get_by_role("option").filter(has_text="Sevran").first.click()
+    page.get_by_text("Adresse de livraison complète", exact=True).wait_for(timeout=20_000)
+    page.get_by_role("radiogroup", name="Options de livraison").wait_for(timeout=20_000)
     page.locator("#termsCheckbox").check(force=True)
     page.get_by_test_id("checkout-button").click()
     page.wait_for_url("**/paiement", timeout=30_000)
     page.get_by_test_id("pay-on-delivery").wait_for()
     check(page.get_by_text(re.compile("mode test|simuler", re.I)).count() == 0, "aucune mention de test sur la page de paiement")
-    page.get_by_text("Vous réglez votre commande au magasin, au moment du retrait.", exact=False).wait_for()
+    page.get_by_text("Vous réglez votre commande à la livraison, à la remise des appareils.", exact=False).wait_for()
     # Formats d'origine différents (« 40 € » au panier, « 40.00€ » au paiement) : on compare les montants.
     amount = lambda t: float(re.sub(r"[^\d,.]", "", t).replace(",", "."))
     eq(amount(page.get_by_test_id("payment-total").inner_text()), amount(total), "total identique panier / paiement")
@@ -606,14 +617,14 @@ def _():
     page.get_by_test_id("pay-on-delivery").click()
     page.wait_for_url(re.compile(r"/confirmation\?status=success&order="), timeout=30_000)
     page.get_by_text("Merci pour votre commande !").wait_for()
-    check("au retrait en magasin" in page.locator("main").inner_text(), "règlement au retrait annoncé")
+    check("à la livraison" in page.locator("main").inner_text(), "règlement à la livraison annoncé")
     number = re.search(r"TAT-\d{8}-[0-9A-F]{6}", page.content()).group(0)
     go(page, "/compte/commandes")
     page.get_by_text(f"Commande {number}").wait_for()
     row = page.locator("article").filter(has=page.get_by_role("heading", name=f"Commande {number}"))
     # Le libellé est affiché en capitales (CSS) : comparaison sans casse.
     text = row.inner_text().lower()
-    check("en préparation" in text and "à régler au retrait" in text, "commande en préparation, à régler au retrait")
+    check("en préparation" in text and "à régler à la livraison" in text, "commande en préparation, à régler à la livraison")
     check("facture sera disponible" in text, "facture annoncée pour après le règlement")
     order_id = re.search(r"order=([A-Za-z0-9]+)", page.evaluate("document.referrer") or "") or None
     resp = page.request.get("/api/orders")
@@ -842,6 +853,8 @@ def start_server(port: int):
         "STRIPE_SECRET_KEY": "",
         # Simulation de paiement réservée aux tests (échec / succès), jamais active en production.
         "TEST_PAYMENTS": "true",
+        # Commandes de test par l'API en retrait (sans géocodage) ; fermé sur le site en production.
+        "STORE_PICKUP_ENABLED": "true",
         "ADMIN_API_SECRET": ADMIN_SECRET,
         "NODE_ENV": "production",
     }
