@@ -1,0 +1,70 @@
+{
+  "slug": "services",
+  "title": "Services",
+  "data": {
+    "intro": "Choisir un appareil n'est que la première étape. Nous le livrons, l'installons, reprenons l'ancien et restons votre interlocuteur ensuite.",
+    "services": [
+      {
+        "id": "livraison",
+        "image": "/assets/images/libres/service-livraison.jpg",
+        "imageAlt": "Camion de livraison garé devant un immeuble, un livreur porte un appareil emballé",
+        "title": "Livraison à domicile",
+        "text": "Jusqu'à 80 km autour du magasin. Le tarif dépend de la distance et du niveau de service, il est calculé automatiquement depuis votre adresse avant le paiement.",
+        "points": [
+          "Au pied du camion, dans la pièce de votre choix ou avec installation",
+          "Créneau fixé par téléphone après la commande",
+          "Frais d'étage à partir du 3ᵉ étage"
+        ]
+      },
+      {
+        "id": "installation",
+        "image": "/assets/images/libres/service-installation.jpg",
+        "imageAlt": "Perceuse, clés et mètre posés au sol avant une installation",
+        "title": "Installation et mise en service",
+        "text": "Nos techniciens raccordent l'appareil, le mettent à niveau, vérifient son fonctionnement et vous montrent les réglages utiles.",
+        "points": [
+          "Raccordement à l'eau et à l'électricité existants",
+          "Démonstration des programmes principaux",
+          "Emballages repartis avec nous"
+        ]
+      },
+      {
+        "id": "reprise",
+        "image": "/assets/images/libres/service-magasin.jpg",
+        "imageAlt": "Intérieur d'un magasin d'électroménager avec appareils de cuisine exposés",
+        "title": "Reprise et retrait en magasin",
+        "text": "Avec l'installation, nous reprenons votre ancien appareil pour 5 € et le confions à la filière de recyclage. Vous pouvez aussi retirer votre commande gratuitement au magasin.",
+        "points": [
+          "Reprise de l'ancien appareil le jour de l'installation",
+          "Retrait gratuit, commande prête sous 24 h",
+          "Présentation de l'appareil par un conseiller au retrait"
+        ]
+      },
+      {
+        "id": "garantie",
+        "image": "/assets/images/libres/service-sav.jpg",
+        "imageAlt": "Technicien réparant un appareil dans son atelier",
+        "title": "Garantie et après-vente",
+        "text": "Chaque fiche produit indique la durée de garantie constructeur. En cas de panne, nous gérons les démarches avec le fabricant pour vous.",
+        "points": [
+          "Un interlocuteur unique au magasin",
+          "Diagnostic par téléphone avant tout déplacement",
+          "Suivi de vos commandes et factures dans votre compte"
+        ]
+      }
+    ],
+    "rates": {
+      "title": "Grille de livraison",
+      "text": "Distance mesurée à vol d'oiseau depuis le magasin. Au-delà de 60 km, seule la livraison au pied du camion est proposée ; nous ne livrons pas au-delà de 80 km."
+    },
+    "quote": {
+      "title": "Faire installer un appareil",
+      "text": "Vous avez déjà l'appareil, ou vous préférez convenir d'un créneau avant de commander ? Indiquez-nous la date et le moment qui vous arrangent : un technicien vous rappelle pour confirmer."
+    },
+    "location": {
+      "title": "Passer nous voir"
+    }
+  },
+  "metaTitle": "Livraison, installation et reprise",
+  "metaDescription": "Livraison jusqu'à 80 km avec tarif selon la distance, installation et mise en service, reprise de l'ancien appareil, retrait gratuit en magasin, garantie et service après-vente."
+}

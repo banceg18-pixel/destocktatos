@@ -1,0 +1,306 @@
+// Schéma de la base métier (SQLite en local, compatible PostgreSQL/MySQL en production).
+// Il couvre uniquement les fonctionnalités observées sur le site source :
+// catalogue, comptes clients, adresses, panier/commande, paiement, coupons fidélité,
+// avis, contact, demandes de service, tickets d'assistance, newsletter.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------- Catalogue
+
+model Category {
+  id        String    @id @default(cuid())
+  slug      String    @unique // ex. "refrigerateur" (route /categorie/refrigerateur)
+  nom       String    @unique // libellé source, ex. "réfrigérateur"
+  ordre     Int       @default(0)
+  image     String? // image représentative locale
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Product {
+  id                 String          @id // identifiant d'origine conservé (24 hex)
+  slug               String          @unique
+  titre              String
+  marque             String
+  modele             String
+  prixCents          Int
+  promotionPrixCents Int?
+  stock              Int             @default(0)
+  categoryId         String
+  category           Category        @relation(fields: [categoryId], references: [id])
+  sousCategories     Json            
+  description        String          @default("")
+  caracteristiques   Json             // { profondeur, largeur, hauteur, poids }
+  garantie           Json? // { duree, descriptif }
+  pose               String?
+  couleurs           Json            
+  connecter          Boolean         @default(false)
+  vedette            Boolean         @default(false)
+  magasin            Boolean         @default(false)
+  sonore             Int?
+  imagePrincipale    String?
+  etiquetteEnergie   String?
+  metaTitle          String?
+  metaDescription    String?
+  images             ProductImage[]
+  reviews            Review[]
+  orderItems         OrderItem[]
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  @@index([categoryId])
+  @@index([vedette])
+}
+
+model ProductImage {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String
+  position  Int     @default(0)
+
+  @@index([productId])
+}
+
+// ---------------------------------------------------------------- Comptes
+
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+model User {
+  id           String               @id @default(cuid())
+  name         String
+  email        String               @unique
+  passwordHash String?
+  image        String?
+  role         Role                 @default(CUSTOMER)
+  addresses    Address[]
+  orders       Order[]
+  reviews      Review[]
+  coupons      Coupon[]
+  redemptions  CouponRedemption[]
+  tickets      Ticket[]
+  resetTokens  PasswordResetToken[]
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+}
+
+model Address {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName       String
+  address        String
+  city           String
+  postalCode     String
+  phone          String
+  additionalInfo String   @default("")
+  floor          Int      @default(0)
+  isDefault      Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// ---------------------------------------------------------------- Commandes
+
+enum OrderStatus {
+  EN_ATTENTE_PAIEMENT
+  PAYEE
+  EN_PREPARATION
+  EXPEDIEE
+  LIVREE
+  ANNULEE
+  PAIEMENT_ECHOUE
+}
+
+model Order {
+  id                  String            @id @default(cuid())
+  number              String            @unique
+  userId              String
+  user                User              @relation(fields: [userId], references: [id])
+  status              OrderStatus       @default(EN_ATTENTE_PAIEMENT)
+  subtotalCents       Int
+  discountCents       Int               @default(0)
+  deliveryFeeCents    Int               @default(0)
+  totalCents          Int
+  deliveryMethod      String? // piedDuCamion | livraisonPiece | installation
+  includeOldItemPickup Boolean          @default(false)
+  deliveryDistanceKm  Float             @default(0)
+  isPickupInStore     Boolean           @default(false)
+  shippingAddress     Json?
+  billingAddress      Json?
+  couponCode          String?
+  paymentProvider     String? // stripe | test
+  paymentMode         String? // live | test
+  paymentIntentId     String?           @unique
+  paidAt              DateTime?
+  items               OrderItem[]
+  payments            Payment[]
+  redemption          CouponRedemption?
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  @@index([userId])
+}
+
+model OrderItem {
+  id             String  @id @default(cuid())
+  orderId        String
+  order          Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId      String
+  product        Product @relation(fields: [productId], references: [id])
+  titre          String
+  marque         String
+  imagePrincipale String?
+  unitPriceCents Int
+  quantity       Int
+  lineTotalCents Int
+
+  @@index([orderId])
+}
+
+enum PaymentStatus {
+  EN_ATTENTE
+  REUSSI
+  ECHOUE
+  ANNULE
+}
+
+model Payment {
+  id          String        @id @default(cuid())
+  orderId     String
+  order       Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  provider    String
+  mode        String // test | live
+  providerRef String?
+  amountCents Int
+  status      PaymentStatus @default(EN_ATTENTE)
+  details     Json?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([orderId])
+}
+
+// ---------------------------------------------------------------- Fidélité
+
+enum CouponType {
+  POURCENTAGE
+  MONTANT
+}
+
+model Coupon {
+  id            String             @id @default(cuid())
+  code          String             @unique
+  description   String             @default("")
+  type          CouponType
+  value         Int // pourcentage entier ou montant en centimes
+  active        Boolean            @default(true)
+  maxUses       Int?
+  usedCount     Int                @default(0)
+  minOrderCents Int                @default(0)
+  expiresAt     DateTime?
+  userId        String? // coupon personnel (programme fidélité) ou public si null
+  user          User?              @relation(fields: [userId], references: [id])
+  redemptions   CouponRedemption[]
+  createdAt     DateTime           @default(now())
+}
+
+model CouponRedemption {
+  id            String   @id @default(cuid())
+  couponId      String
+  coupon        Coupon   @relation(fields: [couponId], references: [id])
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  orderId       String   @unique
+  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  discountCents Int
+  createdAt     DateTime @default(now())
+}
+
+// ---------------------------------------------------------------- Avis
+
+model Review {
+  id          String   @id @default(cuid())
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  note        Int
+  commentaire String   @default("")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([productId, userId])
+}
+
+// ---------------------------------------------------------------- Demandes entrantes
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String   @default("")
+  subject   String   @default("")
+  message   String
+  status    String   @default("NOUVEAU")
+  createdAt DateTime @default(now())
+}
+
+model ServiceRequest {
+  id          String   @id @default(cuid())
+  fullName    String
+  email       String
+  phone       String
+  service     String
+  details     Json     
+  message     String   @default("")
+  status      String   @default("NOUVEAU")
+  createdAt   DateTime @default(now())
+}
+
+model Ticket {
+  id          String   @id @default(cuid())
+  number      String   @unique
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+  type        String
+  priority    String
+  title       String
+  description String
+  details     Json     
+  images      Json     
+  email       String
+  name        String   @default("")
+  status      String   @default("OUVERT")
+  createdAt   DateTime @default(now())
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  source    String   @default("site")
+  createdAt DateTime @default(now())
+}

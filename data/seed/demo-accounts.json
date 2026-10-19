@@ -1,0 +1,4 @@
+{
+  "_comment": "Identifiants de TEST pour l'environnement local uniquement (générés au setup, sans lien avec le site source).",
+  "customer": { "name": "Client Démo", "email": "client.demo@tatos.test", "password": "Demo-357ca7e9993f" }
+}

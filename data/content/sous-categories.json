@@ -1,0 +1,106 @@
+{
+ "réfrigérateur": [
+  "combiné",
+  "side by side",
+  "américain",
+  "table top",
+  "cave à vin"
+ ],
+ "congélateur": [
+  "coffre",
+  "armoire",
+  "table top",
+  "cave à vin"
+ ],
+ "lave-linge": [
+  "hublot",
+  "ouverture dessus",
+  "séchant",
+  "compact",
+  "lave-linge séchant"
+ ],
+ "sèche-linge": [
+  "ventilation",
+  "condensation",
+  "pompe à chaleur",
+  "compact"
+ ],
+ "lave-vaisselle": [
+  "encastrable",
+  "libre",
+  "compact",
+  "intégrable",
+  "semi-encastrable"
+ ],
+ "cuisinière": [
+  "électrique",
+  "gaz",
+  "mixte",
+  "induction",
+  "vitrocéramique"
+ ],
+ "four": [
+  "électrique",
+  "micro-ondes",
+  "combiné",
+  "vapeur",
+  "grill"
+ ],
+ "plaque de cuisson": [
+  "induction"
+ ],
+ "micro-ondes": [
+  "solo",
+  "grill",
+  "combiné",
+  "intégrable",
+  "encastrable"
+ ],
+ "hotte": [
+  "extraction",
+  "recyclage",
+  "décorative",
+  "télescopique",
+  "domino"
+ ],
+ "aspirateur": [
+  "traîneau",
+  "balai",
+  "robot",
+  "centralisé",
+  "sans sac"
+ ],
+ "climatiseur": [
+  "split",
+  "monobloc",
+  "cassette",
+  "console",
+  "mobile"
+ ],
+ "autres": [
+  "air fryer",
+  "centrale vapeur",
+  "cuiseur de riz",
+  "cuisine",
+  "friteuse",
+  "friteuse sans huile",
+  "grille‑pain",
+  "machine a glacons",
+  "ventilateur colonne"
+ ],
+ "robot de cuisine": [
+  "planétaire",
+  "blender",
+  "mixeur",
+  "multifonction",
+  "hachoir"
+ ],
+ "plaque à gaz": [
+  "induction",
+  "encastrable"
+ ],
+ "télévision": [
+  "4k",
+  "oled"
+ ]
+}

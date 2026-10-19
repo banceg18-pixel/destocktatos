@@ -1,0 +1,14 @@
+{
+  "siteName": "TATOS",
+  "description": "Électroménager de qualité au meilleur prix",
+  "email": "tatos-electromenager@outlook.com",
+  "phone": "+33 6 51 64 41 84",
+  "phoneIntl": "+33-6-51-64-41-84",
+  "addressLine": "15 Rue Paul Langevin",
+  "postalCode": "93270",
+  "city": "Sevran",
+  "country": "France",
+  "hours": "Service disponible 10h - 20h, 7j/7",
+  "storeHours": "Ouvert du lundi au dimanche de 10h à 20h",
+  "mapQuery": "15 Rue Paul Langevin, 93270 Sevran, France"
+}

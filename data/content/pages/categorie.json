@@ -1,0 +1,90 @@
+{
+ "slug": "categorie",
+ "title": "Modèle de page catégorie",
+ "data": {
+  "descriptions": {
+   "aspirateur": "Aspirateurs et robots aspirateurs",
+   "autres": null,
+   "climatiseur": "Climatiseurs et ventilateurs",
+   "congelateur": "Congélateurs et freezers",
+   "cuisiniere": "Cuisinières et plaques de cuisson",
+   "four": "Fours et micro-ondes",
+   "hotte": "Hottes aspirantes et décoratives",
+   "lave-linge": "Machines à laver le linge",
+   "lave-vaisselle": "Lave-vaisselle et accessoires",
+   "micro-ondes": "Micro-ondes et fours combinés",
+   "plaque-a-gaz": null,
+   "plaque-de-cuisson": null,
+   "refrigerateur": "Réfrigérateurs et combinés frigorifiques",
+   "robot-de-cuisine": "Robots culinaires et accessoires",
+   "seche-linge": "Sèche-linge et sèche-linge pompe à chaleur",
+   "television": null
+  },
+  "guide": [
+   {
+    "type": "heading",
+    "level": 3,
+    "text": "1. Types et usages"
+   },
+   {
+    "type": "paragraph",
+    "text": "Choisissez selon vos besoins: encastrable vs pose libre, capacités, technologies utiles, et contraintes d'espace."
+   },
+   {
+    "type": "heading",
+    "level": 3,
+    "text": "2. Critères clés"
+   },
+   {
+    "type": "list",
+    "items": [
+     "Capacité et dimensions: assurez la compatibilité avec votre cuisine.",
+     "Efficacité énergétique: privilégiez A à C pour réduire la consommation.",
+     "Niveau sonore: essentiel pour cuisines ouvertes.",
+     "Fonctionnalités: programmes rapides, connectivité, sécurité enfant."
+    ]
+   },
+   {
+    "type": "heading",
+    "level": 3,
+    "text": "3. Budget et garanties"
+   },
+   {
+    "type": "paragraph",
+    "text": "Comparez le coût total: prix d'achat, consommation, entretien. Optez pour des garanties étendues selon l'usage."
+   },
+   {
+    "type": "heading",
+    "level": 3,
+    "text": "4. Comparatifs rapides"
+   },
+   {
+    "type": "list",
+    "items": [
+     "Entrée de gamme: bon rapport qualité-prix pour usage modéré.",
+     "Milieu de gamme: meilleures performances et options.",
+     "Haut de gamme: silence, efficacité, durabilité renforcée."
+    ]
+   }
+  ],
+  "faq": [
+   {
+    "question": "Quel délai de livraison pour cette catégorie ?",
+    "answer": "En général 3 à 5 jours ouvrables, selon disponibilité et adresse."
+   },
+   {
+    "question": "Quelle classe énergétique privilégier ?",
+    "answer": "Visez A à C; l'économie d'énergie compense souvent l'écart de prix."
+   },
+   {
+    "question": "L'installation est-elle comprise ?",
+    "answer": "Selon l'offre. Vérifiez la fiche produit ou contactez notre support."
+   },
+   {
+    "question": "Combien de décibels pour un usage confortable ?",
+    "answer": "Moins de 45 dB pour une cuisine ouverte, 45–50 dB pour une cuisine fermée."
+   }
+  ],
+  "metaDescriptionTemplate": "Découvrez notre sélection {nom} au meilleur prix: grandes marques, livraison rapide, garanties et SAV."
+ }
+}

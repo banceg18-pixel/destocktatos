@@ -1,0 +1,62 @@
+/**
+ * Événements e-commerce GA4 (mêmes noms et charges utiles que le site source).
+ * Sans effet si Google Analytics n'est pas chargé (désactivé par défaut / sans consentement).
+ */
+type Item = { _id: string; titre: string; marque?: string; prix: number; promotionPrix?: number | null; quantity?: number };
+
+declare global {
+  interface Window {
+    gtag?: (...args: unknown[]) => void;
+    dataLayer?: unknown[];
+  }
+}
+
+function send(event: string, params: Record<string, unknown> = {}) {
+  try {
+    if (typeof window.gtag === "function") window.gtag("event", event, params);
+    if (Array.isArray(window.dataLayer)) window.dataLayer.push({ event, ...params });
+  } catch {
+    /* analytics ne doit jamais casser l'interface */
+  }
+}
+
+function items(list: Item[]) {
+  return list.map((e) => ({
+    item_id: e._id,
+    item_name: e.titre,
+    item_brand: e.marque || undefined,
+    price: Number(e.promotionPrix ?? e.prix) || 0,
+    quantity: Number(e.quantity ?? 1) || 1,
+    currency: "EUR",
+  }));
+}
+
+export function trackAddToCart(item: Item, quantity = 1) {
+  send("add_to_cart", {
+    currency: "EUR",
+    value: (Number(item.promotionPrix ?? item.prix) || 0) * Math.max(1, quantity),
+    items: items([{ ...item, quantity }]),
+  });
+}
+
+export function trackBeginCheckout(list: Item[], value?: number, coupon?: string) {
+  send("begin_checkout", { currency: "EUR", value, coupon: coupon || undefined, items: items(list) });
+}
+
+export function trackAddPaymentInfo(p: { value?: number; coupon?: string; payment_type?: string }) {
+  send("add_payment_info", { currency: "EUR", value: p.value, coupon: p.coupon || undefined, payment_type: p.payment_type || "card" });
+}
+
+export function trackPaymentError(message: string, code?: string) {
+  send("payment_error", { message, code: code || undefined });
+}
+
+export function trackPurchase(p: { transaction_id: string; value?: number; coupon?: string; items?: Item[] }) {
+  send("purchase", {
+    transaction_id: p.transaction_id,
+    currency: "EUR",
+    value: p.value,
+    coupon: p.coupon || undefined,
+    items: p.items ? items(p.items) : undefined,
+  });
+}

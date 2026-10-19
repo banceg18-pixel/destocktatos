@@ -1,0 +1,464 @@
+@import "tailwindcss";
+
+/* Les contenus CMS (HTML des pages légales) peuvent contenir des classes Tailwind. */
+@source "../../data/content";
+
+/* Pas de thème sombre : la variante `dark:` ne s'applique qu'à une classe jamais posée. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ------------------------------------------------------------------------------------------
+ * Design system
+ * Monochrome éditorial : encre sur papier, cartes « brume », filets fins. La couleur est
+ * réservée aux états (stock, erreur). Trois familles : Archivo élargie (titres), Geist (texte),
+ * Geist Mono (références, dimensions, numéros).
+ * ---------------------------------------------------------------------------------------- */
+@theme {
+  --color-ink: #121212;
+  --color-ink-soft: #2a2a28;
+  --color-paper: #ffffff;
+  --color-mist: #f1f1ef;
+  --color-mist-deep: #e6e6e2;
+  --color-line: #e3e3df;
+  --color-graphite: #6f6f6a;
+  --color-graphite-light: #a3a39d;
+  --color-success: #2f7d4f;
+  --color-warning: #a8650a;
+  --color-danger: #b42318;
+
+  --font-display: var(--font-archivo), "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-geist), "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), "Geist Mono", ui-monospace, monospace;
+
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+
+}
+
+/* Variables historiques encore utilisées par le HTML des contenus CMS (pages légales). */
+:root {
+  --text-main: var(--color-ink-soft);
+  --bg-main: var(--color-paper);
+  --card-border: var(--color-line);
+  --header-h: 64px;
+}
+@media (min-width: 1024px) {
+  :root {
+    --header-h: 76px;
+  }
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: calc(var(--header-h) + 16px);
+  }
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-stretch: 112%;
+    font-weight: 500;
+    letter-spacing: -0.025em;
+    line-height: 1.02;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  ::selection {
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 3px;
+    border-radius: var(--radius-xs);
+  }
+  .on-dark :focus-visible {
+    outline-color: var(--color-paper);
+  }
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+  [hidden] {
+    display: none !important;
+  }
+}
+
+@layer components {
+  /* Gabarit horizontal commun. */
+  .shell {
+    width: 100%;
+    max-width: 1520px;
+    margin-inline: auto;
+    padding-inline: clamp(20px, 3.4vw, 48px);
+  }
+
+  /* Échelle typographique. */
+  .t-wordmark {
+    font-family: var(--font-display);
+    font-stretch: 125%;
+    font-weight: 600;
+    letter-spacing: -0.045em;
+    line-height: 0.84;
+    text-transform: uppercase;
+  }
+  .t-display {
+    font-family: var(--font-display);
+    font-stretch: 118%;
+    font-weight: 500;
+    font-size: clamp(2.35rem, 6.4vw, 6rem);
+    letter-spacing: -0.035em;
+    overflow-wrap: break-word;
+    line-height: 0.96;
+  }
+  .t-h2 {
+    font-family: var(--font-display);
+    font-stretch: 115%;
+    font-weight: 500;
+    font-size: clamp(2rem, 4.2vw, 3.75rem);
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .t-h3 {
+    font-family: var(--font-display);
+    font-stretch: 110%;
+    font-weight: 500;
+    font-size: clamp(1.25rem, 1.6vw, 1.6rem);
+    letter-spacing: -0.02em;
+    line-height: 1.12;
+  }
+  .t-lead {
+    font-size: clamp(1.05rem, 1.25vw, 1.25rem);
+    line-height: 1.55;
+    color: var(--color-ink-soft);
+  }
+  .t-eyebrow {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.09em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+  .t-spec {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+  }
+  .t-price {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+
+  /* Filets de grille (cartes produit séparées par des traits fins, sans double bordure). */
+  .hairline-grid {
+    display: grid;
+    border-top: 1px solid var(--color-line);
+    border-left: 1px solid var(--color-line);
+  }
+  .hairline-grid > * {
+    border-right: 1px solid var(--color-line);
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  /* Bouton : le libellé « roule » vers le haut au survol. */
+  .roll {
+    display: inline-grid;
+    overflow: hidden;
+    line-height: 1.2;
+  }
+  .roll > span {
+    grid-area: 1 / 1;
+    transition: transform 0.55s var(--ease-out-expo);
+  }
+  .roll > span + span {
+    transform: translateY(110%);
+  }
+  :where(a, button):hover .roll > span:first-child,
+  :where(a, button):focus-visible .roll > span:first-child {
+    transform: translateY(-110%);
+  }
+  :where(a, button):hover .roll > span + span,
+  :where(a, button):focus-visible .roll > span + span {
+    transform: translateY(0);
+  }
+
+  /* Lien souligné animé. */
+  .link-underline {
+    background: linear-gradient(currentColor, currentColor) 0 100% / 0% 1px no-repeat;
+    transition: background-size 0.45s var(--ease-out-expo);
+    padding-bottom: 1px;
+  }
+  .link-underline:hover,
+  .link-underline:focus-visible,
+  .link-underline[aria-current="page"] {
+    background-size: 100% 1px;
+  }
+
+  /* Apparition au défilement (pilotée par <Reveal>). */
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+      opacity 0.9s var(--ease-out-expo),
+      transform 1.1s var(--ease-out-expo);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  .reveal[data-visible="true"] {
+    opacity: 1;
+    transform: none;
+  }
+  .reveal-mask {
+    clip-path: inset(0 0 100% 0);
+    transition: clip-path 1.2s var(--ease-out-expo);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  .reveal-mask[data-visible="true"] {
+    clip-path: inset(0 0 0 0);
+  }
+
+  /* Lettres du grand logo : montée échelonnée au chargement. */
+  .rise > span {
+    display: inline-block;
+    transform: translateY(105%);
+    animation: rise 1.25s var(--ease-out-expo) forwards;
+    animation-delay: calc(var(--i, 0) * 55ms + 150ms);
+  }
+
+  /* Mot à mot (pilotée par <TextReveal>). */
+  .word-reveal > span {
+    opacity: clamp(0.14, calc(var(--p, 0) * var(--n) - var(--i) + 1), 1);
+    transition: opacity 0.2s linear;
+  }
+
+  /* Bandeau défilant. */
+
+  /* Défilement horizontal discret (carrousels natifs). */
+  .scroll-x {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+  .scroll-x::-webkit-scrollbar {
+    display: none;
+  }
+  .scroll-x > * {
+    scroll-snap-align: start;
+  }
+
+  /* Accordéon natif (<details>) avec ouverture animée là où le navigateur le permet. */
+  .accordion {
+    interpolate-size: allow-keywords;
+  }
+  .accordion::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition:
+      block-size 0.5s var(--ease-out-expo),
+      content-visibility 0.5s allow-discrete;
+  }
+  .accordion[open]::details-content {
+    block-size: auto;
+  }
+  .accordion > summary {
+    list-style: none;
+    cursor: pointer;
+  }
+  .accordion > summary::-webkit-details-marker {
+    display: none;
+  }
+  .accordion .accordion-icon {
+    transition: transform 0.4s var(--ease-out-expo);
+  }
+  .accordion[open] .accordion-icon {
+    transform: rotate(45deg);
+  }
+
+  /* Zoom lent de l'image active du diaporama. */
+  .kenburns {
+    animation: kenburns 9s ease-out forwards;
+  }
+
+  /* Contenus HTML venant du CMS (pages légales). */
+  .prose-legal p {
+    margin-bottom: 0.9rem;
+    color: var(--color-ink-soft);
+  }
+  .prose-legal ul {
+    list-style: disc;
+    padding-left: 1.25rem;
+    margin-bottom: 0.9rem;
+    color: var(--color-ink-soft);
+  }
+  .prose-legal li {
+    margin-bottom: 0.35rem;
+  }
+  .prose-legal a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .prose-legal strong {
+    color: var(--color-ink);
+    font-weight: 600;
+  }
+}
+
+@keyframes rise {
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes kenburns {
+  from {
+    transform: scale(1.08);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+@keyframes progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Mouvement réduit : tout est affiché immédiatement, rien ne défile seul. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal,
+  .reveal-mask,
+  .rise > span {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+  }
+  .word-reveal > span {
+    opacity: 1 !important;
+  }
+}
+
+/* Articles (« Conseils ») : contenu HTML venu du CMS. */
+@layer components {
+  .prose-article {
+    font-size: 1.075rem;
+    line-height: 1.75;
+    color: var(--color-ink-soft);
+  }
+  .prose-article > * + * {
+    margin-top: 1.1em;
+  }
+  .prose-article h2,
+  .prose-article h3 {
+    font-family: var(--font-display);
+    font-stretch: 112%;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    color: var(--color-ink);
+    margin-top: 2em;
+  }
+  .prose-article h2 {
+    font-size: clamp(1.45rem, 2.2vw, 1.9rem);
+  }
+  .prose-article h3 {
+    font-size: 1.25rem;
+  }
+  .prose-article ul,
+  .prose-article ol {
+    padding-left: 1.25rem;
+  }
+  .prose-article ul {
+    list-style: disc;
+  }
+  .prose-article ol {
+    list-style: decimal;
+  }
+  .prose-article li + li {
+    margin-top: 0.4em;
+  }
+  .prose-article a {
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .prose-article strong {
+    color: var(--color-ink);
+    font-weight: 600;
+  }
+  .prose-article blockquote {
+    border-left: 2px solid var(--color-ink);
+    padding-left: 1.25rem;
+    font-style: italic;
+  }
+  .prose-article img {
+    width: 100%;
+    height: auto;
+    background: var(--color-mist);
+  }
+  .prose-article figcaption {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--color-graphite);
+  }
+  .prose-article table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+  .prose-article th,
+  .prose-article td {
+    border-bottom: 1px solid var(--color-line);
+    padding: 0.6rem 0.75rem 0.6rem 0;
+    text-align: left;
+  }
+}

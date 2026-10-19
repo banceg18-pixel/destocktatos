@@ -1,0 +1,13 @@
+{
+  "name": "TATOS - Électroménager au meilleur prix",
+  "short_name": "TATOS",
+  "description": "Électroménager de qualité livraison rapide",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#f59e0b",
+  "icons": [
+    { "src": "/assets/images/branding/logo-tatos.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/assets/images/branding/logo-tatos.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

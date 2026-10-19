@@ -1,0 +1,4 @@
+{
+  "_comment": "Configuration d'audit : motifs interdits hors documentation (domaine du site d'origine et compte Cloudinary de ses images). Lue par scripts/audit-source-refs.mjs (analyse statique) et tests/e2e/run_e2e.py (requêtes réseau réelles). Seul fichier non documentaire autorisé à contenir ces motifs.",
+  "patterns": ["tatosatout", "di3re0dog", "res\\.cloudinary\\.com"]
+}

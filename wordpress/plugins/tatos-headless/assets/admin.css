@@ -1,0 +1,83 @@
+/* Administration TATOS */
+.tatos-wrap h1 { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.tatos-kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; margin: 16px 0; }
+.tatos-kpi { display: flex; flex-direction: column; gap: 4px; padding: 16px; background: #fff; border: 1px solid #dcdcde; border-radius: 4px; text-decoration: none; color: #1d2327; transition: border-color .15s; }
+.tatos-kpi:hover { border-color: #1d2327; color: #1d2327; }
+.tatos-kpi strong { font-size: 26px; line-height: 1.1; font-weight: 600; }
+.tatos-kpi-label { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: #646970; }
+.tatos-kpi-hint { font-size: 12px; color: #646970; }
+#tatos_dashboard .tatos-kpis { grid-template-columns: repeat(2, 1fr); }
+.tatos-quick { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 20px; }
+.tatos-columns { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr); gap: 24px; align-items: start; }
+@media (max-width: 1100px) { .tatos-columns { grid-template-columns: 1fr; } }
+.tatos-card { background: #fff; border: 1px solid #dcdcde; border-radius: 4px; padding: 4px 16px 12px; margin-bottom: 16px; }
+.tatos-card h2 { font-size: 15px; }
+.tatos-badge { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 500; background: #f0f0f1; color: #1d2327; white-space: nowrap; vertical-align: middle; }
+.tatos-badge.ok { background: #e7f5ec; color: #0f6b38; }
+.tatos-badge.warn { background: #fcf3e3; color: #8a5300; }
+.tatos-badge.info { background: #e6f0fa; color: #135e96; }
+.tatos-badge.bad { background: #fbeaea; color: #a32020; }
+.tatos-badge.muted { background: #f0f0f1; color: #646970; }
+.tatos-search { margin: 8px 0 12px; }
+.tatos-search input[type=search] { min-width: 260px; }
+form.tatos-inline { display: inline; }
+.tatos-stars { color: #b26b00; letter-spacing: 1px; white-space: nowrap; }
+.tatos-message { padding-top: 12px; }
+.tatos-message-head { display: flex; justify-content: space-between; gap: 12px; }
+.tatos-message-text { background: #f6f7f7; padding: 10px 12px; border-radius: 3px; white-space: normal; }
+.tatos-message-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-start; }
+.tatos-message-actions details { flex-basis: 100%; }
+.tatos-message-actions details[open] summary { margin-bottom: 8px; }
+.tatos-details { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 8px 0; }
+.tatos-details dt { color: #646970; }
+.tatos-details dd { margin: 0; }
+
+/* Formulaires structurés (fiche produit, contenus de page) */
+.tatos-form .tatos-group { border: 1px solid #dcdcde; border-radius: 4px; padding: 8px 14px 12px; margin: 12px 0; background: #fff; }
+.tatos-form .tatos-group legend { font-weight: 600; padding: 0 6px; }
+.tatos-form .tatos-group .tatos-group { background: #fbfbfb; }
+.tatos-field { margin: 10px 0; }
+.tatos-field > label:first-child { display: block; font-weight: 500; margin-bottom: 4px; }
+.tatos-field-bool > label { font-weight: 400 !important; }
+.tatos-image-field { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.tatos-image-preview img { max-width: 96px; max-height: 72px; object-fit: contain; background: #f0f0f1; border: 1px solid #dcdcde; display: block; }
+.tatos-image-preview:empty { display: none; }
+.tatos-items { display: flex; flex-direction: column; gap: 10px; }
+.tatos-item { border: 1px solid #c3c4c7; border-radius: 4px; padding: 6px 12px 8px; background: #fff; }
+.tatos-item-bar { display: flex; justify-content: space-between; align-items: center; gap: 8px; border-bottom: 1px solid #f0f0f1; padding-bottom: 6px; }
+.tatos-item-bar .button-link { text-decoration: none; padding: 0 4px; }
+.tatos-advanced { margin-top: 16px; }
+.tatos-advanced summary { cursor: pointer; color: #2271b1; }
+
+/* Aperçu du thème WordPress sans objet pour les fiches et pages structurées. */
+.post-type-produit #preview-action, .post-type-page #preview-action, .post-type-faq #preview-action { display: none; }
+
+/* Aide intégrée (guide d'utilisation, documentation technique) */
+.tatos-doc-tabs { margin-bottom: 16px; }
+.tatos-doc { display: grid; grid-template-columns: 240px minmax(0, 860px); gap: 32px; align-items: start; margin-top: 12px; }
+@media (max-width: 960px) { .tatos-doc { grid-template-columns: 1fr; } }
+.tatos-doc-toc { position: sticky; top: 46px; background: #fff; border: 1px solid #dcdcde; border-radius: 4px; padding: 12px 16px; max-height: calc(100vh - 80px); overflow: auto; }
+@media (max-width: 960px) { .tatos-doc-toc { position: static; max-height: none; } }
+.tatos-doc-toc-title { margin: 0 0 6px; font-weight: 600; }
+.tatos-doc-toc ol { margin: 0 0 0 18px; }
+.tatos-doc-toc li { margin: 4px 0; }
+.tatos-doc-body { background: #fff; border: 1px solid #dcdcde; border-radius: 4px; padding: 8px 32px 24px; font-size: 14px; line-height: 1.65; }
+.tatos-doc-body h1 { font-size: 26px; margin: 18px 0 8px; }
+.tatos-doc-body h2 { font-size: 20px; margin: 32px 0 8px; padding-top: 16px; border-top: 1px solid #f0f0f1; scroll-margin-top: 48px; }
+.tatos-doc-body h3 { font-size: 16px; margin: 22px 0 6px; scroll-margin-top: 48px; }
+.tatos-doc-body h4 { font-size: 14px; margin: 18px 0 4px; }
+.tatos-doc-body p, .tatos-doc-body li { font-size: 14px; }
+.tatos-doc-body ul { list-style: disc; margin-left: 22px; }
+.tatos-doc-body ol { margin-left: 22px; }
+.tatos-doc-body blockquote { margin: 14px 0; padding: 4px 14px; border-left: 4px solid #72aee6; background: #f0f6fc; }
+.tatos-doc-body pre { background: #1d2327; color: #f0f0f1; padding: 12px 14px; border-radius: 4px; overflow: auto; }
+.tatos-doc-body pre code { background: none; color: inherit; padding: 0; }
+.tatos-doc-body img { max-width: 100%; height: auto; border: 1px solid #dcdcde; border-radius: 4px; margin: 6px 0; }
+.tatos-doc-table { overflow-x: auto; margin: 12px 0; }
+.tatos-doc-table table td, .tatos-doc-table table th { vertical-align: top; }
+
+/* Import des contenus du site (réglages) */
+.tatos-import-log { max-width: 720px; }
+.tatos-import-log p { margin: 4px 0; }
+.tatos-import-ok { color: #0f6b38; font-weight: 600; }
+.tatos-import-error { color: #a32020; font-weight: 600; }

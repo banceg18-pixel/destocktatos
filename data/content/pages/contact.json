@@ -1,0 +1,20 @@
+{
+  "slug": "contact",
+  "title": "Nous Contacter",
+  "data": {
+    "formTitle": "Formulaire de Contact",
+    "infoTitle": "Nos Coordonnées",
+    "address": { "title": "Adresse", "lines": ["15 Rue Paul Langevin", "93270 Sevran", "France"] },
+    "phone": { "title": "Téléphone", "value": "06 51 64 41 84", "tel": "+33651644184", "note": "Du lundi au dimanchd de 10h à 20h" },
+    "email": { "title": "Email", "value": "tatos-electromenager@outlook.com", "note": "Nous répondons sous 24h" },
+    "hours": { "title": "Horaires d'ouverture", "value": "Lundi - Dimanche: 10h00 - 20h00" },
+    "urgent": {
+      "title": "Besoin d'aide urgente?",
+      "text": "Notre équipe de support est disponible pour vous aider immédiatement.",
+      "cta": "Chat en direct",
+      "link": "/signaler-bug"
+    },
+    "mapTitle": "Notre Emplacement",
+    "mapEmbedUrl": "https://www.google.com/maps?q=15+Rue+Paul+Langevin+93270+Sevran&output=embed"
+  }
+}

@@ -1,0 +1,2173 @@
+MISSION — RÉPLICATION RÉCURSIVE COMPLÈTE DE TATOSATOUT VERS UN SITE WORDPRESS HEADLESS FULL STACK
+
+URL SOURCE À RÉPLIQUER :
+https://www.tatosatout.fr/
+
+IMPORTANT :
+Tu dois traiter le site https://www.tatosatout.fr/ comme la source de vérité pour la reproduction du frontend.
+
+OBJECTIF :
+Créer dans le projet local une réplique extrêmement fidèle du site source, page par page, section par section, asset par asset, interaction par interaction et responsive par responsive, puis préparer cette réplique pour une architecture WordPress Headless.
+
+La priorité absolue est la fidélité au site source et l'autonomie du projet local.
+
+
+
+==================================================
+PLAN D'EXÉCUTION OBLIGATOIRE — DEUX VOLETS MENÉS EN PARALLÈLE
+==================================================
+
+Le projet porte sur le site source : https://www.tatosatout.fr/
+
+Tu dois organiser le travail en DEUX VOLETS COORDONNÉS. Ne te limite pas à une simple copie visuelle et ne reporte pas le téléchargement des assets à la toute fin.
+
+VOLET A — INVENTAIRE, RÉCUPÉRATION ET ORGANISATION DES ASSETS
+- Explorer récursivement les pages publiques accessibles et les états interactifs du site.
+- Repérer toutes les images affichées ou référencées : images HTML, srcset, picture/source, backgrounds CSS, SVG, logos, galeries, images de produits, images responsive, images lazy-loadées, miniatures, images de partage/social et images chargées après interaction.
+- Télécharger localement chaque fichier image pertinent lorsque l'accès technique et les droits d'utilisation le permettent.
+- Vérifier chaque téléchargement : réponse valide, fichier non vide, format réel, dimensions, intégrité et rendu.
+- Dédupliquer les fichiers identiques, sans supprimer des variantes visuellement ou fonctionnellement différentes.
+- Renommer les fichiers avec des noms courts, descriptifs, cohérents et faciles à retrouver.
+- Générer un inventaire des assets et noter pour chaque fichier son nom local, son type, ses dimensions, sa page d'utilisation et son statut de téléchargement.
+
+VOLET B — RÉPLICATION DU SITE WORDPRESS HEADLESS FULL STACK
+- Cartographier les pages, routes, contenus, composants, interactions, animations et comportements responsive.
+- Construire le frontend comme un vrai frontend WordPress Headless maintenable, pas comme une capture statique.
+- Implémenter les composants, templates, routes, données, API et backend nécessaires aux fonctionnalités observées.
+- Connecter les vues aux assets téléchargés localement dès qu'ils sont prêts.
+- Tester chaque page et workflow avec les assets locaux, puis effectuer les tests de bout en bout.
+
+Si tu disposes d'agents ou de tâches parallèles, répartis ces deux volets et synchronise-les via un inventaire partagé des pages et des assets. Sinon, alterne entre les deux volets de façon méthodique : l'inventaire des assets doit progresser pendant la réplication, et chaque page implémentée doit utiliser les fichiers locaux disponibles.
+
+Ne marque pas une page comme terminée tant que son design, ses assets, ses liens, ses interactions et son responsive n'ont pas été vérifiés.
+
+==================================================
+RÈGLES DE NOMMAGE ET DE TRAÇABILITÉ DES ASSETS
+==================================================
+
+Les noms des fichiers dans le projet doivent être propres, compréhensibles et utiles aux développeurs. Ne conserve pas dans les noms locaux des préfixes techniques sans valeur, paramètres de tracking, identifiants temporaires, chemins d'export, noms génériques comme image-1 ou chaînes incompréhensibles issus du CDN lorsque le rôle du fichier peut être identifié.
+
+Exemples de noms locaux :
+- logo-tatosatout.svg
+- accueil-banniere-principale.webp
+- accueil-section-services.webp
+- produit-nom-du-produit-face-avant.webp
+- produit-nom-du-produit-detail-01.webp
+- equipe-portrait-prenom-nom.webp
+- icone-recherche.svg
+
+Règles :
+1. Utilise des noms descriptifs, en minuscules, avec des tirets, sans accents ni espaces.
+2. Pour les variantes, indique clairement la variante utile : mobile, desktop, miniature, detail-01, etc.
+3. Ne renomme pas un fichier en te basant sur une supposition : inspecte l'image et son contexte. Si son rôle reste inconnu, utilise un nom neutre mais stable, par exemple asset-a-001.webp, et consigne-le dans le manifeste.
+4. Ne supprime pas les références de provenance en modifiant les pixels de l'image, en effaçant un filigrane, ou en retirant des mentions de copyright/licence intégrées. La demande de nettoyage concerne le NOM LOCAL et les identifiants techniques de fichier, pas l'effacement de l'attribution ou des protections de droits.
+5. Si les métadonnées contiennent des informations techniques inutiles ou sensibles (par exemple des coordonnées GPS d'une photo), nettoie-les lorsque cela est approprié, mais conserve les informations de droits/licence nécessaires.
+6. Enregistre la provenance et les informations de licence utiles dans un fichier séparé, par exemple docs/assets-manifest.csv ou docs/assets-manifest.json, plutôt que d'encombrer les noms de fichiers.
+7. Si un fichier est indisponible, bloqué ou protégé, indique-le explicitement dans le manifeste. Ne prétends jamais l'avoir téléchargé. Cherche une autre variante publique autorisée si elle existe.
+
+Organisation recommandée :
+public/assets/images/
+  branding/
+  home/
+  pages/
+  products/
+  categories/
+  team/
+  icons/
+  backgrounds/
+  responsive/
+public/assets/fonts/
+public/assets/videos/
+docs/assets-manifest.csv
+docs/site-map.md
+docs/replication-notes.md
+
+Adapte les sous-dossiers au contenu réellement trouvé. Évite de créer des dossiers vides ou une arborescence inutilement complexe.
+
+==================================================
+RÈGLE ABSOLUE — AUCUN LIEN INTERNE VERS LE SITE EN LIGNE
+==================================================
+
+Dans le projet local, aucun lien interne, bouton, formulaire, route, redirection, image, script, feuille de style ou requête de contenu ne doit dépendre du site source https://www.tatosatout.fr/.
+
+Tous les liens de navigation internes doivent pointer vers les routes locales du projet. Toutes les images et ressources récupérées doivent être référencées depuis le projet local. Les formulaires doivent appeler le backend local ou l'API configurée du projet, pas un endpoint du site source.
+
+Ne laisse aucun lien source dans :
+- href ;
+- src ;
+- srcset ;
+- CSS url(...) ;
+- imports ;
+- données JSON ;
+- configurations ;
+- menus ;
+- boutons ;
+- breadcrumbs ;
+- liens de footer ;
+- redirections ;
+- métadonnées ;
+- composants ;
+- scripts ;
+- fichiers de données ;
+- configurations SEO canonicals / Open Graph.
+
+Exception limitée : les liens vers des services réellement externes et nécessaires (par exemple un réseau social officiel, une carte, un fournisseur de paiement ou un service tiers) peuvent rester externes uniquement s'ils correspondent à un besoin réel du projet et ne renvoient pas vers le site source. Documente chaque exception. Ne transforme pas un lien interne du site source en lien externe.
+
+À la fin, recherche automatiquement toutes les occurrences de tatosatout.fr et de l'URL source dans le code exécutable et les fichiers publics. Les seules occurrences éventuellement acceptables sont dans la documentation d'audit ou le manifeste de provenance, jamais dans les liens et ressources exécutés par l'application.
+
+
+==================================================
+1. RÈGLE GÉNÉRALE
+==================================================
+
+Ne commence pas immédiatement à coder.
+
+Commence par explorer et comprendre le site source dans son ensemble.
+
+Tu dois parcourir chaque page accessible, analyser sa structure et son comportement, télécharger les assets nécessaires localement et ensuite reproduire le frontend.
+
+Ne te limite surtout pas à la page d'accueil.
+
+Le résultat final doit être aussi proche que techniquement possible du site source, comme deux copies du même site.
+
+Ne fais aucune approximation volontaire lorsqu'une information peut être observée sur le site source.
+
+Si quelque chose n'est pas clair, analyse davantage le site source au lieu d'inventer.
+
+==================================================
+2. STACK CIBLE
+==================================================
+
+Le projet final doit être pensé comme un frontend WordPress Headless.
+
+Utilise de préférence :
+
+- React
+- TypeScript
+- Next.js si pertinent
+- CSS / CSS Modules / Tailwind selon ce qui permet la meilleure fidélité
+- composants réutilisables
+- routing propre
+- architecture compatible avec une future connexion à WordPress
+
+WordPress sera utilisé comme CMS Headless.
+
+Prépare donc une architecture pouvant ultérieurement récupérer depuis WordPress :
+
+- pages
+- articles
+- médias
+- menus
+- catégories
+- contenus personnalisés
+- champs personnalisés
+
+Mais ne complexifie pas inutilement le projet avant d'avoir terminé la réplication visuelle.
+
+La priorité est :
+
+1. réplication fidèle ;
+2. assets locaux ;
+3. liens localisés ;
+4. interactions ;
+5. responsive ;
+6. audit récursif ;
+7. préparation Headless WordPress.
+
+==================================================
+3. PHASE 0 — CARTOGRAPHIE DU SITE
+==================================================
+
+Avant de développer, explore https://www.tatosatout.fr/ et construis une cartographie complète du site.
+
+Cherche les pages accessibles depuis :
+
+- header
+- navigation principale
+- navigation secondaire
+- menus mobiles
+- footer
+- boutons
+- CTA
+- cartes
+- liens textuels
+- breadcrumbs
+- formulaires
+- éléments interactifs
+- sliders
+- carrousels
+- menus déroulants
+- sections
+- éventuels liens cachés ou conditionnels
+
+Tu dois identifier toutes les routes internes pertinentes.
+
+Exemple de registre :
+
+/
+ /about
+ /contact
+ /services
+ /services/...
+ /blog
+ /blog/...
+ etc.
+
+Ne considère pas que la navigation principale contient nécessairement toutes les pages.
+
+==================================================
+4. EXPLORATION RÉCURSIVE DES PAGES
+==================================================
+
+Pour chaque page découverte :
+
+1. visite la page source ;
+2. analyse son DOM et sa structure ;
+3. analyse visuellement la page ;
+4. récupère son contenu ;
+5. identifie ses composants ;
+6. récupère tous ses assets ;
+7. récupère tous ses liens ;
+8. analyse ses interactions ;
+9. analyse ses animations ;
+10. analyse son comportement responsive ;
+11. note les éventuelles dépendances externes ;
+12. reproduis la page localement ;
+13. teste la page locale.
+
+Ne marque une page comme terminée qu'après vérification.
+
+==================================================
+5. INVENTAIRE COMPLET DES ASSETS
+==================================================
+
+Pour CHAQUE page, récupère tous les assets utilisés.
+
+Cela comprend notamment :
+
+- images
+- logos
+- variantes de logos
+- favicon
+- SVG
+- icônes
+- illustrations
+- photos
+- backgrounds
+- images CSS
+- images inline
+- images responsive
+- srcset
+- vidéos si téléchargeables
+- fichiers audio si présents
+- JSON nécessaires
+- fonts
+- fichiers de police
+- assets utilisés dans les animations
+- assets chargés dynamiquement lorsque leur URL peut être déterminée
+- images visibles uniquement après ouverture d'un menu, d'une galerie, d'un carrousel, d'un accordéon, d'une modale ou d'un autre état interactif
+- variantes desktop/mobile référencées dans picture, srcset ou les media queries CSS
+- images présentes dans les pages secondaires, pages produit, catégories, résultats de recherche et pied de page
+- images accessibles par pagination ou par liens internes découverts pendant l'exploration
+
+Je ne veux pas simplement conserver leurs URLs distantes.
+
+Lorsque techniquement et légalement possible, télécharge les fichiers et stocke-les dans le projet local.
+
+Exemple d'organisation :
+
+public/
+  images/
+  logos/
+  icons/
+  fonts/
+  videos/
+  assets/
+
+Le frontend doit ensuite utiliser les fichiers locaux.
+
+==================================================
+6. IMAGES — EXIGENCE ABSOLUE
+==================================================
+
+Toutes les images nécessaires à la reproduction doivent être téléchargées localement lorsque possible.
+
+Cela inclut :
+
+- photos
+- logos
+- icônes image
+- illustrations
+- backgrounds
+- images de cartes
+- images de produits
+- images du footer
+- images du header
+- images uniquement visibles sur mobile
+- images uniquement visibles dans certains états
+- images chargées via CSS
+- images chargées via srcset
+- images utilisées par des composants
+
+Exemple :
+
+AVANT :
+
+<img src="/assets/images/accueil-photo-principale.webp">
+
+APRÈS :
+
+<img src="/images/photo.jpg">
+
+Ne laisse pas volontairement une image du domaine source comme dépendance distante lorsque tu peux la localiser.
+
+==================================================
+7. DÉTECTION ET DÉDUPLICATION DES IMAGES
+==================================================
+
+Une même image peut être présente sur plusieurs pages.
+
+Tu dois éviter les doublons.
+
+Utilise si nécessaire :
+
+- hash MD5/SHA
+- comparaison binaire
+- taille
+- dimensions
+- URL canonique
+- nom de fichier
+
+Si deux fichiers sont strictement identiques, ne conserve qu'une seule copie locale.
+
+Exemple :
+
+/image.jpg
+/assets/image.jpg
+/uploads/image.jpg
+
+Si ces fichiers sont identiques, une seule ressource doit exister localement.
+
+Toutes les pages doivent réutiliser cette ressource.
+
+Attention : si deux fichiers ont des dimensions ou contenus réellement différents et que le site les utilise dans des contextes différents, conserve-les.
+
+==================================================
+8. CSS ET BACKGROUND IMAGES
+==================================================
+
+Ne te limite surtout pas aux balises <img>.
+
+Recherche aussi les assets dans :
+
+- CSS
+- SCSS
+- CSS Modules
+- styles inline
+- SVG
+- variables
+- fichiers JS/TS
+- composants React
+
+Exemples :
+
+background-image: url(...)
+
+url(...)
+
+Tous les assets pertinents doivent être localisés.
+
+==================================================
+9. SRCSET ET IMAGES RESPONSIVES
+==================================================
+
+Inspecte :
+
+- src
+- srcset
+- sizes
+- picture
+- source
+- variantes desktop/mobile
+- variantes haute résolution
+
+Détermine quels fichiers sont réellement différents.
+
+Déduplique uniquement les fichiers strictement identiques.
+
+Conserve les différentes variantes lorsqu'elles ont réellement un rôle responsive.
+
+==================================================
+10. POLICES
+==================================================
+
+Identifie les polices utilisées par le site.
+
+Pour chaque police, détermine si possible :
+
+- famille
+- poids
+- style
+- format
+- source
+
+Lorsque techniquement et légalement possible, localise les fichiers de police.
+
+Configure correctement :
+
+@font-face
+
+Respecte :
+
+- font-family
+- font-weight
+- font-style
+- line-height
+- letter-spacing
+- text-transform
+
+La typographie doit être aussi fidèle que possible.
+
+==================================================
+11. ANALYSE VISUELLE
+==================================================
+
+Analyse précisément chaque page.
+
+Pour chaque section, reproduis :
+
+- largeur
+- max-width
+- hauteur
+- marges
+- padding
+- gaps
+- grille
+- colonnes
+- alignements
+- positionnement
+- overflow
+- z-index
+- border
+- border-radius
+- shadow
+- gradients
+- backgrounds
+- couleurs
+- opacités
+
+Analyse également :
+
+TYPOGRAPHIE :
+- famille
+- taille
+- poids
+- hauteur de ligne
+- letter-spacing
+- casse
+
+COULEURS :
+- background
+- texte
+- titres
+- boutons
+- bordures
+- hover
+- gradients
+- overlays
+
+Ne remplace pas arbitrairement les valeurs par des valeurs génériques.
+
+==================================================
+12. HEADER ET NAVIGATION
+==================================================
+
+Analyse particulièrement :
+
+- header desktop
+- header mobile
+- logo
+- menu
+- sous-menus
+- dropdowns
+- CTA
+- sticky header
+- changement de header au scroll
+- menu hamburger
+- transitions
+- comportement au scroll
+
+Reproduis exactement les comportements observables.
+
+==================================================
+13. FOOTER
+==================================================
+
+Analyse entièrement le footer :
+
+- structure
+- colonnes
+- liens
+- logos
+- icônes
+- textes
+- réseaux sociaux
+- newsletter
+- mentions
+- couleurs
+- responsive
+- espacement
+
+Tous les liens internes doivent être localisés.
+
+==================================================
+14. ANIMATIONS ET INTERACTIONS
+==================================================
+
+Ne produis surtout pas une simple copie statique.
+
+Analyse et reproduis autant que possible :
+
+- animations au chargement
+- animations au scroll
+- fade
+- slide
+- scale
+- hover
+- transitions
+- parallaxe
+- sliders
+- carrousels
+- accordéons
+- tabs
+- dropdowns
+- modales
+- sticky elements
+- compteurs
+- effets de texte
+- transitions entre pages
+- micro-interactions
+- effets de curseur
+- lazy loading
+- animations liées aux images
+
+Si le site utilise une bibliothèque connue, identifie-la si possible.
+
+Tu peux utiliser une technologie équivalente si elle reproduit fidèlement le comportement.
+
+==================================================
+15. RESPONSIVE
+==================================================
+
+Reproduis le responsive réel du site.
+
+Analyse au minimum :
+
+- desktop
+- laptop
+- tablette
+- mobile
+
+Teste notamment :
+
+1440px
+1280px
+1024px
+768px
+430px
+390px
+375px
+
+Adapte les breakpoints aux comportements réellement observés sur le site source.
+
+Vérifie :
+
+- navigation
+- menu mobile
+- colonnes
+- ordre des sections
+- tailles de texte
+- images
+- boutons
+- espacements
+- éléments masqués
+- éléments déplacés
+- hauteurs
+- overflow
+- animations
+
+==================================================
+16. CONTENU
+==================================================
+
+Conserve fidèlement le contenu observable :
+
+- titres
+- sous-titres
+- paragraphes
+- labels
+- boutons
+- menus
+- textes
+- informations
+- CTA
+- éléments de formulaire
+
+Ne remplace pas le contenu par du Lorem Ipsum.
+
+N'invente pas de contenu lorsque le contenu source est disponible.
+
+==================================================
+17. LIENS — PREMIÈRE PASSE
+==================================================
+
+Pendant l'exploration, récupère TOUS les liens.
+
+Classe-les :
+
+A. liens internes du domaine source
+
+https://www.tatosatout.fr/...
+
+B. liens relatifs
+
+/...
+/page/...
+
+C. liens externes
+
+Instagram
+Facebook
+LinkedIn
+YouTube
+etc.
+
+D. liens spéciaux
+
+mailto:
+tel:
+whatsapp:
+etc.
+
+E. ancres
+
+#contact
+#services
+etc.
+
+==================================================
+18. LOCALISATION DES LIENS INTERNES
+==================================================
+
+Tous les liens internes vers Tatosatout doivent devenir des routes locales.
+
+Exemple :
+
+https://www.tatosatout.fr/contact
+
+devient :
+
+/contact
+
+Ne laisse pas dans le frontend :
+
+https://www.tatosatout.fr/...
+
+sauf si une référence externe au domaine est réellement nécessaire et explicitement justifiée.
+
+==================================================
+19. ATTENTION AUX LIENS INDIRECTS
+==================================================
+
+Ne recherche pas seulement les href.
+
+Inspecte également :
+
+- src
+- action
+- canonical
+- metadata
+- Open Graph
+- JSON
+- données structurées
+- scripts
+- variables
+- configuration
+- imports
+- CSS
+- SVG
+- données statiques
+- fichiers téléchargés
+- redirections
+- manifests
+
+Cherche toute référence au domaine :
+
+www.tatosatout.fr
+tatosatout.fr
+https://www.tatosatout.fr
+http://www.tatosatout.fr
+//www.tatosatout.fr
+
+et variantes pertinentes.
+
+==================================================
+20. PROCESSUS RÉCURSIF — PARTIE CRITIQUE
+==================================================
+
+Une fois la première réplication terminée, tu dois considérer le projet local comme un projet à auditer entièrement.
+
+Tu dois parcourir tout le projet local et rechercher toutes les références restantes vers :
+
+https://www.tatosatout.fr/
+
+Recherche notamment dans :
+
+- HTML
+- JSX
+- TSX
+- JS
+- TS
+- CSS
+- SCSS
+- JSON
+- SVG
+- configuration
+- données
+- scripts
+- public
+- assets
+- metadata
+
+==================================================
+21. SI UN LIEN SOURCE EST ENCORE TROUVÉ
+==================================================
+
+Si tu trouves encore une URL interne du domaine source :
+
+1. identifie l'URL ;
+2. identifie la page correspondante ;
+3. visite la page source ;
+4. analyse-la ;
+5. réplique-la localement ;
+6. télécharge ses assets ;
+7. déduplique ses assets ;
+8. localise ses liens ;
+9. ajoute la nouvelle route ;
+10. rescane tout le projet.
+
+Exemple :
+
+Le scan trouve :
+
+https://www.tatosatout.fr/nouvelle-page
+
+Tu dois alors visiter cette page et la répliquer.
+
+Tu ne dois pas simplement remplacer l'URL par une route locale vide.
+
+==================================================
+22. BOUCLE RÉCURSIVE OBLIGATOIRE
+==================================================
+
+Le processus doit être :
+
+SCAN COMPLET DU PROJET LOCAL
+        ↓
+RECHERCHE DES RÉFÉRENCES À tatosatout.fr
+        ↓
+RÉFÉRENCES TROUVÉES ?
+        ↓
+OUI
+        ↓
+IDENTIFIER LES PAGES MANQUANTES
+        ↓
+VISITER LES PAGES SOURCE
+        ↓
+RÉPLIQUER LES PAGES
+        ↓
+TÉLÉCHARGER LES ASSETS
+        ↓
+DÉDUPLIQUER
+        ↓
+LOCALISER LES LIENS
+        ↓
+RESCAN COMPLET
+        ↓
+RÉFÉRENCES ENCORE TROUVÉES ?
+        ↓
+OUI → RECOMMENCER
+        ↓
+NON
+        ↓
+AUDIT FINAL
+
+Tu dois répéter cette boucle jusqu'à ce qu'un scan complet ne trouve plus aucune référence interne au site source.
+
+==================================================
+23. IMPORTANT — NE PAS ARRÊTER APRÈS UNE SEULE PASSE
+==================================================
+
+Le processus récursif n'est PAS une option.
+
+Tu dois faire autant de passes que nécessaire.
+
+Exemple :
+
+PASS 1 :
+20 références trouvées
+
+PASS 2 :
+7 références trouvées
+
+PASS 3 :
+2 références trouvées
+
+PASS 4 :
+0 référence trouvée
+
+Seulement dans ce dernier cas, la localisation des liens peut être considérée comme terminée.
+
+==================================================
+24. LIENS EXTERNES
+==================================================
+
+Attention à ne pas supprimer les liens externes légitimes.
+
+Exemple :
+
+Instagram
+Facebook
+LinkedIn
+Google Maps
+services externes
+etc.
+
+Le but est de supprimer les dépendances accidentelles au domaine source, pas de supprimer tous les liens externes.
+
+Conserve les liens externes qui font réellement partie du site.
+
+==================================================
+25. ARCHITECTURE DES COMPOSANTS
+==================================================
+
+Crée une architecture propre avec des composants réutilisables.
+
+Par exemple :
+
+components/
+  Header
+  Footer
+  Button
+  Container
+  Hero
+  Card
+  Navigation
+  MobileMenu
+  Section
+  etc.
+
+Mais attention :
+
+Ne force pas deux composants à partager le même composant si leurs comportements ou leurs styles diffèrent.
+
+La fidélité visuelle est prioritaire sur l'abstraction excessive.
+
+==================================================
+26. ROUTING
+==================================================
+
+Chaque page source doit avoir une route locale correspondante.
+
+Exemple :
+
+Source :
+https://www.tatosatout.fr/about
+
+Local :
+/about
+
+Source :
+https://www.tatosatout.fr/contact
+
+Local :
+/contact
+
+Et ainsi de suite.
+
+Les routes doivent être testées individuellement.
+
+==================================================
+27. FORMULAIRES ET INTERACTIONS
+==================================================
+
+Analyse les formulaires présents sur le site.
+
+Reproduis :
+
+- champs
+- labels
+- placeholders
+- validations visuelles
+- messages
+- boutons
+- états disabled
+- états loading
+- erreurs
+- succès
+- comportement responsive
+
+Si un backend réel est nécessaire mais n'est pas disponible, reproduis au minimum fidèlement le comportement frontend sans inventer une API inexistante.
+
+==================================================
+27 BIS. WORKFLOWS COMMERCIAUX — VENTE, ACHAT ET TRANSACTION
+==================================================
+
+CETTE SECTION EST CRITIQUE.
+
+Le projet ne doit pas être considéré comme terminé simplement parce que les pages sont visuellement identiques.
+
+Tous les workflows commerciaux réellement présents sur le site source doivent fonctionner de bout en bout dans le projet local.
+
+Cela comprend notamment, SI ces fonctionnalités existent sur le site source :
+
+- parcours d'achat ;
+- parcours de vente ;
+- demande de rachat ;
+- estimation ou calcul de prix ;
+- sélection d'un produit ;
+- ajout au panier ;
+- modification d'une quantité ;
+- suppression d'un article ;
+- calcul des sous-totaux ;
+- frais éventuels ;
+- total ;
+- formulaire de commande ;
+- informations client ;
+- coordonnées ;
+- adresse ;
+- choix de livraison ;
+- choix de retrait ;
+- choix de paiement ;
+- confirmation ;
+- récapitulatif ;
+- validation ;
+- messages de succès ;
+- messages d'erreur ;
+- emails ou confirmations lorsque leur existence est observable ;
+- redirections après validation ;
+- états de chargement ;
+- états disabled ;
+- reprise après erreur.
+
+IMPORTANT :
+
+Tu dois d'abord observer précisément comment le site source fonctionne.
+
+Ne suppose pas qu'un workflow existe simplement parce qu'il est courant dans un site e-commerce.
+
+Si un workflow existe sur le site source, reproduis son comportement et son enchaînement.
+
+Le parcours doit fonctionner de manière cohérente :
+
+DÉBUT
+↓
+SÉLECTION
+↓
+SAISIE DES INFORMATIONS
+↓
+VALIDATION
+↓
+CALCUL / RÉCAPITULATIF
+↓
+CONFIRMATION
+↓
+SUCCÈS OU ERREUR
+↓
+ÉTAT FINAL
+
+Aucune étape ne doit être visuellement présente mais inutilisable.
+
+--------------------------------------------------
+27 BIS.1 — TESTS DES WORKFLOWS
+--------------------------------------------------
+
+Pour CHAQUE workflow commercial découvert, réalise un test complet.
+
+Exemples :
+
+TEST ACHAT :
+- choisir un produit ;
+- sélectionner les options disponibles ;
+- ajouter au panier ;
+- modifier la quantité ;
+- vérifier le calcul ;
+- passer à l'étape suivante ;
+- remplir les informations ;
+- vérifier les validations ;
+- confirmer ;
+- vérifier l'état final.
+
+TEST VENTE / RACHAT :
+- choisir le type de produit ou service ;
+- renseigner les informations demandées ;
+- vérifier les calculs ;
+- vérifier les validations ;
+- soumettre ;
+- vérifier le message final ;
+- vérifier les erreurs éventuelles.
+
+TEST ERREUR :
+- champ obligatoire vide ;
+- valeur invalide ;
+- quantité invalide ;
+- données incorrectes ;
+- étape interrompue ;
+- erreur réseau simulée lorsque pertinent.
+
+Chaque état doit être correctement géré.
+
+--------------------------------------------------
+27 BIS.2 — AUCUN WORKFLOW CASSÉ
+--------------------------------------------------
+
+Il est interdit de livrer :
+
+- un bouton qui ne fait rien ;
+- un formulaire qui ne peut pas être envoyé ;
+- un checkout qui bloque ;
+- un panier qui perd ses données sans raison ;
+- un total incorrect ;
+- une validation absente ;
+- une étape inaccessible ;
+- une redirection cassée ;
+- un état loading qui reste bloqué ;
+- un message de succès qui apparaît alors que l'action a échoué ;
+- une erreur silencieuse ;
+- une route de transaction inexistante.
+
+Si le backend source n'est pas publiquement accessible, ne fabrique pas de faux système de paiement ou de fausse transaction réelle.
+
+Dans ce cas :
+
+1. reproduis fidèlement le workflow frontend observable ;
+2. crée une couche de service/API propre ;
+3. isole les appels backend ;
+4. utilise des données mockées uniquement pour permettre les tests locaux ;
+5. documente clairement les points qui devront être connectés à WordPress ou au backend réel.
+
+Le frontend ne doit toutefois jamais donner l'impression qu'une vraie transaction externe a été effectuée si elle ne l'a pas été.
+
+--------------------------------------------------
+27 BIS.3 — PERSISTANCE ET ÉTATS
+--------------------------------------------------
+
+Lorsque le comportement source le justifie, vérifie :
+
+- persistance du panier ;
+- persistance des données nécessaires entre les étapes ;
+- rafraîchissement de page ;
+- navigation précédent/suivant ;
+- retour sur une étape précédente ;
+- abandon du workflow ;
+- reprise du workflow ;
+- état vide ;
+- état loading ;
+- état succès ;
+- état erreur.
+
+Tout état important doit être explicitement prévu.
+
+--------------------------------------------------
+27 BIS.4 — WORKFLOWS WORDPRESS HEADLESS
+--------------------------------------------------
+
+Prépare les workflows afin qu'ils puissent ultérieurement être branchés à WordPress Headless et/ou à une API métier.
+
+Sépare clairement :
+
+UI
+→ services frontend
+→ API / couche de données
+→ WordPress / backend
+
+Ne mets pas les appels API directement dans tous les composants UI.
+
+Prévois une architecture permettant de remplacer facilement les mocks par les vrais endpoints.
+
+Exemple conceptuel :
+
+/services
+/api
+/lib
+/hooks
+/types
+
+Les données dynamiques doivent être typées lorsque TypeScript est utilisé.
+
+==================================================
+28. SEO ET MÉTADONNÉES
+==================================================
+
+Analyse et reproduis lorsque pertinent :
+
+- title
+- meta description
+- canonical
+- Open Graph
+- Twitter Card
+- favicon
+- robots
+- données structurées
+- metadata spécifiques aux pages
+
+Les références au domaine source doivent être adaptées au domaine local.
+
+==================================================
+29. WORDPRESS HEADLESS
+==================================================
+
+Une fois la réplication frontend terminée, prépare une architecture compatible WordPress Headless.
+
+Prévois une séparation claire entre :
+
+FRONTEND
+et
+CMS / DATA
+
+Le frontend doit pouvoir être connecté ultérieurement à :
+
+- WordPress REST API
+ou
+- WPGraphQL
+
+Prépare des fonctions ou services propres pour récupérer :
+
+- pages
+- posts
+- médias
+- menus
+- catégories
+- contenus personnalisés
+- produits lorsque le site source en possède ;
+- données de catalogue ;
+- données de commande lorsque l'architecture retenue le nécessite ;
+- données nécessaires aux workflows d'achat/vente.
+
+--------------------------------------------------
+29.1 — TEMPLATE WORDPRESS HEADLESS RÉEL
+--------------------------------------------------
+
+Le résultat ne doit pas être une simple copie statique du site.
+
+Construis le frontend comme un véritable template WordPress Headless :
+
+- composants réutilisables ;
+- templates de pages ;
+- templates de contenus ;
+- layouts ;
+- composants de navigation ;
+- composants de formulaires ;
+- composants commerciaux ;
+- couche de données séparée ;
+- types pour les données dynamiques ;
+- services/API séparés de l'UI.
+
+Le contenu actuellement répliqué localement peut servir de données de référence pendant le développement, mais l'architecture doit permettre de remplacer ces données par WordPress sans refaire le frontend.
+
+--------------------------------------------------
+29.2 — DONNÉES DYNAMIQUES ET FIDÉLITÉ
+--------------------------------------------------
+
+Lorsqu'une donnée devient dynamique, son rendu doit rester visuellement identique au site source.
+
+La connexion future à WordPress ne doit pas casser :
+
+- layout ;
+- responsive ;
+- typographie ;
+- images ;
+- composants ;
+- formulaires ;
+- workflows ;
+- navigation ;
+- SEO.
+
+Prévois les états :
+
+- loading ;
+- empty ;
+- error ;
+- success ;
+- données absentes ;
+- données partielles.
+
+Mais ne rends pas artificiellement ces états visibles lorsque le site source ne les présente pas.
+
+--------------------------------------------------
+29.3 — COMPATIBILITÉ CMS
+--------------------------------------------------
+
+Le frontend doit être conçu de manière à permettre au CMS de modifier les contenus sans nécessiter une modification manuelle du code pour chaque nouvelle page ou nouveau contenu, lorsque la structure du site source le permet.
+
+Évite donc de coder en dur dans les composants toutes les données qui devraient naturellement venir du CMS.
+
+Mais ne transforme pas non plus en données dynamiques des éléments purement structurels qui doivent rester fixes.
+
+Mais ne détruis pas la fidélité du frontend pour rendre tout dynamique prématurément.
+
+
+==================================================
+28 BIS. BACKEND COMPLET — À IMPLÉMENTER ENTIÈREMENT
+==================================================
+
+IMPORTANT — RESPONSABILITÉ FULL STACK :
+
+Tu ne dois PAS te limiter au frontend.
+
+Si le site source possède des fonctionnalités qui nécessitent un backend, tu dois également concevoir et implémenter toi-même le backend nécessaire afin que l'intégralité du projet local soit réellement fonctionnelle.
+
+Le backend fait partie intégrante de la mission.
+
+Tu dois donc prendre en charge :
+
+- architecture backend ;
+- base de données ;
+- modèles ;
+- relations ;
+- migrations ;
+- seeders / données de démonstration lorsque nécessaires ;
+- API ;
+- authentification lorsque nécessaire ;
+- autorisations ;
+- validation ;
+- logique métier ;
+- gestion des commandes ;
+- gestion des produits ;
+- gestion du panier ;
+- gestion des clients ;
+- gestion des demandes ;
+- gestion des ventes ;
+- gestion des achats / rachats ;
+- calculs ;
+- statuts ;
+- notifications lorsque nécessaires ;
+- gestion des erreurs ;
+- sécurité ;
+- logs utiles ;
+- configuration ;
+- intégration frontend/backend ;
+- documentation technique minimale.
+
+--------------------------------------------------
+28 BIS.1 — ANALYSER AVANT DE DÉVELOPPER
+--------------------------------------------------
+
+Avant de créer le backend, identifie précisément toutes les fonctionnalités observables du site source qui nécessitent un traitement serveur.
+
+Pour chaque fonctionnalité, détermine :
+
+- quelles données sont nécessaires ;
+- quelles données doivent être stockées ;
+- quelles relations existent ;
+- quelles actions sont possibles ;
+- quels statuts existent ;
+- quelles validations sont nécessaires ;
+- quelles règles métier sont visibles ;
+- quelles données sont calculées ;
+- quelles réponses le frontend doit recevoir ;
+- quels cas d'erreur doivent être gérés.
+
+Ne crée pas un backend générique sans rapport avec les fonctionnalités réellement observées.
+
+Le backend doit être conçu à partir de l'analyse du site source.
+
+--------------------------------------------------
+28 BIS.2 — WORDPRESS HEADLESS : BACKEND ET CMS
+--------------------------------------------------
+
+Le projet doit être conçu pour fonctionner dans une architecture WordPress Headless.
+
+Lorsque WordPress doit jouer le rôle de CMS, prévois une architecture permettant au frontend de consommer proprement :
+
+- pages ;
+- contenus ;
+- médias ;
+- menus ;
+- catégories ;
+- produits ;
+- données commerciales ;
+- données nécessaires aux workflows.
+
+Selon les fonctionnalités réellement nécessaires, utilise proprement :
+
+- WordPress REST API ;
+- WPGraphQL si pertinent ;
+- WooCommerce ou une autre couche e-commerce si elle correspond réellement aux besoins ;
+- custom post types ;
+- taxonomies ;
+- custom fields ;
+- endpoints personnalisés ;
+- webhooks lorsque nécessaires.
+
+Ne choisis pas une technologie uniquement parce qu'elle est populaire.
+
+Choisis l'architecture qui permet de reproduire fidèlement les fonctionnalités du site source tout en gardant le projet maintenable.
+
+--------------------------------------------------
+28 BIS.3 — SI WORDPRESS NE SUFFIT PAS
+--------------------------------------------------
+
+Si certaines fonctionnalités métier nécessitent un backend complémentaire à WordPress, mets-le en place toi-même.
+
+Par exemple :
+
+Frontend Headless
+↓
+API / Backend métier
+↓
+WordPress / WooCommerce / Base de données
+↓
+Services externes lorsque réellement nécessaires
+
+Le frontend ne doit pas contenir toute la logique métier.
+
+Les opérations importantes doivent être validées côté serveur.
+
+--------------------------------------------------
+28 BIS.4 — BASE DE DONNÉES
+--------------------------------------------------
+
+Conçois la base de données à partir des besoins réels.
+
+Identifie notamment, lorsque nécessaire :
+
+- users ;
+- customers ;
+- products ;
+- categories ;
+- carts ;
+- cart_items ;
+- orders ;
+- order_items ;
+- sales ;
+- purchase_requests ;
+- transactions ;
+- addresses ;
+- payments ;
+- statuses ;
+- notifications ;
+- audit data.
+
+Ne crée pas inutilement des tables qui ne correspondent à aucune fonctionnalité.
+
+Les relations doivent être cohérentes et les contraintes d'intégrité doivent être prévues.
+
+--------------------------------------------------
+28 BIS.5 — API COMPLÈTE
+--------------------------------------------------
+
+Toutes les fonctionnalités dynamiques nécessaires doivent disposer d'une API propre.
+
+Pour chaque endpoint, prévois :
+
+- méthode HTTP appropriée ;
+- route ;
+- paramètres ;
+- validation ;
+- authentification lorsque nécessaire ;
+- autorisation ;
+- traitement métier ;
+- réponse structurée ;
+- codes HTTP cohérents ;
+- gestion des erreurs ;
+- protection contre les données invalides.
+
+Ne crée pas d'endpoint qui renvoie simplement toujours une réponse fictive.
+
+Les endpoints doivent réellement effectuer les opérations prévues.
+
+--------------------------------------------------
+28 BIS.6 — LOGIQUE MÉTIER
+--------------------------------------------------
+
+Toute règle métier identifiée doit être implémentée côté backend lorsqu'elle nécessite une validation serveur.
+
+Exemples :
+
+- disponibilité d'un produit ;
+- calcul d'un prix ;
+- quantité ;
+- frais ;
+- total ;
+- statut d'une commande ;
+- validation d'une demande ;
+- conditions d'achat ;
+- conditions de vente / rachat ;
+- traitement d'une transaction ;
+- autorisations ;
+- changement de statut.
+
+Le frontend ne doit jamais être la seule source de vérité pour une opération sensible.
+
+--------------------------------------------------
+28 BIS.7 — ACHAT / VENTE DE BOUT EN BOUT
+--------------------------------------------------
+
+Les workflows d'achat et de vente doivent être réellement exécutables dans l'environnement local.
+
+Exemple d'achat :
+
+Produit
+↓
+Sélection
+↓
+Panier
+↓
+Validation
+↓
+Informations client
+↓
+Calcul
+↓
+Commande
+↓
+Traitement backend
+↓
+Statut
+↓
+Confirmation
+
+Exemple de vente / rachat :
+
+Produit ou demande
+↓
+Informations
+↓
+Estimation / calcul
+↓
+Validation
+↓
+Création de la demande
+↓
+Traitement backend
+↓
+Statut
+↓
+Confirmation
+
+Chaque étape doit communiquer correctement avec le backend.
+
+Aucune étape ne doit être simulée lorsque le backend local peut réellement l'implémenter.
+
+--------------------------------------------------
+28 BIS.8 — TRANSACTIONS ET COHÉRENCE DES DONNÉES
+--------------------------------------------------
+
+Pour les opérations qui modifient plusieurs données liées, utilise des mécanismes garantissant la cohérence des données lorsque la technologie choisie le permet.
+
+Exemples :
+
+- création d'une commande + ses lignes ;
+- modification d'un stock ;
+- création d'une transaction ;
+- changement de statut ;
+- paiement ;
+- annulation.
+
+Évite les situations où le frontend indique qu'une opération a réussi alors que seule une partie de l'opération a été enregistrée.
+
+--------------------------------------------------
+28 BIS.9 — PAIEMENT
+--------------------------------------------------
+
+Si le site source utilise réellement un système de paiement :
+
+1. identifie le fonctionnement observable ;
+2. implémente l'intégration correspondante si les credentials/API nécessaires sont disponibles ;
+3. sécurise les clés et secrets côté serveur ;
+4. implémente les callbacks/webhooks lorsque nécessaires ;
+5. gère les statuts succès, échec, attente et annulation ;
+6. vérifie le résultat côté serveur.
+
+Si aucun fournisseur de paiement réel n'est disponible dans l'environnement local, crée une architecture prête à recevoir le vrai fournisseur et un mode de test clairement séparé.
+
+NE SIMULE JAMAIS silencieusement un paiement réel.
+
+--------------------------------------------------
+28 BIS.10 — AUTHENTIFICATION ET AUTORISATIONS
+--------------------------------------------------
+
+Si le site source possède des comptes ou espaces privés, implémente :
+
+- inscription lorsque nécessaire ;
+- connexion ;
+- déconnexion ;
+- sessions / tokens ;
+- récupération de mot de passe si observable ;
+- protection des routes ;
+- rôles ;
+- permissions ;
+- validation serveur.
+
+Un utilisateur ne doit jamais pouvoir accéder simplement en modifiant une URL à une ressource qui ne lui appartient pas.
+
+--------------------------------------------------
+28 BIS.11 — VALIDATION ET SÉCURITÉ BACKEND
+--------------------------------------------------
+
+Toutes les données provenant du frontend doivent être considérées comme non fiables.
+
+Implémente :
+
+- validation serveur ;
+- sanitation lorsque nécessaire ;
+- contrôle des types ;
+- contrôle des permissions ;
+- protection contre les injections ;
+- protection des secrets ;
+- gestion sécurisée des erreurs ;
+- limitation des informations sensibles retournées ;
+- CORS correctement configuré ;
+- protections adaptées à l'authentification ;
+- variables d'environnement.
+
+Ne mets jamais :
+
+- mot de passe ;
+- clé API privée ;
+- secret de paiement ;
+- token privé ;
+- credentials serveur
+
+directement dans le frontend ou dans le dépôt.
+
+--------------------------------------------------
+28 BIS.12 — GESTION DES ERREURS
+--------------------------------------------------
+
+Chaque opération importante doit avoir :
+
+- état loading côté frontend ;
+- succès ;
+- erreur métier ;
+- erreur de validation ;
+- erreur serveur ;
+- erreur réseau ;
+- possibilité de réessayer lorsque pertinent.
+
+Les erreurs doivent être compréhensibles pour l'utilisateur sans exposer de détails techniques sensibles.
+
+Côté développement, les logs doivent permettre d'identifier la cause réelle du problème.
+
+--------------------------------------------------
+28 BIS.13 — TESTS BACKEND
+--------------------------------------------------
+
+Après implémentation, teste réellement les fonctionnalités critiques.
+
+Lorsque pertinent, crée :
+
+- tests unitaires ;
+- tests d'intégration ;
+- tests API ;
+- tests des règles métier ;
+- tests d'authentification ;
+- tests des permissions ;
+- tests des commandes ;
+- tests des workflows achat/vente ;
+- tests des erreurs ;
+- tests des cas limites.
+
+Teste notamment :
+
+- données valides ;
+- données invalides ;
+- données manquantes ;
+- valeurs extrêmes ;
+- utilisateur non autorisé ;
+- ressource inexistante ;
+- doublon ;
+- opération répétée ;
+- erreur réseau ;
+- erreur serveur.
+
+--------------------------------------------------
+28 BIS.14 — FRONTEND + BACKEND : TEST DE BOUT EN BOUT
+--------------------------------------------------
+
+Une fonctionnalité n'est considérée comme TERMINÉE que lorsque :
+
+Frontend
+↓
+API
+↓
+Logique métier
+↓
+Base de données
+↓
+Réponse API
+↓
+Frontend
+
+fonctionne correctement.
+
+Ne considère pas une fonctionnalité terminée uniquement parce que :
+
+- la page s'affiche ;
+- le bouton est visible ;
+- l'API répond 200 ;
+- une donnée fictive est affichée.
+
+Il faut vérifier le résultat réel de l'opération.
+
+--------------------------------------------------
+28 BIS.15 — ENVIRONNEMENT LOCAL COMPLET
+--------------------------------------------------
+
+Le projet local doit pouvoir être lancé et utilisé avec une procédure claire.
+
+Prépare lorsque nécessaire :
+
+- variables d'environnement d'exemple ;
+- configuration backend ;
+- configuration base de données ;
+- migrations ;
+- seeders ;
+- installation des dépendances ;
+- commandes de démarrage ;
+- commandes de test ;
+- configuration CORS ;
+- configuration WordPress Headless ;
+- configuration des URLs frontend/backend.
+
+Le projet ne doit pas dépendre d'une configuration cachée uniquement connue de l'IA.
+
+--------------------------------------------------
+28 BIS.16 — AUCUNE FONCTIONNALITÉ FAUSSE
+--------------------------------------------------
+
+INTERDIT :
+
+- faux bouton ;
+- fausse commande ;
+- faux panier ;
+- faux calcul ;
+- fausse confirmation ;
+- fausse API ;
+- fausse transaction ;
+- données codées en dur lorsqu'elles doivent être dynamiques ;
+- réponse backend inventée ;
+- workflow qui semble fonctionner mais n'enregistre rien.
+
+Si une fonctionnalité peut être réellement implémentée localement, elle doit l'être.
+
+Si une dépendance externe est absolument nécessaire et inaccessible, isole clairement cette dépendance et implémente tout le reste du workflow réellement.
+
+
+==================================================
+29 BIS. QUALITÉ PRODUIT — EXPÉRIENCE UTILISATEUR
+==================================================
+
+==================================================
+PRINCIPE FONDAMENTAL — FULL STACK DE BOUT EN BOUT
+==================================================
+
+Le résultat final doit être traité comme un véritable produit web, pas comme une simple maquette.
+
+Tu es responsable du frontend ET du backend.
+
+Ne t'arrête jamais à la reproduction visuelle si une fonctionnalité nécessite un traitement serveur.
+
+Si le site source permet à l'utilisateur de faire une action, ton projet local doit également permettre cette action avec une implémentation réelle lorsque cela est techniquement possible.
+
+Tu dois donc construire tout ce qui est nécessaire pour obtenir un produit fonctionnel de bout en bout :
+frontend + backend + base de données + API + logique métier + intégration WordPress Headless + tests.
+
+
+
+Vérifie systématiquement :
+
+- parcours utilisateur clair ;
+- boutons compréhensibles ;
+- feedback après chaque action ;
+- états loading ;
+- états empty ;
+- états error ;
+- états success ;
+- formulaires utilisables ;
+- navigation cohérente ;
+- retour arrière fonctionnel ;
+- liens sans destination cassée ;
+- absence de contenu qui déborde ;
+- absence de texte coupé ;
+- absence de boutons impossibles à atteindre ;
+- absence d'éléments superposés incorrectement.
+
+--------------------------------------------------
+29 BIS.1 — ACCESSIBILITÉ
+--------------------------------------------------
+
+Lorsque cela est compatible avec la fidélité au site source, vérifie :
+
+- navigation clavier ;
+- focus visible ;
+- labels de formulaires ;
+- aria-label lorsque nécessaire ;
+- boutons réellement accessibles ;
+- contraste suffisant ;
+- textes alternatifs des images pertinentes ;
+- structure sémantique ;
+- éléments interactifs utilisables au clavier.
+
+Ne dégrade pas la fidélité visuelle pour ajouter une abstraction inutile.
+
+--------------------------------------------------
+29 BIS.2 — PERFORMANCE
+--------------------------------------------------
+
+Optimise le projet sans modifier le rendu attendu.
+
+Vérifie notamment :
+
+- poids des images ;
+- formats modernes lorsque compatibles ;
+- lazy loading ;
+- chargement des fonts ;
+- bundles ;
+- JavaScript inutile ;
+- CSS inutilisé ;
+- assets dupliqués ;
+- requêtes inutiles ;
+- images trop lourdes ;
+- chargement initial.
+
+N'effectue aucune optimisation qui modifie visiblement ou fonctionnellement le comportement du site source.
+
+--------------------------------------------------
+29 BIS.3 — SÉCURITÉ FRONTEND
+--------------------------------------------------
+
+Vérifie notamment :
+
+- aucune clé secrète dans le frontend ;
+- aucune donnée sensible exposée inutilement ;
+- validation des entrées ;
+- gestion prudente des URLs ;
+- absence de code injecté inutilement ;
+- gestion correcte des erreurs API ;
+- aucune confiance aveugle dans les données utilisateur.
+
+Les secrets et credentials ne doivent jamais être intégrés dans le code frontend.
+
+--------------------------------------------------
+29 BIS.4 — TEST DE NON-RÉGRESSION
+--------------------------------------------------
+
+Après chaque modification importante, reteste les pages et workflows déjà fonctionnels.
+
+Une correction sur une page ne doit pas casser :
+
+- header ;
+- footer ;
+- navigation ;
+- responsive ;
+- routes ;
+- formulaires ;
+- panier ;
+- achat ;
+- vente ;
+- autres workflows ;
+- assets.
+
+Avant la livraison, effectue une passe globale de non-régression.
+
+--------------------------------------------------
+29 BIS.5 — RESPONSIVE FONCTIONNEL
+--------------------------------------------------
+
+Le responsive ne concerne pas uniquement la position des éléments.
+
+Un workflow doit rester utilisable sur :
+
+- desktop ;
+- laptop ;
+- tablette ;
+- mobile.
+
+Teste donc les formulaires, boutons, menus, paniers, étapes d'achat/vente et messages à différentes tailles d'écran.
+
+Un bouton visible mais inaccessible sur mobile constitue une anomalie.
+
+==================================================
+30. TEST VISUEL
+==================================================
+
+Après chaque groupe de pages :
+
+1. lance le projet ;
+2. ouvre la page locale ;
+3. compare avec la page source ;
+4. identifie les différences ;
+5. corrige ;
+6. reteste.
+
+Compare :
+
+- dimensions
+- espacements
+- couleurs
+- typographie
+- images
+- alignements
+- bordures
+- ombres
+- radius
+- animations
+- responsive
+
+Si possible, utilise des captures d'écran pour comparer visuellement le rendu local au rendu source.
+
+==================================================
+31. TEST DES ROUTES
+==================================================
+
+Pour chaque route :
+
+- page accessible
+- pas d'erreur 404
+- pas d'erreur console critique
+- assets chargés
+- images visibles
+- fonts chargées
+- navigation fonctionnelle
+- responsive correct
+
+==================================================
+32. TEST DES ASSETS
+==================================================
+
+Vérifie :
+
+- aucune image cassée
+- aucun logo manquant
+- aucun SVG cassé
+- aucune font manquante
+- aucune image source inutilement distante
+- aucun background cassé
+- aucun asset important oublié
+
+==================================================
+33. AUDIT GLOBAL DES URL
+==================================================
+
+Avant la livraison finale, effectue plusieurs recherches globales.
+
+Recherche :
+
+https://www.tatosatout.fr
+http://www.tatosatout.fr
+//www.tatosatout.fr
+www.tatosatout.fr
+tatosatout.fr
+
+Puis inspecte chaque résultat.
+
+Une référence interne accidentelle signifie que la mission n'est pas terminée.
+
+==================================================
+34. AUDIT DES IMAGES
+==================================================
+
+Recherche toutes les références d'images distantes.
+
+Inspecte notamment :
+
+<img>
+src=
+srcset=
+background-image
+url()
+poster=
+picture
+source
+
+Détermine si chaque image doit être :
+
+- locale
+- externe volontairement
+- téléchargée
+- remplacée
+
+==================================================
+35. AUDIT DES ASSETS
+==================================================
+
+Vérifie :
+
+- doublons
+- fichiers inutilisés
+- fichiers manquants
+- assets externes
+- images oubliées
+- fonts oubliées
+- SVG oubliés
+- vidéos oubliées
+
+Supprime les doublons et fichiers inutiles lorsque cela ne casse rien.
+
+==================================================
+36. AUDIT DU CODE
+==================================================
+
+Vérifie :
+
+- TypeScript
+- imports
+- routes
+- composants
+- CSS
+- build
+- console
+- warnings
+- erreurs runtime
+- erreurs réseau
+
+Le projet doit être propre.
+
+==================================================
+37. BUILD FINAL
+==================================================
+
+À la fin :
+
+1. installe les dépendances nécessaires ;
+2. lance le lint si disponible ;
+3. lance le type-check si disponible ;
+4. lance le build production ;
+5. corrige les erreurs ;
+6. relance le build ;
+7. démarre le projet en production ;
+8. teste les routes principales.
+
+Le projet ne doit pas être livré avec un build cassé.
+
+==================================================
+38. RAPPORT DE PROGRESSION
+==================================================
+
+Maintiens un état de progression.
+
+Exemple :
+
+Pages découvertes : 30
+Pages répliquées : 27
+Pages restantes : 3
+
+Assets découverts : 500
+Assets téléchargés : 480
+Doublons détectés : 90
+Doublons supprimés : 90
+
+Références au domaine source : 18
+Références localisées : 18
+
+Passes récursives : 3
+
+Références restantes : 2
+
+Puis :
+
+Passes récursives : 4
+Références restantes : 0
+
+==================================================
+39. RÈGLE ABSOLUE DE FIN
+==================================================
+
+NE DÉCLARE PAS LA MISSION TERMINÉE si :
+
+- une page connue manque ;
+- une route importante manque ;
+- une image importante manque ;
+- un logo manque ;
+- une font nécessaire manque ;
+- une interaction importante manque ;
+- un lien interne pointe encore vers tatosatout.fr ;
+- un asset interne pointe encore vers tatosatout.fr ;
+- une page nouvellement découverte n'a pas été répliquée ;
+- le build échoue ;
+- des erreurs runtime critiques persistent.
+
+La mission est terminée uniquement lorsque toutes les conditions suivantes sont satisfaites :
+
+1. Toutes les pages découvertes sont répliquées.
+2. Toutes les nouvelles pages découvertes pendant les scans récursifs sont répliquées.
+3. Tous les assets nécessaires sont localisés lorsque possible.
+4. Les images sont téléchargées localement lorsque possible.
+5. Les doublons sont correctement gérés.
+6. Les liens internes sont transformés en routes locales.
+7. Les interactions importantes sont reproduites.
+8. Le responsive est reproduit.
+9. Le frontend fonctionne sans dépendance accidentelle au site source.
+10. Une recherche globale du domaine source ne trouve plus aucune référence interne.
+11. Une nouvelle passe complète confirme encore l'absence de référence interne.
+12. Les routes principales fonctionnent.
+13. Le build production fonctionne.
+14. Le projet est structuré proprement pour WordPress Headless.
+15. Tous les workflows d'achat, de vente, de commande ou de transaction réellement présents sur le site source ont été testés de bout en bout.
+16. Aucun bouton, formulaire ou étape commerciale importante n'est visuellement présente sans comportement fonctionnel correspondant.
+17. Les états loading, erreur, succès et validation des workflows sont correctement gérés.
+18. Les workflows restent utilisables sur desktop, tablette et mobile.
+19. Une passe de non-régression complète ne révèle aucune fonctionnalité cassée.
+20. Le projet peut remplacer les données mockées par les données WordPress/API sans refaire l'interface.
+21. Le backend nécessaire aux fonctionnalités du site a été conçu et implémenté.
+22. La base de données, les modèles, relations, migrations et données de test nécessaires sont fonctionnels.
+23. Les API nécessaires sont réellement connectées au frontend.
+24. Les workflows critiques fonctionnent de bout en bout : frontend → API → logique métier → base de données → API → frontend.
+25. Les validations, autorisations et règles métier sont contrôlées côté serveur.
+26. Les erreurs et cas limites ont été testés.
+27. Aucun workflow important ne dépend d'une simple donnée fictive lorsque son implémentation réelle est possible.
+28. Le projet peut être lancé localement avec une configuration reproductible.
+21. Les performances, l'accessibilité raisonnable et la sécurité frontend ont été contrôlées.
+
+==================================================
+40. ORDRE DE TRAVAIL FINAL
+==================================================
+
+Suis exactement cette logique :
+
+1. EXPLORER
+2. CARTOGRAPHIER
+3. ANALYSER
+4. TÉLÉCHARGER
+5. DÉDUPLIQUER
+6. RÉPLIQUER
+7. LOCALISER LES LIENS
+8. TESTER
+9. SCANNER LE PROJET
+10. DÉCOUVRIR LES PAGES MANQUANTES
+11. RÉPLIQUER LES NOUVELLES PAGES
+12. TÉLÉCHARGER LEURS ASSETS
+13. DÉDUPLIQUER
+14. LOCALISER
+15. RESCANNER
+16. RÉPÉTER JUSQU'À ZÉRO RÉFÉRENCE SOURCE
+17. AUDIT FINAL
+18. BUILD PRODUCTION
+19. TEST FINAL
+20. LIVRAISON
+
+==================================================
+41. CONSIGNE FINALE
+==================================================
+
+Commence maintenant par analyser :
+
+https://www.tatosatout.fr/
+
+Ne te contente pas d'une copie de la homepage.
+
+Parcours le site de manière récursive.
+
+Télécharge les images et assets localement.
+
+Évite les doublons.
+
+Réplique fidèlement le design, le contenu, les interactions, les animations et le responsive.
+
+Après la première réplication, scanne l'intégralité du projet local pour retrouver toute référence restante vers tatosatout.fr.
+
+Pour chaque nouvelle page trouvée, retourne sur le site source, analyse-la, réplique-la et télécharge ses assets.
+
+Puis rescane tout le projet.
+
+Continue cette boucle autant de fois que nécessaire.
+
+Tu dois continuer jusqu'à ce qu'une analyse complète du projet local ne trouve absolument plus aucune référence interne au site :
+
+https://www.tatosatout.fr/
+
+Le résultat final doit être un frontend local autonome, extrêmement fidèle au site source, structuré proprement et prêt à être utilisé dans une architecture WordPress Headless.
+
+PRIORITÉS ABSOLUES :
+
+FIDÉLITÉ
+EXHAUSTIVITÉ
+ASSETS LOCAUX
+DÉDUPLICATION
+LIENS LOCALISÉS
+RESPONSIVE
+INTERACTIONS
+ANIMATIONS
+WORKFLOWS ACHAT / VENTE
+FORMULAIRES FONCTIONNELS
+ÉTATS LOADING / ERREUR / SUCCÈS
+RESPONSIVE FONCTIONNEL
+QUALITÉ DU CODE
+PERFORMANCE
+ACCESSIBILITÉ
+SÉCURITÉ FRONTEND
+NON-RÉGRESSION
+AUDIT RÉCURSIF
+ZÉRO RÉFÉRENCE INTERNE ACCIDENTELLE AU SITE SOURCE
+
+Ne t'arrête pas tant que ces critères ne sont pas remplis.
+
+
+
+==================================================
+PHASE FINALE OBLIGATOIRE — RECETTE ET NON-RÉGRESSION
+==================================================
+
+Ne déclare pas le projet terminé après la compilation ou après une simple vérification visuelle. Exécute les tests, corrige les anomalies et répète les tests après correction.
+
+1. TESTS DES PAGES
+- Ouvre chaque route locale directement, puis via la navigation.
+- Vérifie chargement, contenu, assets, liens, animations, formulaires, console navigateur, réseau et erreurs serveur.
+- Vérifie les états loading, vide, succès et erreur lorsqu'ils existent.
+- Vérifie qu'aucune page n'est blanche, cassée ou incomplète.
+
+2. TESTS DE TOUS LES WORKFLOWS
+- Exécute chaque workflow métier du début à la fin, y compris achats, ventes, commandes, panier, estimation, formulaires, compte client et paiement lorsqu'ils existent.
+- Vérifie les données envoyées à l'API, les validations côté serveur, les changements en base de données, la réponse API et le résultat affiché.
+- Teste aussi les données invalides, les champs obligatoires, les actions répétées, les erreurs réseau, les ressources absentes, les permissions et les cas limites.
+- Aucun workflow ne doit être validé uniquement parce que son interface s'affiche.
+
+3. TESTS SUR TROIS FORMATS D'APPAREILS
+- PC / desktop : résolutions courantes et redimensionnement de fenêtre.
+- Tablette : portrait et paysage.
+- Téléphone : petit écran et écran standard, portrait et paysage lorsque pertinent.
+- Vérifie les menus, boutons, formulaires, champs, clavier virtuel, modales, tableaux, paniers, étapes de commande et confirmations.
+- Compare les changements de disposition avec le comportement du site source : ordre des blocs, grilles, menus, espacements, visibilité, tailles d'image et interactions.
+- Aucun workflow utilisable sur PC ne doit devenir inutilisable sur tablette ou téléphone.
+
+4. TESTS BACKEND ET BASE DE DONNÉES
+- Démarrage, configuration, migrations, connexion base de données, endpoints, authentification, permissions, validations, règles métier et persistance.
+- Vérifie les résultats réels en base de données pour les opérations critiques.
+- Vérifie qu'une erreur ne crée pas de données partielles ou incohérentes.
+- Ne simule pas silencieusement les paiements ou confirmations externes.
+
+5. TESTS DES ASSETS ET DES LIENS
+- Vérifie qu'aucune image locale ne retourne une erreur 404.
+- Vérifie que les assets utilisent les chemins locaux attendus.
+- Vérifie que les noms des fichiers sont cohérents avec le manifeste.
+- Recherche les références restantes au domaine source dans le code exécutable.
+- Vérifie qu'aucun lien interne ne redirige vers le site en ligne.
+- Contrôle les images dupliquées, les fichiers vides et les téléchargements incomplets.
+
+6. CONSOLE, BUILD ET ERREURS
+- Exécute les commandes de build et de test disponibles dans le projet.
+- Inspecte les erreurs JavaScript, réseau, API, serveur et base de données.
+- Corrige toute erreur critique et tout workflow cassé.
+- Ne masque pas une erreur avec un faux message de succès.
+
+7. NON-RÉGRESSION
+Après les dernières corrections, rejoue tous les parcours critiques et vérifie de nouveau desktop, tablette et téléphone. Une correction n'est terminée que si elle ne casse pas une autre page, un autre workflow ou le responsive.
+
+8. RAPPORT FINAL HONNÊTE
+Produis un rapport contenant : pages couvertes, nombre d'assets trouvés/téléchargés/indisponibles, doublons éliminés, workflows testés, résultats des tests desktop/tablette/mobile, tests API/backend/base de données, erreurs trouvées et corrigées, exceptions externes restantes et éventuels points non vérifiables.
+
+N'affirme jamais « tout fonctionne » si les tests n'ont pas été exécutés. Si un test ne peut pas être réalisé à cause d'un service, d'identifiants ou d'un accès manquant, signale précisément la limite et teste tout le reste.
+
+CRITÈRE DE LIVRAISON : aucune anomalie critique connue, aucun workflow critique cassé, aucune référence interne accidentelle vers le site source, aucun asset local manquant non documenté et aucune régression connue sur PC, tablette ou téléphone.

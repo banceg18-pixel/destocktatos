@@ -1,0 +1,85 @@
+{
+  "slug": "accueil",
+  "title": "Accueil",
+  "metaTitle": "TATOS | Électroménager livré, installé et garanti",
+  "metaDescription": "Réfrigérateurs, lave-linge, fours, plaques et petit électroménager : livraison et installation à domicile jusqu'à 80 km, reprise de l'ancien appareil, retrait gratuit en magasin.",
+  "data": {
+    "hero": {
+      "slides": [
+        {
+          "image": "/assets/images/home/accueil-slide-cuisine.png",
+          "imageAlt": "Cuisine équipée d'un réfrigérateur inox, d'un four et d'une plaque de cuisson",
+          "title": "Une cuisine qui suit votre rythme",
+          "text": "Fours, plaques, hottes et réfrigérateurs des grandes marques, posés chez vous par nos installateurs.",
+          "cta": "Équiper la cuisine",
+          "href": "/categorie/four"
+        },
+        {
+          "image": "/assets/images/pages/promotions-lave-linge.jpg",
+          "imageAlt": "Lave-linge blanc dans une buanderie lumineuse",
+          "title": "Le linge, sans y penser",
+          "text": "Lave-linge, sèche-linge et lavantes-séchantes : capacités, programmes et niveaux sonores comparés pour vous.",
+          "cta": "Voir les lave-linge",
+          "href": "/categorie/lave-linge"
+        },
+        {
+          "image": "/assets/images/home/accueil-slide-gros-electromenager.png",
+          "imageAlt": "Cuisine en bois avec hotte murale et plan de travail",
+          "title": "Du magasin à votre pièce",
+          "text": "Livraison au pied du camion, dans la pièce de votre choix ou avec installation complète, jusqu'à 80 km.",
+          "cta": "Nos services",
+          "href": "/services"
+        }
+      ]
+    },
+    "categories": {
+      "title": "Trouver le bon appareil",
+      "intro": "Seize rayons, du réfrigérateur américain à la machine à café. Chaque fiche détaille dimensions, capacité et consommation."
+    },
+    "statement": {
+      "title": "Des appareils choisis pour durer, livrés et installés par l'équipe qui vous les a conseillés.",
+      "cta": "Découvrir le magasin",
+      "href": "/a-propos"
+    },
+    "services": [
+      {
+        "icon": "truck",
+        "title": "Livraison jusqu'à 80 km",
+        "text": "Au pied du camion, dans la pièce de votre choix ou avec installation. Tarif calculé selon la distance, affiché avant paiement."
+      },
+      {
+        "icon": "wrench",
+        "title": "Installation et reprise",
+        "text": "Raccordement, mise en service et reprise de l'ancien appareil le même jour, pour 5 € de plus."
+      },
+      {
+        "icon": "store",
+        "title": "Retrait en magasin",
+        "text": "Gratuit, sous 24 h, avec un conseiller pour vous présenter l'appareil."
+      }
+    ],
+    "promo": {
+      "cta": "Voir toutes les promotions"
+    },
+    "selection": {
+      "title": "Nos coups de cœur du moment",
+      "cta": "Tout le catalogue"
+    },
+    "why": {
+      "text": "Un magasin indépendant qui compare pour vous les dimensions, les consommations et les niveaux sonores, livre à l'étage et reprend l'ancien appareil. Vous parlez à la même équipe avant, pendant et après l'achat.",
+      "stats": {
+        "products": "appareils disponibles",
+        "brands": "marques",
+        "radius": "km de rayon de livraison"
+      }
+    },
+    "band": {
+      "image": "/assets/images/pages/services-installation.jpg",
+      "imageAlt": "Technicien installant un lave-linge",
+      "title": "On s'occupe de tout, jusqu'au raccordement.",
+      "text": "Livraison, installation, mise en service, reprise et recyclage de l'ancien appareil : choisissez simplement l'option au moment de commander.",
+      "cta": "Livraison et installation",
+      "href": "/services"
+    }
+  }
+}

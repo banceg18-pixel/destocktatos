@@ -1,0 +1,16 @@
+{
+  "header": [
+    { "label": "À propos", "href": "/a-propos" },
+    { "label": "Boutique", "href": "/boutique", "dataCy": "nav-boutique" },
+    { "label": "Promotions", "href": "/promotions" },
+    { "label": "Contact", "href": "/contact" },
+    { "label": "Services", "href": "/services" },
+    { "label": "Conseils", "href": "/conseils" },
+    { "label": "FAQ", "href": "/faq" }
+  ],
+  "footerLegal": [
+    { "label": "Mentions légales", "href": "/mentions-legales" },
+    { "label": "Conditions générales de vente", "href": "/cgv" },
+    { "label": "Politique de confidentialité", "href": "/politique-confidentialite" }
+  ]
+}

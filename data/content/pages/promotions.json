@@ -1,0 +1,31 @@
+{
+  "slug": "promotions",
+  "title": "Promotions",
+  "data": {
+    "hero": {
+      "image": "/assets/images/pages/promotions-banniere.jpg",
+      "imageAlt": "Nos promotions",
+      "title": "Promotions Exclusives",
+      "text": "Découvrez nos offres spéciales et profitez de remises exceptionnelles sur une sélection de produits."
+    },
+    "flashSale": {
+      "active": false,
+      "title": "Ventes Flash",
+      "inactiveText": "Aucune vente flash active en ce moment. Revenez bientôt pour découvrir nos prochaines offres à durée limitée !",
+      "badge": "Offres renouvelées régulièrement",
+      "activeText": "",
+      "endsAt": null,
+      "ctaLabel": "Voir les offres",
+      "ctaLink": "/boutique?promotions=1"
+    },
+    "categoriesTitle": "Promotions par Catégorie",
+    "categories": [
+      { "title": "Réfrigérateur", "image": "/assets/images/pages/promotions-cuisine.jpg", "imageAlt": "Réfrigérateurs en promotion", "color": "orange", "link": "/boutique?categorie=Réfrigérateur" },
+      { "title": "Lave-linge", "image": "/assets/images/pages/promotions-lave-linge.jpg", "imageAlt": "Lave-linge en promotion", "color": "blue", "link": "/boutique?categorie=Lave-linge" },
+      { "title": "Lave-vaisselle", "image": "/assets/images/pages/promotions-lave-linge.jpg", "imageAlt": "Lave-vaisselle en promotion", "color": "indigo", "link": "/boutique?categorie=Lave-vaisselle" },
+      { "title": "Four", "image": "/assets/images/pages/promotions-cuisine.jpg", "imageAlt": "Fours en promotion", "color": "red", "link": "/boutique?categorie=Four" },
+      { "title": "Aspirateur", "image": "/assets/images/pages/promotions-aspirateur.jpg", "imageAlt": "Aspirateurs en promotion", "color": "green", "link": "/boutique?categorie=Aspirateur" },
+      { "title": "Micro-ondes", "image": "/assets/images/pages/promotions-cuisine.jpg", "imageAlt": "Micro-ondes en promotion", "color": "pink", "link": "/boutique?categorie=Micro-ondes" }
+    ]
+  }
+}
