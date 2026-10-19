@@ -30,3 +30,4 @@ skills-lock.json
 !.env.example
 *.local.md
 prisma/*.db*
+/backups/

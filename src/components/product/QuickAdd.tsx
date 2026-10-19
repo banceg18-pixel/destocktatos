@@ -6,7 +6,7 @@ import { useUi } from "@/context/UiProvider";
 import { cn } from "@/lib/client/cn";
 import { IconBag } from "@/components/ui/Icons";
 
-/** Données de panier d'un produit (poids inclus pour les frais d'étage). */
+/** Données de panier d'un produit (poids inclus pour la préparation de la livraison). */
 export function toCartItem(p: Product) {
   return {
     _id: p._id,

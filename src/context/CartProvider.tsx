@@ -2,7 +2,7 @@
 
 import { createContext, startTransition, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useSession } from "next-auth/react";
-import { calculateDeliveryFee, calculateTotalWeight, type DeliveryMethod } from "@/lib/delivery";
+import { calculateDeliveryFee, type DeliveryMethod } from "@/lib/delivery";
 import { useError } from "@/context/PopUpProvider";
 import { validateCoupon } from "@/services/loyalty";
 import type { CartItem, ShippingAddress, AppliedCoupon } from "@/types/cart";
@@ -135,12 +135,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const deliveryFee = useMemo(() => {
     if (isPickupInStore || !deliveryMethod || deliveryDistance <= 0) return 0;
     try {
-      return calculateDeliveryFee(deliveryDistance, deliveryMethod, includeOldItemPickup, shippingAddress?.floor || 0, calculateTotalWeight(cart));
+      return calculateDeliveryFee(deliveryMethod, includeOldItemPickup);
     } catch {
       setErrorRef.current("Impossible de calculer les frais de livraison");
       return 0;
     }
-  }, [deliveryMethod, deliveryDistance, includeOldItemPickup, isPickupInStore, cart, shippingAddress]);
+  }, [deliveryMethod, deliveryDistance, includeOldItemPickup, isPickupInStore]);
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = cart.reduce((sum, item) => sum + (item.promotionPrix || item.prix) * item.quantity, 0);

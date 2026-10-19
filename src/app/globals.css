@@ -24,6 +24,8 @@
   --color-success: #2f7d4f;
   --color-warning: #a8650a;
   --color-danger: #b42318;
+  /* Bandeau promotionnel : rouge vif, texte blanc lisible (contraste 5:1). */
+  --color-promo: #d7261e;
 
   --font-display: var(--font-archivo), "Archivo", ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-geist), "Geist", ui-sans-serif, system-ui, sans-serif;
@@ -43,11 +45,22 @@
   --text-main: var(--color-ink-soft);
   --bg-main: var(--color-paper);
   --card-border: var(--color-line);
-  --header-h: 64px;
+  /* Hauteur totale fixée en haut : bandeau promotionnel (s'il y en a un) + barre de navigation. */
+  --nav-h: 64px;
+  --banner-h: 0px;
+  --header-h: calc(var(--nav-h) + var(--banner-h));
+}
+:root.has-banner {
+  --banner-h: 44px;
+}
+@media (min-width: 768px) {
+  :root.has-banner {
+    --banner-h: 36px;
+  }
 }
 @media (min-width: 1024px) {
   :root {
-    --header-h: 76px;
+    --nav-h: 76px;
   }
 }
 

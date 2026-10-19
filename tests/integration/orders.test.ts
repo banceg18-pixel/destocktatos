@@ -41,7 +41,7 @@ describe("devis serveur (quoteOrder)", () => {
     expect(q.deliveryFeeCents).toBe(0);
   });
 
-  it("livraison : grille + reprise + étages calculés sur le poids réel", async () => {
+  it("livraison offerte : installation, reprise et étage sans frais", async () => {
     const user = await makeUser();
     const p = await makeProduct({ caracteristiques: { poids: 30 } });
     const q = await quoteOrder(
@@ -55,9 +55,8 @@ describe("devis serveur (quoteOrder)", () => {
       }),
       { distanceKm: 10 },
     );
-    // 45 € installation + 5 € reprise + 10 € (3e étage) + 10 € (1 étage au-delà, ≥ 20 kg)
-    expect(q.deliveryFeeCents).toBe(7_000);
-    expect(q.totalCents).toBe(50_000 + 7_000);
+    expect(q.deliveryFeeCents).toBe(0);
+    expect(q.totalCents).toBe(50_000);
   });
 
   it("distance calculée côté serveur via le géocodeur", async () => {
@@ -66,18 +65,20 @@ describe("devis serveur (quoteOrder)", () => {
     const req = orderRequest([{ _id: p.id, quantity: 1 }], 0, { isPickupInStore: false, deliveryMethod: "piedDuCamion", shippingAddress: ADDRESS });
     const q = await quoteOrder(prisma, user.id, req, { geocoder: geocoderAt(30) });
     expect(q.deliveryDistanceKm).toBe(30);
-    expect(q.deliveryFeeCents).toBe(4_000);
+    expect(q.deliveryFeeCents).toBe(0);
   });
 
-  it("refus au-delà de 80 km, et hors pied du camion au-delà de 60 km", async () => {
+  it("livraison partout en France, tous modes, sans limite de distance", async () => {
     const user = await makeUser();
     const p = await makeProduct();
     const req = (deliveryMethod: "piedDuCamion" | "installation") =>
       orderRequest([{ _id: p.id, quantity: 1 }], 0, { isPickupInStore: false, deliveryMethod, shippingAddress: ADDRESS });
-    await expectApiError(quoteOrder(prisma, user.id, req("piedDuCamion"), { distanceKm: 81 }), 422, /80km/);
-    await expectApiError(quoteOrder(prisma, user.id, req("installation"), { distanceKm: 70 }), 422, /pied du camion/);
-    const ok = await quoteOrder(prisma, user.id, req("piedDuCamion"), { distanceKm: 70 });
-    expect(ok.deliveryFeeCents).toBe(6_500);
+    // Sevran -> Marseille ≈ 660 km, Sevran -> Ajaccio ≈ 920 km
+    for (const distanceKm of [81, 660, 920]) {
+      const q = await quoteOrder(prisma, user.id, req("installation"), { distanceKm });
+      expect(q.deliveryFeeCents).toBe(0);
+      expect(q.deliveryDistanceKm).toBe(distanceKm);
+    }
   });
 
   it("adresse introuvable -> 422", async () => {
@@ -144,10 +145,10 @@ describe("création de commande", () => {
     const p = await makeProduct();
     const { order } = await createOrder(
       user.id,
-      orderRequest([{ _id: p.id, quantity: 1 }], 535, { isPickupInStore: false, deliveryMethod: "livraisonPiece", shippingAddress: ADDRESS }),
+      orderRequest([{ _id: p.id, quantity: 1 }], 500, { isPickupInStore: false, deliveryMethod: "livraisonPiece", shippingAddress: ADDRESS }),
       geocoderAt(15),
     );
-    expect(order).toMatchObject({ deliveryFeeCents: 3_500, deliveryDistanceKm: 15, deliveryMethod: "livraisonPiece", isPickupInStore: false });
+    expect(order).toMatchObject({ deliveryFeeCents: 0, deliveryDistanceKm: 15, deliveryMethod: "livraisonPiece", isPickupInStore: false });
     expect(order.shippingAddress).toMatchObject({ city: "Sevran", postalCode: "93270" });
   });
 });

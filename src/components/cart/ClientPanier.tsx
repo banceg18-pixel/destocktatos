@@ -8,12 +8,12 @@ import { useCart } from "@/context/CartProvider";
 import { useError } from "@/context/PopUpProvider";
 import type { SiteSettings } from "@/lib/cms/types";
 import { trackBeginCheckout } from "@/lib/client/analytics";
-import { MAX_DELIVERY_DISTANCE } from "@/lib/delivery";
 import { formatEuros } from "@/lib/money";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Arrow, Checkbox, Spinner } from "@/components/ui/Primitives";
 import { IconAlert, IconLock } from "@/components/ui/Icons";
 import { CartItemRow } from "./CartItemRow";
+import { CheckoutAccount } from "./CheckoutAccount";
 import { CouponForm } from "./CouponForm";
 import { DeliveryOptions } from "./DeliveryOptions";
 import { ShippingAddressForm } from "./ShippingAddressForm";
@@ -56,22 +56,33 @@ export function ClientPanier({ settings }: { settings: SiteSettings }) {
   const [processing, setProcessing] = useState(false);
   const [attempted, setAttempted] = useState(false);
   const [confirmClear, setConfirmClear] = useState(false);
+  // Le compte n'est demandé qu'au moment de payer, une fois tout le reste rempli.
+  const [accountOpen, setAccountOpen] = useState(false);
 
   const missing: string[] = [];
-  if (!authenticated) missing.push("Connectez-vous ou créez un compte pour commander.");
   if (!isPickupInStore) {
     if (!isShippingAddressValid() || !shippingAddress) missing.push("Complétez l'adresse de livraison.");
     else if (deliveryDistance <= 0) missing.push("La distance de livraison n'est pas encore calculée.");
-    else if (deliveryDistance > MAX_DELIVERY_DISTANCE) missing.push(`Adresse au-delà de ${MAX_DELIVERY_DISTANCE} km : choisissez le retrait en magasin.`);
     else if (!deliveryMethod) missing.push("Choisissez une option de livraison.");
   }
   if (!accepted) missing.push("Acceptez les conditions générales de vente.");
   const canCheckout = missing.length === 0;
 
-  const checkout = async () => {
+  const checkout = () => {
     setAttempted(true);
-    if (!canCheckout || processing) return;
+    if (!canCheckout || processing || status === "loading") return;
     if (!cart.length || !totalPrice) return setError("Votre panier est vide.");
+    if (!authenticated) return setAccountOpen(true);
+    void placeOrder();
+  };
+
+  // Compte créé ou connexion faite dans le panneau : la commande part aussitôt, sans rien ressaisir.
+  const onAccountReady = () => {
+    setAccountOpen(false);
+    void placeOrder();
+  };
+
+  const placeOrder = async () => {
     setProcessing(true);
     const total = calculateTotalWithDelivery();
     trackBeginCheckout(cart, total, appliedCoupon?.code);
@@ -167,7 +178,7 @@ export function ClientPanier({ settings }: { settings: SiteSettings }) {
             )}
             <div className="flex justify-between">
               <dt className="text-graphite">{isPickupInStore ? "Retrait en magasin" : "Livraison"}</dt>
-              <dd>{isPickupInStore ? "Gratuit" : deliveryMethod && deliveryDistance > 0 ? formatEuros(deliveryFee) : "Selon l'adresse"}</dd>
+              <dd>{isPickupInStore || deliveryFee <= 0 ? "Offerte" : formatEuros(deliveryFee)}</dd>
             </div>
           </dl>
           <div className="mt-5 border-t border-line pt-5">
@@ -182,15 +193,8 @@ export function ClientPanier({ settings }: { settings: SiteSettings }) {
 
           {!authenticated && status !== "loading" && (
             <p className="mt-6 border border-line bg-paper p-4 text-sm">
-              Pour commander,{" "}
-              <Link href="/connexion?callbackUrl=/panier" className="font-medium underline underline-offset-4">
-                connectez-vous
-              </Link>{" "}
-              ou{" "}
-              <Link href="/inscription" className="font-medium underline underline-offset-4">
-                créez un compte
-              </Link>
-              . Votre panier est conservé.
+              Pas besoin de compte pour préparer votre commande : vous le créerez juste avant le paiement, en une minute. Déjà client ? Vous pourrez vous
+              connecter à cette étape.
             </p>
           )}
 
@@ -247,6 +251,7 @@ export function ClientPanier({ settings }: { settings: SiteSettings }) {
           </p>
         </div>
       </aside>
+      <CheckoutAccount open={accountOpen} onClose={() => setAccountOpen(false)} onDone={onAccountReady} />
     </div>
   );
 }

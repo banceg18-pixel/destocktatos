@@ -9,7 +9,7 @@ export interface CartItem {
   prix: number;
   promotionPrix?: number | null;
   imagePrincipale: ImageRef;
-  /** Poids unitaire (kg) — sert au calcul des frais d'étage. */
+  /** Poids unitaire (kg) — enregistré avec la commande pour préparer la livraison. */
   poids?: number;
   quantity: number;
 }

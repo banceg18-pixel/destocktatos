@@ -1,5 +1,5 @@
 {
-  "siteName": "TATOS",
+  "siteName": "Destocktatos",
   "description": "Électroménager de qualité au meilleur prix",
   "email": "tatos-electromenager@outlook.com",
   "phone": "+33 6 51 64 41 84",
@@ -10,5 +10,7 @@
   "country": "France",
   "hours": "Service disponible 10h - 20h, 7j/7",
   "storeHours": "Ouvert du lundi au dimanche de 10h à 20h",
-  "mapQuery": "15 Rue Paul Langevin, 93270 Sevran, France"
+  "mapQuery": "15 Rue Paul Langevin, 93270 Sevran, France",
+  "bannerMessage1": "DÉSTOCKAGE MASSIF : Fins de séries & liquidation de stocks électroménager jusqu'à -80%.",
+  "bannerMessage2": "Livraison gratuite dans toute la France par nos agents de proximité et en mains propres"
 }

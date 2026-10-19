@@ -9,11 +9,11 @@
         "image": "/assets/images/libres/service-livraison.jpg",
         "imageAlt": "Camion de livraison garé devant un immeuble, un livreur porte un appareil emballé",
         "title": "Livraison à domicile",
-        "text": "Jusqu'à 80 km autour du magasin. Le tarif dépend de la distance et du niveau de service, il est calculé automatiquement depuis votre adresse avant le paiement.",
+        "text": "Gratuite partout en France, en mains propres par nos agents de proximité, quel que soit le niveau de service choisi.",
         "points": [
           "Au pied du camion, dans la pièce de votre choix ou avec installation",
           "Créneau fixé par téléphone après la commande",
-          "Frais d'étage à partir du 3ᵉ étage"
+          "Sans frais d'étage"
         ]
       },
       {
@@ -33,7 +33,7 @@
         "image": "/assets/images/libres/service-magasin.jpg",
         "imageAlt": "Intérieur d'un magasin d'électroménager avec appareils de cuisine exposés",
         "title": "Reprise et retrait en magasin",
-        "text": "Avec l'installation, nous reprenons votre ancien appareil pour 5 € et le confions à la filière de recyclage. Vous pouvez aussi retirer votre commande gratuitement au magasin.",
+        "text": "Avec l'installation, nous reprenons gratuitement votre ancien appareil et le confions à la filière de recyclage. Vous pouvez aussi retirer votre commande gratuitement au magasin.",
         "points": [
           "Reprise de l'ancien appareil le jour de l'installation",
           "Retrait gratuit, commande prête sous 24 h",
@@ -54,8 +54,8 @@
       }
     ],
     "rates": {
-      "title": "Grille de livraison",
-      "text": "Distance mesurée à vol d'oiseau depuis le magasin. Au-delà de 60 km, seule la livraison au pied du camion est proposée ; nous ne livrons pas au-delà de 80 km."
+      "title": "Tarifs de livraison",
+      "text": "La livraison est offerte partout en France, pour tous les modes de livraison."
     },
     "quote": {
       "title": "Faire installer un appareil",
@@ -66,5 +66,5 @@
     }
   },
   "metaTitle": "Livraison, installation et reprise",
-  "metaDescription": "Livraison jusqu'à 80 km avec tarif selon la distance, installation et mise en service, reprise de l'ancien appareil, retrait gratuit en magasin, garantie et service après-vente."
+  "metaDescription": "Livraison gratuite partout en France, installation et mise en service, reprise de l'ancien appareil, retrait gratuit en magasin, garantie et service après-vente."
 }

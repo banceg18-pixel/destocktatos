@@ -30,7 +30,7 @@ export const POST = route("POST /api/auth/forgot-password", async (req: Request)
     await sendMail({
       to: email,
       tag: "reinitialisation-mot-de-passe",
-      subject: "TATOS — Réinitialisation de votre mot de passe",
+      subject: "Destocktatos — Réinitialisation de votre mot de passe",
       text: `Bonjour,\n\nPour choisir un nouveau mot de passe, ouvrez ce lien (valable 1 heure) :\n${link}\n\nSi vous n'êtes pas à l'origine de cette demande, ignorez cet email.`,
     });
   }

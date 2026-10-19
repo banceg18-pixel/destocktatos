@@ -12,7 +12,6 @@ import { ImageComponent } from "@/components/ui/ImageComponent";
 import { IconRecycle, IconShield, IconStore, IconTruck, IconWrench } from "@/components/ui/Icons";
 import { getCatalogStats, getCategories, getFeaturedProducts, getPromotionProducts } from "@/lib/catalog/repository";
 import { getPage, getSiteSettings } from "@/lib/cms";
-import { MAX_DELIVERY_DISTANCE } from "@/lib/delivery";
 import { discountPercent, formatEuros } from "@/lib/money";
 import type { HomeContent, ServiceIcon } from "@/types/home";
 
@@ -20,7 +19,7 @@ export const revalidate = 300;
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPage<HomeContent>("accueil");
-  const title = page?.metaTitle ?? "TATOS | Électroménager livré, installé et garanti";
+  const title = page?.metaTitle ?? "Destocktatos | Électroménager livré, installé et garanti";
   const description = page?.metaDescription;
   return {
     title: { absolute: title },
@@ -197,7 +196,8 @@ export default async function HomePage() {
             {[
               { value: stats.available, label: c.why.stats.products },
               { value: stats.brands, label: c.why.stats.brands },
-              { value: MAX_DELIVERY_DISTANCE, label: c.why.stats.radius },
+              // Livraison offerte partout en France : « 0 € de frais de livraison ».
+              { value: 0, label: c.why.stats.radius },
             ].map((s) => (
               <div key={s.label} className="flex flex-col items-center">
                 <dt className="sr-only">{s.label}</dt>

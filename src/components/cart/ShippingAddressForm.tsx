@@ -9,7 +9,7 @@ import { AddressAutocomplete } from "@/components/account/AddressAutocomplete";
 import { FLOOR_OPTIONS } from "@/components/account/floors";
 import { createAddress, fetchAddresses, type SavedAddress } from "@/services/account";
 import { geocodeAddress } from "@/lib/geocode";
-import { LONG_DISTANCE_THRESHOLD, MAX_DELIVERY_DISTANCE, STORE_COORDINATES, calculateDistance } from "@/lib/delivery";
+import { STORE_COORDINATES, calculateDistance } from "@/lib/delivery";
 import { cn } from "@/lib/client/cn";
 import { Field, Input, NativeSelect, Spinner, Textarea } from "@/components/ui/Primitives";
 import { IconAlert, IconCheck, IconPin, IconStore, IconTruck } from "@/components/ui/Icons";
@@ -228,7 +228,7 @@ export function ShippingAddressForm({ settings }: { settings: SiteSettings }) {
   return (
     <div className="flex flex-col gap-6">
       <div className="grid gap-3 md:grid-cols-2" role="radiogroup" aria-label="Mode de réception">
-        <ChoiceCard name="reception" checked={!isPickupInStore} onChange={() => switchMode("delivery")} icon={<IconTruck />} title="Livraison à domicile" text={`Jusqu'à ${MAX_DELIVERY_DISTANCE} km, tarif selon la distance`} />
+        <ChoiceCard name="reception" checked={!isPickupInStore} onChange={() => switchMode("delivery")} icon={<IconTruck />} title="Livraison à domicile" text="Gratuite partout en France" />
         <ChoiceCard name="reception" checked={isPickupInStore} onChange={() => switchMode("pickup")} icon={<IconStore />} title="Retrait en magasin" text="Gratuit, prêt sous 24 h" aside="Gratuit" />
       </div>
 
@@ -319,7 +319,7 @@ export function ShippingAddressForm({ settings }: { settings: SiteSettings }) {
               <Field label="Ville" htmlFor="ship-city" required error={errors.city}>
                 <Input id="ship-city" name="city" value={form.city} onChange={onInput} onBlur={() => touch("city")} invalid={!!errors.city} placeholder="Sevran" autoComplete="address-level2" />
               </Field>
-              <Field label="Étage" htmlFor="ship-floor" hint="Frais d'étage dès le 3ᵉ, sans ascenseur comme avec.">
+              <Field label="Étage" htmlFor="ship-floor" hint="Pour préparer la montée de l'appareil (sans frais).">
                 <NativeSelect id="ship-floor" name="floor" value={form.floor} onChange={onInput}>
                   {FLOOR_OPTIONS.map((o) => (
                     <option value={o.value} key={o.value}>
@@ -369,18 +369,11 @@ export function ShippingAddressForm({ settings }: { settings: SiteSettings }) {
               </div>
             )}
             {!geocoding && !geoError && deliveryDistance > 0 && (
-              <div className={cn("flex gap-3 p-4 text-sm", deliveryDistance > MAX_DELIVERY_DISTANCE ? "border border-danger/30 bg-danger/5" : "bg-mist")}>
+              <div className="flex gap-3 bg-mist p-4 text-sm">
                 <IconPin className="mt-0.5 shrink-0" />
-                <div>
-                  <p>
-                    Adresse à <strong className="t-price">{deliveryDistance} km</strong> du magasin.
-                  </p>
-                  {deliveryDistance > MAX_DELIVERY_DISTANCE ? (
-                    <p className="mt-1 text-danger">Nous ne livrons pas au-delà de {MAX_DELIVERY_DISTANCE} km. Choisissez le retrait en magasin ou une adresse plus proche.</p>
-                  ) : deliveryDistance > LONG_DISTANCE_THRESHOLD ? (
-                    <p className="mt-1 text-graphite">Au-delà de {LONG_DISTANCE_THRESHOLD} km, seule la livraison au pied du camion est proposée.</p>
-                  ) : null}
-                </div>
+                <p>
+                  <strong className="font-medium">Livraison gratuite à cette adresse</strong>, en mains propres par nos agents de proximité.
+                </p>
               </div>
             )}
           </div>

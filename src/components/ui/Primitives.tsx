@@ -48,7 +48,7 @@ export function SectionHeading({
   );
 }
 
-/** Prix courant, ancien prix barré et réduction. Format unique « 1 299,00 € ». */
+/** Prix courant, prix conseillé fabricant barré et réduction. Format unique « 1 299,00 € ». */
 export function Price({
   prix,
   promotionPrix,
@@ -82,8 +82,10 @@ export function Price({
       </span>
       {pct > 0 && (
         <>
-          <span className="sr-only">au lieu de</span>
-          <s className={cn(size === "xl" ? "text-base" : "text-xs", tone === "paper" ? "text-white/60" : "text-graphite")}>{formatEuros(prix)}</s>
+          {/* Le prix barré est le prix conseillé par le fabricant (jamais un ancien prix du magasin). */}
+          <span className={cn(size === "xl" ? "text-base" : "text-xs", tone === "paper" ? "text-white/60" : "text-graphite")}>
+            Prix conseillé fabricant <s>{formatEuros(prix)}</s>
+          </span>
           {showBadge && (
             <span className={cn("t-spec rounded-xs px-1.5 py-0.5", tone === "paper" ? "bg-paper text-ink" : "bg-ink text-paper")}>-{pct} %</span>
           )}

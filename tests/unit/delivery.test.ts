@@ -1,61 +1,43 @@
 import { describe, expect, it } from "vitest";
-import {
-  STORE_COORDINATES,
-  calculateDeliveryFee,
-  calculateDistance,
-  calculateFloorFees,
-  calculateTotalWeight,
-  getDeliveryOptions,
-} from "@/lib/delivery";
+import { DELIVERY_METHODS, DELIVERY_OPTIONS, STORE_COORDINATES, calculateDeliveryFee, calculateDistance, calculateTotalWeight } from "@/lib/delivery";
+import { destockagePriceCents } from "@/lib/destockage";
 
-describe("grille de livraison (règles du site source)", () => {
-  it.each([
-    [0, 30, 35, 45],
-    [20, 30, 35, 45],
-    [21, 40, 45, 55],
-    [40, 40, 45, 55],
-    [41, 50, 55, 65],
-    [60, 50, 55, 65],
-    [61, 65, 70, 80],
-    [80, 65, 70, 80],
-  ])("à %i km : pied du camion %i €, pièce %i €, installation %i €", (km, pied, piece, install) => {
-    const o = getDeliveryOptions(km)!;
-    expect(o.piedDuCamion.price).toBe(pied);
-    expect(o.livraisonPiece.price).toBe(piece);
-    expect(o.installation.price).toBe(install);
-    expect(o.installation.additionalFee).toBe(5);
+describe("livraison offerte partout en France", () => {
+  it.each(DELIVERY_METHODS)("%s : gratuit", (method) => {
+    expect(DELIVERY_OPTIONS[method].price).toBe(0);
+    expect(calculateDeliveryFee(method)).toBe(0);
   });
 
-  it("aucune livraison au-delà de 80 km", () => {
-    expect(getDeliveryOptions(81)).toBeNull();
-    expect(calculateDeliveryFee(81, "piedDuCamion")).toBe(0);
-  });
-
-  it("reprise de l'ancien appareil : +5 € uniquement avec l'installation", () => {
-    expect(calculateDeliveryFee(10, "installation", true)).toBe(50);
-    expect(calculateDeliveryFee(10, "installation", false)).toBe(45);
-    expect(calculateDeliveryFee(10, "piedDuCamion", true)).toBe(30);
+  it("reprise de l'ancien appareil offerte avec l'installation", () => {
+    expect(calculateDeliveryFee("installation", true)).toBe(0);
   });
 
   it("sans méthode choisie, pas de frais", () => {
-    expect(calculateDeliveryFee(10, null)).toBe(0);
+    expect(calculateDeliveryFee(null)).toBe(0);
   });
 });
 
-describe("frais d'étage", () => {
+describe("prix de déstockage", () => {
+  const pct = (id: string, euros: number) => Math.round((1 - destockagePriceCents(id, euros * 100) / (euros * 100)) * 100);
+  const ids = Array.from({ length: 40 }, (_, i) => `produit-${i}`);
+
   it.each([
-    [0, 50, 0],
-    [2, 50, 0],
-    [3, 50, 10],
-    [5, 19.9, 10],
-    [5, 20, 30],
-    [10, 100, 80],
-  ])("étage %i, %f kg -> %i €", (floor, kg, fee) => {
-    expect(calculateFloorFees(floor, kg)).toBe(fee);
+    [499, 60, 80],
+    [500, 40, 60],
+    [1999, 40, 60],
+    [2000, 30, 50],
+    [4500, 30, 50],
+  ])("à %i € : remise entre %i et %i %%", (euros, min, max) => {
+    for (const id of ids) {
+      const p = pct(id, euros);
+      expect(p).toBeGreaterThanOrEqual(min);
+      expect(p).toBeLessThanOrEqual(max);
+    }
   });
 
-  it("s'ajoutent au tarif de livraison", () => {
-    expect(calculateDeliveryFee(30, "livraisonPiece", false, 4, 25)).toBe(45 + 20);
+  it("prix stable pour un même produit et terminé par ,99", () => {
+    expect(destockagePriceCents("abc", 89_900)).toBe(destockagePriceCents("abc", 89_900));
+    expect(destockagePriceCents("abc", 89_900) % 100).toBe(99);
   });
 });
 

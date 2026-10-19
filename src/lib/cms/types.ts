@@ -22,6 +22,9 @@ export interface SiteSettings {
   hours: string;
   storeHours: string;
   mapQuery: string;
+  /** Messages du bandeau fixe en haut de page (vides : pas de bandeau). */
+  bannerMessage1?: string;
+  bannerMessage2?: string;
 }
 
 export interface MenuSet {

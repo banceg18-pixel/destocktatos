@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useCart } from "@/context/CartProvider";
-import { LONG_DISTANCE_THRESHOLD, calculateFloorFees, calculateTotalWeight, getDeliveryOptions, type DeliveryMethod } from "@/lib/delivery";
+import { DELIVERY_OPTIONS, type DeliveryMethod } from "@/lib/delivery";
 import { formatEuros } from "@/lib/money";
 import { Checkbox } from "@/components/ui/Primitives";
 import { ChoiceCard } from "./ShippingAddressForm";
@@ -13,29 +13,21 @@ const METHODS: { m: DeliveryMethod; title: string; text: string }[] = [
   { m: "installation", title: "Installation", text: "Livraison, raccordement et mise en service" },
 ];
 
-/** Choix du mode de livraison selon la distance (grille tarifaire, reprise, frais d'étage). */
+/** Prix affiché : « Offert » quand c'est gratuit (cas actuel, partout en France). */
+const fee = (euros: number) => (euros > 0 ? formatEuros(euros) : "Offert");
+
+/** Choix du mode de livraison (tous offerts, partout en France) et reprise de l'ancien appareil. */
 export function DeliveryOptions() {
-  const { deliveryMethod, setDeliveryMethod, deliveryDistance, includeOldItemPickup, setIncludeOldItemPickup, deliveryFee, cart, shippingAddress } = useCart();
-  const options = useMemo(() => (deliveryDistance > 0 ? getDeliveryOptions(deliveryDistance) : null), [deliveryDistance]);
-  const weight = calculateTotalWeight(cart);
-  const floor = shippingAddress?.floor || 0;
-  const floorFees = calculateFloorFees(floor, weight);
-  const longDistance = deliveryDistance > LONG_DISTANCE_THRESHOLD;
+  const { deliveryMethod, setDeliveryMethod, deliveryDistance, includeOldItemPickup, setIncludeOldItemPickup, deliveryFee } = useCart();
+  // Les options s'affichent une fois l'adresse vérifiée (géocodée).
+  const options = deliveryDistance > 0 ? DELIVERY_OPTIONS : null;
 
-  const available = useCallback(
-    (m: DeliveryMethod) => !!options && options[m]?.price > 0 && (!longDistance || m === "piedDuCamion"),
-    [options, longDistance],
-  );
-
-  // Choix par défaut : installation si possible ; au-delà de 60 km, pied du camion uniquement.
+  // Choix par défaut : l'installation, le service le plus complet.
   useEffect(() => {
-    if (!options) return;
-    if (deliveryMethod && available(deliveryMethod)) return;
-    const next = (["installation", "livraisonPiece", "piedDuCamion"] as DeliveryMethod[]).find(available) ?? null;
-    if (next !== deliveryMethod) setDeliveryMethod(next);
-  }, [options, deliveryMethod, available, setDeliveryMethod]);
+    if (options && !deliveryMethod) setDeliveryMethod("installation");
+  }, [options, deliveryMethod, setDeliveryMethod]);
 
-  if (!options) return <p className="text-sm text-graphite">Les options et leurs tarifs s&apos;affichent dès que l&apos;adresse de livraison est complète.</p>;
+  if (!options) return <p className="text-sm text-graphite">Les options de livraison s&apos;affichent dès que l&apos;adresse de livraison est complète.</p>;
 
   return (
     <div className="flex flex-col gap-5">
@@ -45,11 +37,10 @@ export function DeliveryOptions() {
             key={m}
             name="livraison"
             checked={deliveryMethod === m}
-            disabled={!available(m)}
-            onChange={() => available(m) && setDeliveryMethod(m)}
+            onChange={() => setDeliveryMethod(m)}
             title={title}
             text={text}
-            aside={available(m) ? formatEuros(options[m].price) : "Indisponible"}
+            aside={fee(options[m].price)}
           />
         ))}
       </div>
@@ -61,7 +52,7 @@ export function DeliveryOptions() {
           onChange={(e) => setIncludeOldItemPickup(e.target.checked)}
           label={
             <>
-              Reprendre mon ancien appareil (+{formatEuros(options.installation.additionalFee ?? 5)}) — collecté et recyclé le jour de l&apos;installation
+              Reprendre mon ancien appareil ({fee(options.installation.additionalFee ?? 0).toLowerCase()}) — collecté et recyclé le jour de l&apos;installation
             </>
           }
         />
@@ -71,25 +62,17 @@ export function DeliveryOptions() {
         <dl className="t-price flex flex-col gap-1.5 border-t border-line pt-4 text-sm">
           <div className="flex justify-between">
             <dt className="text-graphite">{METHODS.find((x) => x.m === deliveryMethod)?.title}</dt>
-            <dd>{formatEuros(options[deliveryMethod].price)}</dd>
+            <dd>{fee(options[deliveryMethod].price)}</dd>
           </div>
           {deliveryMethod === "installation" && includeOldItemPickup && (
             <div className="flex justify-between">
               <dt className="text-graphite">Reprise de l&apos;ancien appareil</dt>
-              <dd>{formatEuros(options.installation.additionalFee ?? 5)}</dd>
-            </div>
-          )}
-          {floorFees > 0 && (
-            <div className="flex justify-between">
-              <dt className="text-graphite">
-                Frais d&apos;étage ({floor}ᵉ, {String(Math.round(weight * 10) / 10).replace(".", ",")} kg)
-              </dt>
-              <dd>{formatEuros(floorFees)}</dd>
+              <dd>{fee(options.installation.additionalFee ?? 0)}</dd>
             </div>
           )}
           <div className="flex justify-between font-medium">
             <dt>Total livraison</dt>
-            <dd>{formatEuros(deliveryFee)}</dd>
+            <dd>{fee(deliveryFee)}</dd>
           </div>
         </dl>
       )}

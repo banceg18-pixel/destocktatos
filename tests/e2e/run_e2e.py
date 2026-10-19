@@ -629,13 +629,12 @@ def _():
     ctx.close()
 
 
-@test("achat", "livraison à domicile : autocomplétion BAN, distance, options et frais, étage")
+@test("achat", "livraison à domicile sans compte : autocomplétion BAN, livraison offerte, compte créé avant le paiement")
 def _():
     errors: list[str] = []
     ctx = new_context(consent="accepted")
     page = new_page(ctx, errors)
-    user = register_user("livraison")
-    ui_login(page, user)
+    # Visiteur sans compte : il prépare toute sa commande, le compte n'est demandé qu'au paiement.
     add_to_cart(page, CHEAP)
     go(page, "/panier")
     page.get_by_text("Livraison à domicile", exact=True).click()
@@ -653,15 +652,23 @@ def _():
     page.get_by_text("Adresse de livraison complète", exact=True).wait_for(timeout=20_000)
     group = page.get_by_role("radiogroup", name="Options de livraison")
     group.wait_for(timeout=20_000)
-    text = group.inner_text().replace("\u202f", " ").replace("\xa0", " ")
-    check("30,00 €" in text and "45,00 €" in text, f"tarifs 0-20 km affichés : {text!r}")
+    text = group.inner_text()
+    check(text.count("Offert") == 3 and "€" not in text, f"trois modes de livraison offerts : {text!r}")
     group.get_by_text("Installation", exact=True).click()
     page.locator("#termsCheckbox").check(force=True)
     page.get_by_test_id("checkout-button").click()
+    # Panneau « Dernière étape : votre compte » : création du compte sans quitter le panier.
+    panel = page.get_by_role("dialog", name="Dernière étape : votre compte")
+    panel.wait_for(timeout=10_000)
+    check(page.url.endswith("/panier"), "toujours sur le panier")
+    password = f"Essai{int(time.time())}2026x"
+    panel.locator('[data-cy="signup-email-input"]').fill(f"invite-{int(time.time())}@tatos.test")
+    panel.locator('[data-cy="signup-password-input"]').fill(password)
+    panel.locator('[data-cy="signup-confirm-password-input"]').fill(password)
+    panel.locator('[data-cy="signup-submit"]').click()
     page.wait_for_url("**/paiement", timeout=30_000)
     latest = page.request.get("/api/orders/latest").json()
-    # 45 € installation + 10 € (4e étage ; < 20 kg : pas de supplément par étage)
-    eq((latest["deliveryMethod"], latest["deliveryFee"], latest["isPickupInStore"]), ("installation", 55, False), "frais de livraison recalculés par le serveur")
+    eq((latest["deliveryMethod"], latest["deliveryFee"], latest["isPickupInStore"]), ("installation", 0, False), "livraison offerte, recalculée par le serveur")
     check(latest["deliveryDistance"] <= 2, f"distance magasin calculée côté serveur : {latest['deliveryDistance']} km")
     check(not errors, f"erreurs pendant le parcours : {errors}")
     ctx.close()

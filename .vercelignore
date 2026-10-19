@@ -16,3 +16,4 @@ prisma/*.db-journal
 /wordpress/.local
 /wordpress/export
 *.log
+/backups

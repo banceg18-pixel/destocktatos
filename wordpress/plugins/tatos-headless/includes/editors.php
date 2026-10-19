@@ -190,14 +190,14 @@ const TATOS_PRODUCT_FORM = [
         ['modele', 'Référence / modèle', 'text'],
     ],
     'Prix' => [
-        ['prix', 'Prix (€ TTC)', 'money'],
-        ['promotion_prix', 'Prix promotionnel (€ TTC) — vide si pas de promotion', 'money'],
+        ['prix', 'Prix conseillé fabricant (€ TTC) — affiché barré, doit être le vrai prix public du fabricant', 'money'],
+        ['promotion_prix', 'Prix de déstockage (€ TTC) — prix de vente ; vide : vendu au prix conseillé', 'money'],
     ],
     'Caractéristiques' => [
         ['caracteristiques.largeur', 'Largeur (cm)', 'number'],
         ['caracteristiques.hauteur', 'Hauteur (cm)', 'number'],
         ['caracteristiques.profondeur', 'Profondeur (cm)', 'number'],
-        ['caracteristiques.poids', 'Poids (kg) — sert au calcul des frais de livraison', 'number'],
+        ['caracteristiques.poids', 'Poids (kg) — transmis aux livreurs (livraison offerte)', 'number'],
         ['sonore', 'Niveau sonore (dB)', 'int'],
         ['pose', 'Pose (ex. pose libre, encastrable)', 'text'],
         ['couleurs', 'Couleurs (codes couleur, séparés par des virgules)', 'list'],

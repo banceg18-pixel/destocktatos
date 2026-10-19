@@ -14,7 +14,11 @@ import { FormError, GoogleButton } from "./ConnexionForm";
 
 type Key = "email" | "mdp" | "mdpv";
 
-export function InscriptionForm({ googleEnabled }: { googleEnabled: boolean }) {
+/**
+ * `onSuccess` : appelé une fois le compte créé et connecté, à la place de la redirection (panier) ;
+ * Google, qui quitte la page, n'est alors pas proposé.
+ */
+export function InscriptionForm({ googleEnabled, onSuccess }: { googleEnabled: boolean; onSuccess?: () => void }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
@@ -39,6 +43,7 @@ export function InscriptionForm({ googleEnabled }: { googleEnabled: boolean }) {
     }
     const login = await signIn("credentials", { email, mdp: password, callbackUrl: "/compte", redirect: false });
     if (login?.ok && !login.error) {
+      if (onSuccess) return onSuccess();
       router.push("/compte");
       router.refresh();
       return;
@@ -49,7 +54,7 @@ export function InscriptionForm({ googleEnabled }: { googleEnabled: boolean }) {
 
   return (
     <div>
-      <GoogleButton label="S'inscrire avec Google" callbackUrl="/compte" enabled={googleEnabled} disabled={loading} onError={setError} />
+      {!onSuccess && <GoogleButton label="S'inscrire avec Google" callbackUrl="/compte" enabled={googleEnabled} disabled={loading} onError={setError} />}
       <form method="post" onSubmit={submit} noValidate className="flex flex-col gap-5">
         <Field label="Email" htmlFor="email" error={f.errors.email}>
           <Input

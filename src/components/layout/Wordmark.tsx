@@ -53,5 +53,6 @@ export function Wordmark({ name, animated = false, className }: { name: string; 
 
 /** Logo compact de l'en-tête. */
 export function Logo({ name, className }: { name: string; className?: string }) {
-  return <span className={cn("font-display text-[1.15rem] font-semibold uppercase tracking-[-0.03em] [font-stretch:125%] lg:text-[1.3rem]", className)}>{name}</span>;
+  // Petits écrans : la taille suit la largeur pour que le nom (12 lettres) tienne à côté des icônes.
+  return <span className={cn("font-display text-[clamp(0.75rem,calc((100vw-200px)/10),1.15rem)] font-semibold uppercase tracking-[-0.03em] [font-stretch:125%] xl:text-[1.3rem]", className)}>{name}</span>;
 }

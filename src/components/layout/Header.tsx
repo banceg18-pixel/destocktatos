@@ -15,6 +15,8 @@ import { Logo } from "./Wordmark";
 import { SearchPanel } from "./SearchPanel";
 import { CartDrawer } from "./CartDrawer";
 import { MobileMenu } from "./MobileMenu";
+import { TopBanner } from "./TopBanner";
+import { bannerMessagesOf } from "@/lib/banner";
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
@@ -65,6 +67,7 @@ export function Header({ menu, categories, settings }: { menu: MenuItem[]; categ
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`));
   const shopCategories = categories.filter((c) => (c.count ?? 0) > 0);
   const tone = overHero ? "glass" : "light";
+  const bannerMessages = bannerMessagesOf(settings);
 
   return (
     <>
@@ -75,13 +78,14 @@ export function Header({ menu, categories, settings }: { menu: MenuItem[]; categ
         )}
         onMouseLeave={closeMegaSoon}
       >
-        <div className="shell flex h-[var(--header-h)] items-center gap-6">
+        {bannerMessages.length > 0 && <TopBanner messages={bannerMessages} />}
+        <div className="shell flex h-[var(--nav-h)] items-center gap-6">
           <Link href="/" className="shrink-0" aria-label={`${settings.siteName} — accueil`}>
             <Logo name={settings.siteName} />
           </Link>
 
           <nav aria-label="Navigation principale" className="hidden flex-1 justify-center lg:flex">
-            <ul className="flex items-center gap-7 xl:gap-9">
+            <ul className="flex items-center gap-5 whitespace-nowrap xl:gap-9">
               {menu.map((item) => {
                 const shop = item.href === "/boutique";
                 return (
@@ -120,7 +124,7 @@ export function Header({ menu, categories, settings }: { menu: MenuItem[]; categ
               href={status === "authenticated" ? "/compte" : "/connexion"}
               aria-label={status === "authenticated" ? "Mon compte" : "Se connecter"}
               title={status === "authenticated" ? "Mon compte" : "Se connecter"}
-              className={headerIconClasses(tone, "hidden sm:inline-flex")}
+              className={headerIconClasses(tone, "max-sm:hidden")}
             >
               <IconUser />
               {status === "authenticated" && <span className="absolute right-1.5 top-1.5 size-1.5 rounded-full bg-success" aria-hidden="true" />}

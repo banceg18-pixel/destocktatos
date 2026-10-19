@@ -1,8 +1,8 @@
 {
   "slug": "accueil",
   "title": "Accueil",
-  "metaTitle": "TATOS | Électroménager livré, installé et garanti",
-  "metaDescription": "Réfrigérateurs, lave-linge, fours, plaques et petit électroménager : livraison et installation à domicile jusqu'à 80 km, reprise de l'ancien appareil, retrait gratuit en magasin.",
+  "metaTitle": "Destocktatos | Électroménager livré, installé et garanti",
+  "metaDescription": "Réfrigérateurs, lave-linge, fours, plaques et petit électroménager : livraison gratuite partout en France, installation à domicile, reprise de l'ancien appareil, retrait gratuit en magasin.",
   "data": {
     "hero": {
       "slides": [
@@ -26,7 +26,7 @@
           "image": "/assets/images/home/accueil-slide-gros-electromenager.png",
           "imageAlt": "Cuisine en bois avec hotte murale et plan de travail",
           "title": "Du magasin à votre pièce",
-          "text": "Livraison au pied du camion, dans la pièce de votre choix ou avec installation complète, jusqu'à 80 km.",
+          "text": "Livraison gratuite partout en France : au pied du camion, dans la pièce de votre choix ou avec installation complète.",
           "cta": "Nos services",
           "href": "/services"
         }
@@ -44,13 +44,13 @@
     "services": [
       {
         "icon": "truck",
-        "title": "Livraison jusqu'à 80 km",
-        "text": "Au pied du camion, dans la pièce de votre choix ou avec installation. Tarif calculé selon la distance, affiché avant paiement."
+        "title": "Livraison gratuite partout en France",
+        "text": "En mains propres par nos agents de proximité : au pied du camion, dans la pièce de votre choix ou avec installation."
       },
       {
         "icon": "wrench",
         "title": "Installation et reprise",
-        "text": "Raccordement, mise en service et reprise de l'ancien appareil le même jour, pour 5 € de plus."
+        "text": "Raccordement, mise en service et reprise de l'ancien appareil le même jour, sans supplément."
       },
       {
         "icon": "store",
@@ -70,7 +70,7 @@
       "stats": {
         "products": "appareils disponibles",
         "brands": "marques",
-        "radius": "km de rayon de livraison"
+        "radius": "€ de frais de livraison en France"
       }
     },
     "band": {

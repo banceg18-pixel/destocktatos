@@ -81,7 +81,11 @@ export function GoogleButton({ label, callbackUrl, enabled, disabled, onError }:
 
 type Key = "email" | "mdp";
 
-export function ConnexionForm({ googleEnabled }: { googleEnabled: boolean }) {
+/**
+ * `onSuccess` : appelé une fois connecté, à la place de la redirection (connexion depuis le panier) ;
+ * Google, qui quitte la page, n'est alors pas proposé.
+ */
+export function ConnexionForm({ googleEnabled, onSuccess }: { googleEnabled: boolean; onSuccess?: () => void }) {
   const router = useRouter();
   const params = useSearchParams();
   const callbackUrl = safeCallback(params.get("callbackUrl"));
@@ -100,6 +104,7 @@ export function ConnexionForm({ googleEnabled }: { googleEnabled: boolean }) {
     try {
       const res = await signIn("credentials", { email, mdp: password, callbackUrl, redirect: false });
       if (res?.ok && !res.error) {
+        if (onSuccess) return onSuccess();
         router.push(callbackUrl);
         router.refresh();
         return;
@@ -118,7 +123,7 @@ export function ConnexionForm({ googleEnabled }: { googleEnabled: boolean }) {
 
   return (
     <div>
-      <GoogleButton label="Continuer avec Google" callbackUrl={callbackUrl} enabled={googleEnabled} disabled={loading} onError={setError} />
+      {!onSuccess && <GoogleButton label="Continuer avec Google" callbackUrl={callbackUrl} enabled={googleEnabled} disabled={loading} onError={setError} />}
       {/* method="post" : si l'on clique avant que la page soit prête, le mot de passe ne part jamais dans l'adresse. */}
       <form method="post" onSubmit={submit} noValidate className="flex flex-col gap-5">
         <Field label="Email" htmlFor="email" error={f.errors.email}>

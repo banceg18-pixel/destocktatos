@@ -11,7 +11,6 @@ import { Accordion, Price, StockBadge, Stars, Tag } from "@/components/ui/Primit
 import { Reveal } from "@/components/ui/Reveal";
 import { IconLock, IconShield, IconStore, IconTruck, IconWrench } from "@/components/ui/Icons";
 import { getCategories, getProductBySlug, getSuggestions } from "@/lib/catalog/repository";
-import { DELIVERY_RATES, MAX_DELIVERY_DISTANCE } from "@/lib/delivery";
 import { DeliveryRates } from "@/components/common/DeliveryRates";
 import { discountPercent, formatEuros } from "@/lib/money";
 import { SITE_URL, jsonLd } from "@/lib/seo";
@@ -143,7 +142,7 @@ export default async function ProductPage({ params }: { params: Params }) {
             <Price prix={p.prix} promotionPrix={p.promotionPrix} size="xl" />
             {pct > 0 && <Tag tone="ink">-{pct} %</Tag>}
           </div>
-          {pct > 0 && <p className="mt-2 text-sm text-graphite">Vous économisez {formatEuros(p.prix - price)}.</p>}
+          {pct > 0 && <p className="mt-2 text-sm text-graphite">Vous économisez {formatEuros(p.prix - price)} par rapport au prix conseillé fabricant.</p>}
 
           <div className="mt-8">
             <PurchasePanel product={p} />
@@ -153,8 +152,8 @@ export default async function ProductPage({ params }: { params: Params }) {
             <li className="flex gap-3">
               <IconTruck className="mt-0.5 shrink-0" />
               <span>
-                <span className="block font-medium">Livraison dès {formatEuros(DELIVERY_RATES["0-20"].piedDuCamion.price)}</span>
-                <span className="text-graphite">jusqu&apos;à {MAX_DELIVERY_DISTANCE} km</span>
+                <span className="block font-medium">Livraison gratuite</span>
+                <span className="text-graphite">partout en France</span>
               </span>
             </li>
             <li className="flex gap-3">
@@ -195,7 +194,7 @@ export default async function ProductPage({ params }: { params: Params }) {
               </dl>
             </Accordion>
             <Accordion title="Livraison et installation">
-              <p className="mb-4">Tarif selon la distance depuis le magasin, calculé automatiquement à partir de votre adresse avant le paiement.</p>
+              <p className="mb-4">Livraison offerte partout en France, quel que soit le mode choisi.</p>
               <DeliveryRates />
             </Accordion>
             {p.garantie && (

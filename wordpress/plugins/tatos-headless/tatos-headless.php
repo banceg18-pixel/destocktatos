@@ -119,6 +119,8 @@ const TATOS_SETTINGS_FIELDS = [
     'hours' => 'Horaires (pied de page)',
     'storeHours' => 'Horaires du magasin',
     'mapQuery' => 'Adresse pour la carte',
+    'bannerMessage1' => 'Message 1',
+    'bannerMessage2' => 'Message 2 (alterne avec le 1, facultatif)',
     'siteUrl' => 'Adresse publique du site, commençant par https://',
     'adminApiSecret' => "Clé d'administration (ADMIN_API_SECRET du site)",
     'webhookUrl' => 'URL du webhook frontend (/api/webhooks/wordpress)',
@@ -128,11 +130,13 @@ const TATOS_SETTINGS_FIELDS = [
 /** Réglages techniques (liaison avec le site), regroupés à part sur la page de réglages. */
 const TATOS_TECHNICAL_FIELDS = ['siteUrl', 'adminApiSecret', 'webhookUrl', 'webhookSecret'];
 const TATOS_SECRET_FIELDS = ['adminApiSecret', 'webhookSecret'];
+/** Bandeau rouge fixé tout en haut du site (laisser vide pour le masquer). */
+const TATOS_BANNER_FIELDS = ['bannerMessage1', 'bannerMessage2'];
 
 function tatos_settings(): array
 {
     $defaults = [
-        'siteName' => 'TATOS',
+        'siteName' => 'Destocktatos',
         'description' => 'Électroménager de qualité au meilleur prix',
         'country' => 'France',
     ];
@@ -152,7 +156,8 @@ add_action('admin_menu', function () {
         echo '<form method="post" action="options.php">';
         settings_fields('tatos_settings');
         $groups = [
-            'Coordonnées affichées sur le site' => array_diff(array_keys(TATOS_SETTINGS_FIELDS), TATOS_TECHNICAL_FIELDS),
+            'Coordonnées affichées sur le site' => array_diff(array_keys(TATOS_SETTINGS_FIELDS), TATOS_TECHNICAL_FIELDS, TATOS_BANNER_FIELDS),
+            'Bandeau du haut de page (laisser vide pour le masquer)' => TATOS_BANNER_FIELDS,
             'Liaison avec le site (technique)' => TATOS_TECHNICAL_FIELDS,
         ];
         foreach ($groups as $title => $keys) {
@@ -160,11 +165,12 @@ add_action('admin_menu', function () {
             foreach ($keys as $key) {
                 $type = in_array($key, TATOS_SECRET_FIELDS, true) ? 'password' : 'text';
                 printf(
-                    '<tr><th><label for="%1$s">%2$s</label></th><td><input class="regular-text" type="%4$s" id="%1$s" name="tatos_settings[%1$s]" value="%3$s" autocomplete="off"></td></tr>',
+                    '<tr><th><label for="%1$s">%2$s</label></th><td><input class="%5$s" type="%4$s" id="%1$s" name="tatos_settings[%1$s]" value="%3$s" autocomplete="off"></td></tr>',
                     esc_attr($key),
                     esc_html(TATOS_SETTINGS_FIELDS[$key]),
                     esc_attr($s[$key] ?? ''),
-                    $type
+                    $type,
+                    in_array($key, TATOS_BANNER_FIELDS, true) ? 'large-text' : 'regular-text'
                 );
             }
             echo '</table>';

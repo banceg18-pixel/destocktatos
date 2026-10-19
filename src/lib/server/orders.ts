@@ -3,15 +3,7 @@ import crypto from "node:crypto";
 import type { Order, OrderItem, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { toEuros } from "@/lib/money";
-import {
-  LONG_DISTANCE_THRESHOLD,
-  MAX_DELIVERY_DISTANCE,
-  STORE_COORDINATES,
-  calculateDeliveryFee,
-  calculateDistance,
-  getDeliveryOptions,
-  type DeliveryMethod,
-} from "@/lib/delivery";
+import { STORE_COORDINATES, calculateDeliveryFee, calculateDistance, type DeliveryMethod } from "@/lib/delivery";
 import { geocodeAddress, type LatLng } from "@/lib/geocode";
 import { invalidateCatalog } from "@/lib/catalog/repository";
 import { notifyOrderPaid } from "./notifications";
@@ -117,18 +109,9 @@ export async function quoteOrder(
     const a = req.shippingAddress;
     if (!a) throw new ApiError(400, "Adresse de livraison incomplète. Veuillez remplir tous les champs obligatoires ou choisir le retrait en magasin.");
     if (!req.deliveryMethod) throw new ApiError(400, "Veuillez sélectionner une méthode de livraison.");
+    // Livraison offerte partout en France : la distance (adresse géocodée) reste enregistrée pour la tournée.
     deliveryDistanceKm = opts.distanceKm ?? (await distanceTo(a, opts.geocoder ?? geocodeAddress));
-    if (deliveryDistanceKm > MAX_DELIVERY_DISTANCE || !getDeliveryOptions(deliveryDistanceKm)) {
-      throw new ApiError(
-        422,
-        "Livraison non disponible : Nous ne livrons pas au-delà de 80km du magasin. Veuillez choisir le retrait en magasin ou une adresse plus proche.",
-      );
-    }
-    if (deliveryDistanceKm > LONG_DISTANCE_THRESHOLD && req.deliveryMethod !== "piedDuCamion") {
-      throw new ApiError(422, "Au-delà de 60 km, seule la livraison au pied du camion est proposée.");
-    }
-    deliveryFeeCents =
-      calculateDeliveryFee(deliveryDistanceKm, req.deliveryMethod, req.deliveryMethod === "installation" && req.includeOldItemPickup, a.floor, totalWeightKg) * 100;
+    deliveryFeeCents = calculateDeliveryFee(req.deliveryMethod, req.deliveryMethod === "installation" && req.includeOldItemPickup) * 100;
   }
 
   const totalCents = Math.max(0, subtotalCents - discountCents + deliveryFeeCents);

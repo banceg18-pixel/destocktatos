@@ -3,19 +3,19 @@ import type { Metadata } from "next";
 /** URL publique du site (jamais celle du site source) — sert aux canonicals et à Open Graph. */
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
 
-export const DEFAULT_TITLE = "TATOS - Électromenager de qualité au meilleur prix";
+export const DEFAULT_TITLE = "Destocktatos - Électromenager de qualité au meilleur prix";
 export const DEFAULT_DESCRIPTION = "Produit électroménager de qualité au meilleur prix pour votre maison et votre entreprise.";
 export const LOGO_PATH = "/assets/images/branding/logo-tatos.png";
 
 /** Métadonnées racine (reprises du site source, domaine remplacé par SITE_URL). */
 export const rootMetadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: { default: DEFAULT_TITLE, template: "%s | TATOS" },
+  title: { default: DEFAULT_TITLE, template: "%s | Destocktatos" },
   description: DEFAULT_DESCRIPTION,
   manifest: "/manifest.webmanifest",
   keywords: ["Electromenager", "qualité", "prix", "maison", "entreprise"],
-  creator: "TATOS",
-  publisher: "TATOS",
+  creator: "Destocktatos",
+  publisher: "Destocktatos",
   robots: {
     index: true,
     follow: true,
@@ -29,9 +29,9 @@ export const rootMetadata: Metadata = {
     title: DEFAULT_TITLE,
     description: DEFAULT_DESCRIPTION,
     url: "/",
-    siteName: "TATOS",
+    siteName: "Destocktatos",
     locale: "fr_FR",
-    images: [{ url: LOGO_PATH, width: 800, height: 600, alt: "TATOS Logo" }],
+    images: [{ url: LOGO_PATH, width: 800, height: 600, alt: "Destocktatos Logo" }],
     type: "website",
   },
   twitter: {
@@ -47,7 +47,7 @@ export function organizationJsonLd(phoneIntl: string) {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "TATOS",
+    name: "Destocktatos",
     url: SITE_URL,
     logo: `${SITE_URL}${LOGO_PATH}`,
     description: "Électroménager de qualité au meilleur prix",

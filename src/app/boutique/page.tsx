@@ -41,7 +41,7 @@ export default async function BoutiquePage({ searchParams }: { searchParams: Sea
         intro={
           q.recherche
             ? `${result.total} résultat${result.total > 1 ? "s" : ""} parmi les appareils disponibles.`
-            : "Tous les appareils disponibles, livrables jusqu'à 80 km, à installer chez vous ou à retirer en magasin."
+            : "Tous les appareils disponibles, livrés gratuitement partout en France, à installer chez vous ou à retirer en magasin."
         }
       />
       <CatalogView
