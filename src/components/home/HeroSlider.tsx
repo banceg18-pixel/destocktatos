@@ -7,17 +7,23 @@ import { cn } from "@/lib/client/cn";
 import { ButtonLink, IconButton } from "@/components/ui/Button";
 import { Arrow } from "@/components/ui/Primitives";
 import { Wordmark } from "@/components/layout/Wordmark";
+import { IconPause, IconPlay } from "@/components/ui/Icons";
 
-const INTERVAL = 7000;
+/** Durée d'affichage d'une diapositive (ms). */
+const INTERVAL = 3000;
 
 /**
  * Ouverture de l'accueil : photo plein écran, nom du magasin en très grand, message et bouton par
- * diapositive. Défilement automatique (pause au survol, au focus clavier, onglet masqué ou
- * mouvement réduit), flèches et barres de progression.
+ * diapositive. Défilement automatique toutes les 3 s, même sous la souris ou après un clic sur
+ * les flèches (le visuel occupe tout l'écran : une pause au survol l'arrêtait en permanence).
+ * Pause avec le bouton dédié ou quand l'onglet est masqué ; flèches et barres de progression.
  */
 export function HeroSlider({ slides, siteName }: { slides: HeroSlide[]; siteName: string }) {
   const [index, setIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
+  // `hidden` : onglet masqué ; `stopped` : le visiteur a mis le défilement en pause.
+  const [hidden, setHidden] = useState(false);
+  const [stopped, setStopped] = useState(false);
+  const paused = hidden || stopped;
   const [reduced, setReduced] = useState(false);
   const timer = useRef<number | undefined>(undefined);
   const count = slides.length;
@@ -26,6 +32,14 @@ export function HeroSlider({ slides, siteName }: { slides: HeroSlide[]; siteName
   const [armed, setArmed] = useState(1);
   const [ready, setReady] = useState<number[]>([]);
   const markReady = useCallback((i: number) => setReady((r) => (r.includes(i) ? r : [...r, i])), []);
+  const section = useRef<HTMLElement>(null);
+
+  // Le premier visuel (prioritaire) peut finir de charger avant que la page soit interactive : son
+  // événement de chargement est alors perdu, et le défilement ne revenait jamais à la 1re diapositive.
+  useEffect(() => {
+    const first = section.current?.querySelector("img");
+    if (first?.complete && first.naturalWidth > 0) markReady(0);
+  }, [markReady]);
 
   const go = useCallback((i: number) => setIndex(((i % count) + count) % count), [count]);
 
@@ -34,7 +48,7 @@ export function HeroSlider({ slides, siteName }: { slides: HeroSlide[]; siteName
     setReduced(mq.matches);
     const onChange = () => setReduced(mq.matches);
     mq.addEventListener("change", onChange);
-    const onVis = () => setPaused(document.hidden);
+    const onVis = () => setHidden(document.hidden);
     document.addEventListener("visibilitychange", onVis);
     return () => {
       mq.removeEventListener("change", onChange);
@@ -49,26 +63,24 @@ export function HeroSlider({ slides, siteName }: { slides: HeroSlide[]; siteName
 
   const nextReady = ready.includes((index + 1) % count);
   useEffect(() => {
-    if (paused || reduced || count < 2 || !nextReady) return;
+    // Mouvement réduit : le défilement continue, en fondu seul (pas d'effet de zoom).
+    if (paused || count < 2 || !nextReady) return;
     timer.current = window.setTimeout(() => go(index + 1), INTERVAL);
     return () => window.clearTimeout(timer.current);
-  }, [index, paused, reduced, count, go, nextReady]);
+  }, [index, paused, count, go, nextReady]);
 
   const slide = slides[index];
-  const running = !paused && !reduced && count > 1 && nextReady;
+  const running = !paused && count > 1 && nextReady;
 
   return (
     <section
+      ref={section}
       aria-roledescription="carrousel"
       aria-label="À la une"
       className="on-dark relative isolate flex h-[100svh] min-h-[620px] max-h-[1080px] flex-col overflow-hidden bg-ink text-paper"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocusCapture={() => setPaused(true)}
-      onBlurCapture={() => setPaused(false)}
     >
       {slides.map((s, i) => (
-        <div key={s.image} aria-hidden={i !== index} className={cn("absolute inset-0 -z-10 transition-opacity duration-[1400ms] ease-[var(--ease-in-out-soft)]", i === index ? "opacity-100" : "opacity-0")}>
+        <div key={s.image} aria-hidden={i !== index} className={cn("absolute inset-0 -z-10 transition-opacity duration-[900ms] ease-[var(--ease-in-out-soft)]", i === index ? "opacity-100" : "opacity-0")}>
           {i < armed && (
             <Image
               src={s.image}
@@ -128,6 +140,9 @@ export function HeroSlider({ slides, siteName }: { slides: HeroSlide[]; siteName
               {String(index + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
             </span>
             <div className="flex gap-2">
+              <IconButton label={stopped ? "Reprendre le défilement" : "Mettre le défilement en pause"} tone="dark" onClick={() => setStopped((s) => !s)}>
+                {stopped ? <IconPlay /> : <IconPause />}
+              </IconButton>
               <IconButton label="Diapositive précédente" tone="dark" onClick={() => go(index - 1)}>
                 <Arrow direction="left" />
               </IconButton>
