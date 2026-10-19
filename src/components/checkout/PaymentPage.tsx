@@ -19,7 +19,7 @@ import { ImageComponent } from "@/components/ui/ImageComponent";
 import { Arrow, Field, Input, Spinner } from "@/components/ui/Primitives";
 import { rules } from "@/lib/client/form-rules";
 import { useFieldErrors } from "@/lib/client/use-field-errors";
-import { IconAlert, IconCheck, IconClock, IconLock } from "@/components/ui/Icons";
+import { IconAlert, IconClock, IconLock } from "@/components/ui/Icons";
 
 const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 const stripePromise = publishableKey ? loadStripe(publishableKey) : null;
@@ -202,16 +202,6 @@ function OnDeliveryForm({ order }: { order: OrderDTO }) {
 
   return (
     <form onSubmit={confirm} noValidate className="flex flex-col gap-8">
-      <div className="flex gap-3 bg-mist p-4 text-sm">
-        <IconCheck className="mt-0.5 shrink-0" />
-        <p>
-          <strong className="font-medium">Aucun paiement en ligne.</strong>{" "}
-          {order.isPickupInStore
-            ? "Vous réglez votre commande au magasin, au moment du retrait."
-            : "Vous réglez votre commande à la livraison, à la remise des appareils."}{" "}
-          Vos articles sont réservés dès la confirmation.
-        </p>
-      </div>
       <div>
         <p className="mb-5 text-sm font-medium">Adresse de facturation</p>
         <div className="grid gap-5 sm:grid-cols-2">
