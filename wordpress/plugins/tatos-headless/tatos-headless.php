@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TATOS Headless
  * Description: Espace d'administration complet du site TATOS (Next.js) : produits, catégories, pages, articles, FAQ, menus, réglages, et gestion de la boutique (commandes, clients, codes promo, avis, messages, newsletter, stock).
- * Version: 2.1.0
+ * Version: 2.1.1
  * Requires PHP: 8.1
  * License: GPL-2.0-or-later
  * Text Domain: tatos-headless
@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('TATOS_HEADLESS_VERSION', '2.1.0');
+define('TATOS_HEADLESS_VERSION', '2.1.1');
 
 /* -------------------------------------------------------------------------
  * Types de contenu et taxonomies
@@ -294,6 +294,20 @@ function tatos_menu_items(string $location): array
         return $out;
     }, $items);
 }
+
+/**
+ * Réponses de l'API REST jamais mises en cache devant WordPress (LiteSpeed Cache, CDN de l'hébergeur) :
+ * le site garde sa propre copie des contenus et la renouvelle dès qu'ils changent (webhook). Une réponse
+ * gardée en cache lui renverrait l'ancienne version pendant des heures.
+ */
+add_filter('rest_post_dispatch', function ($response) {
+    if ($response instanceof WP_HTTP_Response) {
+        $response->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+        $response->header('X-LiteSpeed-Cache-Control', 'no-cache');
+    }
+    do_action('litespeed_control_set_nocache', 'API REST lue par le site');
+    return $response;
+});
 
 add_action('rest_api_init', function () {
     $public = '__return_true';
