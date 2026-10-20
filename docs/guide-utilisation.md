@@ -341,6 +341,11 @@ supprimer une image encore utilisée par un produit ou une page.
   facture envoyée au client à chaque commande et affichés sur sa page de confirmation. Tant que
   l'IBAN est vide, le client est prévenu que vos coordonnées lui seront envoyées par email, et
   l'alerte « nouvelle commande » vous le rappelle.
+- **Informations légales** : dénomination (REIMS GOLD), forme juridique, capital, SIREN, SIRET, RCS,
+  TVA intracommunautaire, siège social et gérant. Elles alimentent automatiquement les mentions
+  légales (« Éditeur du site »), la politique de confidentialité (« Responsable du traitement »), la
+  désignation du vendeur dans les CGV, et le bas des factures, devis et emails. L'établissement
+  affiché est l'adresse saisie dans les coordonnées ci-dessus.
 - **Liaison avec le site (technique)** : adresse publique du site et clé d'administration (l'adresse
   et le secret du webhook sont facultatifs : par défaut, ces deux valeurs suffisent). Ces valeurs sont
   fournies lors de l'installation ; ne les modifiez pas sans votre prestataire.

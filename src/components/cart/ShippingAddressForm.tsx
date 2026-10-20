@@ -291,10 +291,10 @@ export function ShippingAddressForm() {
                 />
               </Field>
               <Field label="Code postal" htmlFor="ship-postalCode" required error={errors.postalCode}>
-                <Input id="ship-postalCode" name="postalCode" value={form.postalCode} onChange={onInput} onBlur={() => touch("postalCode")} invalid={!!errors.postalCode} placeholder="93270" maxLength={5} autoComplete="postal-code" inputMode="numeric" />
+                <Input id="ship-postalCode" name="postalCode" value={form.postalCode} onChange={onInput} onBlur={() => touch("postalCode")} invalid={!!errors.postalCode} placeholder="78300" maxLength={5} autoComplete="postal-code" inputMode="numeric" />
               </Field>
               <Field label="Ville" htmlFor="ship-city" required error={errors.city}>
-                <Input id="ship-city" name="city" value={form.city} onChange={onInput} onBlur={() => touch("city")} invalid={!!errors.city} placeholder="Sevran" autoComplete="address-level2" />
+                <Input id="ship-city" name="city" value={form.city} onChange={onInput} onBlur={() => touch("city")} invalid={!!errors.city} placeholder="Poissy" autoComplete="address-level2" />
               </Field>
               <Field label="Étage" htmlFor="ship-floor" hint="Pour préparer la montée de l'appareil (sans frais).">
                 <NativeSelect id="ship-floor" name="floor" value={form.floor} onChange={onInput}>

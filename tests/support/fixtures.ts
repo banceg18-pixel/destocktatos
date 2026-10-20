@@ -1,4 +1,5 @@
 import type { Prisma } from "@prisma/client";
+import { STORE_COORDINATES } from "@/lib/delivery";
 import { prisma } from "@/lib/prisma";
 import type { OrderRequest } from "@/lib/server/orders";
 
@@ -81,4 +82,5 @@ export function orderRequest(items: { _id: string; quantity: number }[], totalEu
 }
 
 /** Géocodeur factice : coordonnées à `km` kilomètres environ au nord du magasin. */
-export const geocoderAt = (km: number) => async () => ({ lat: 48.9325 + km / 111.195, lng: 2.533 });
+/** Géocodeur de test : adresse située à `km` kilomètres au nord de l'établissement. */
+export const geocoderAt = (km: number) => async () => ({ lat: STORE_COORDINATES.lat + km / 111.195, lng: STORE_COORDINATES.lng });

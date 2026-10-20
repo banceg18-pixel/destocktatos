@@ -5,6 +5,7 @@ import path from "node:path";
 import nodemailer, { type Transporter } from "nodemailer";
 import { getSiteSettings } from "@/lib/cms";
 import { textEmail } from "./email-layout";
+import { legalLines } from "@/lib/brand";
 
 /**
  * Notifications email.
@@ -121,7 +122,7 @@ function smtp(c: MailConfig): Transporter {
 async function toHtml(msg: MailMessage) {
   if (msg.html) return msg.html;
   const s = await getSiteSettings().catch(() => null);
-  return textEmail(msg.text, s ? { name: s.siteName, address: `${s.addressLine}, ${s.postalCode} ${s.city}`, phone: s.phone, email: s.email } : null);
+  return textEmail(msg.text, s ? { name: s.siteName, address: `${s.addressLine}, ${s.postalCode} ${s.city}`, phone: s.phone, email: s.email, legal: legalLines(s) } : null);
 }
 
 async function writeOutbox(msg: MailMessage, reason?: string) {

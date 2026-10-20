@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Destocktatos — Administration du site
  * Description: Espace d'administration complet du site Destocktatos (Next.js) : produits, catégories, pages, articles, FAQ, menus, réglages, et gestion de la boutique (commandes, clients, codes promo, avis, messages, newsletter, stock).
- * Version: 2.4.0
+ * Version: 2.5.0
  * Requires PHP: 8.1
  * License: GPL-2.0-or-later
  * Text Domain: tatos-headless
@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('TATOS_HEADLESS_VERSION', '2.4.0');
+define('TATOS_HEADLESS_VERSION', '2.5.0');
 
 /* -------------------------------------------------------------------------
  * Types de contenu et taxonomies
@@ -125,6 +125,15 @@ const TATOS_SETTINGS_FIELDS = [
     'bankName' => 'Banque',
     'bankIban' => 'IBAN',
     'bankBic' => 'BIC',
+    'legalName' => 'Dénomination sociale',
+    'legalForm' => 'Forme juridique',
+    'legalCapital' => 'Capital social',
+    'legalSiren' => 'Numéro SIREN',
+    'legalSiret' => 'Numéro SIRET (siège)',
+    'legalRcs' => 'Numéro RCS',
+    'legalVat' => 'N° TVA intracommunautaire',
+    'legalHeadOffice' => 'Siège social',
+    'legalDirector' => 'Dirigeant / gérant',
     'siteUrl' => 'Adresse publique du site, commençant par https://',
     'adminApiSecret' => "Clé d'administration (ADMIN_API_SECRET du site)",
     'webhookUrl' => 'URL du webhook (facultatif : adresse du site + /api/webhooks/wordpress par défaut)',
@@ -138,6 +147,19 @@ const TATOS_SECRET_FIELDS = ['adminApiSecret', 'webhookSecret'];
 const TATOS_BANNER_FIELDS = ['bannerMessage1', 'bannerMessage2'];
 /** Coordonnées bancaires du virement : imprimées sur la facture et envoyées au client à la commande. */
 const TATOS_BANK_FIELDS = ['bankHolder', 'bankName', 'bankIban', 'bankBic'];
+/** Société qui exploite le site : mentions légales, CGV, confidentialité, factures (l'établissement = l'adresse ci-dessus). */
+const TATOS_LEGAL_FIELDS = ['legalName', 'legalForm', 'legalCapital', 'legalSiren', 'legalSiret', 'legalRcs', 'legalVat', 'legalHeadOffice', 'legalDirector'];
+const TATOS_LEGAL_DEFAULTS = [
+    'legalName' => 'REIMS GOLD',
+    'legalForm' => 'SARL, société à responsabilité limitée',
+    'legalCapital' => '1 000,00 €',
+    'legalSiren' => '823 456 777',
+    'legalSiret' => '823 456 777 00015',
+    'legalRcs' => '823 456 777 R.C.S. Reims',
+    'legalVat' => 'FR48823456777',
+    'legalHeadOffice' => '3 Rue Émile Zola, 51100 Reims, France',
+    'legalDirector' => 'Jasmine Touvoli',
+];
 
 function tatos_settings(): array
 {
@@ -170,7 +192,8 @@ add_action('admin_menu', function () {
         echo '<form method="post" action="options.php">';
         settings_fields('tatos_settings');
         $groups = [
-            'Coordonnées affichées sur le site' => array_diff(array_keys(TATOS_SETTINGS_FIELDS), TATOS_TECHNICAL_FIELDS, TATOS_BANNER_FIELDS, TATOS_BANK_FIELDS),
+            'Coordonnées affichées sur le site' => array_diff(array_keys(TATOS_SETTINGS_FIELDS), TATOS_TECHNICAL_FIELDS, TATOS_BANNER_FIELDS, TATOS_BANK_FIELDS, TATOS_LEGAL_FIELDS),
+            'Informations légales (mentions légales, CGV, confidentialité, factures)' => TATOS_LEGAL_FIELDS,
             'Bandeau du haut de page (laisser vide pour le masquer)' => TATOS_BANNER_FIELDS,
             'Paiement par virement (coordonnées imprimées sur la facture envoyée au client)' => TATOS_BANK_FIELDS,
             'Liaison avec le site (technique)' => TATOS_TECHNICAL_FIELDS,
@@ -446,6 +469,15 @@ function tatos_rebrand_text(string $s): string
 {
     $s = preg_replace('/tatos-electromenager@[a-z0-9.-]+\.[a-z]{2,}/i', 'contacts@destocktatos.com', $s);
     $s = preg_replace('/\bTATOS\b/', 'Destocktatos', $s);
+    $s = preg_replace('/contact@exemple\.fr/i', 'contacts@destocktatos.com', $s);
+    // Ancienne adresse (Sevran) et ancien téléphone : établissement de Poissy.
+    $s = preg_replace('/15\+Rue\+Paul\+Langevin\+93270\+Sevran/i', '65+Rue+d%27Aigremont+78300+Poissy', $s);
+    $s = preg_replace('/\b1[25] rue paul l(?:angevin|evangin)\b/iu', '65 Rue d’Aigremont', $s);
+    $s = preg_replace('/\b93270 Sevran\b/i', '78300 Poissy', $s);
+    $s = preg_replace('/^93270$/', '78300', $s);
+    $s = preg_replace('/^Sevran$/i', 'Poissy', $s);
+    $s = str_replace(['+33-6-51-64-41-84', '+33651644184'], ['+33-1-83-75-01-21', '+33183750121'], $s);
+    $s = preg_replace_callback('/(?:\+33[\s.-]*\(?6\)?[\s.-]*51[\s.-]*64[\s.-]*41[\s.-]*84|\b0?6[\s.-]?51[\s.-]?64[\s.-]?41[\s.-]?84\b)/', fn($m) => str_starts_with(trim($m[0]), '+') ? '+33 1 83 75 01 21' : '01 83 75 01 21', $s);
     $s = preg_replace(
         '#Example Hosting<br\s*/?>456 avenue du Web<br\s*/?>69000 Lyon, France<br\s*/?>Téléphone : \+33 \(0\)4 56 78 90 12#u',
         'Hostinger International Ltd<br/>61 Lordou Vironos Street<br/>6023 Larnaca, Chypre<br/>Site : www.hostinger.fr',
@@ -465,22 +497,62 @@ function tatos_rebrand_value($v)
     return $v;
 }
 
+/** Informations légales : réglages, sinon valeurs fournies par le gérant. */
+function tatos_company(): array
+{
+    $s = tatos_settings();
+    $c = [];
+    foreach (TATOS_LEGAL_DEFAULTS as $k => $default) {
+        $c[$k] = trim((string) ($s[$k] ?? '')) ?: $default;
+    }
+    $c['establishment'] = trim(($s['addressLine'] ?? '') . ', ' . ($s['postalCode'] ?? '') . ' ' . ($s['city'] ?? ''), ', ');
+    $c['siteName'] = $s['siteName'] ?? 'Destocktatos';
+    return $c;
+}
+
+/** Désignation du vendeur dans les CGV, puis blocs « Éditeur du site » et « Responsable du traitement ». */
+function tatos_company_text(string $html): string
+{
+    $c = tatos_company();
+    $seller = sprintf(
+        'la société %s, %s au capital de %s, dont le siège social est situé %s, immatriculée au Registre du Commerce et des Sociétés sous le numéro %s (SIRET du siège : %s, TVA intracommunautaire : %s), dont l\'établissement est situé %s, représentée par %s, gérant, exploitant le site %s',
+        $c['legalName'], $c['legalForm'], $c['legalCapital'], $c['legalHeadOffice'], $c['legalRcs'], $c['legalSiret'], $c['legalVat'], $c['establishment'], $c['legalDirector'], $c['siteName']
+    );
+    $html = preg_replace('/la société (?:Destocktatos|TATOS), société par actions simplifiée, dont le siège social est situé [^,]+, \d{5} [^,]+, immatriculée au Registre du Commerce et des Sociétés sous le numéro SIRET \d+, activité NAF APE : [^,]+, dirigée par [^,]+/u', esc_html($seller), $html);
+    $html = preg_replace('/(Destocktatos)(, Service Clients| - Service DPO), /u', '$1 (' . esc_html($c['legalName']) . ')$2, ', $html);
+    $note = '<p>Ces informations sont tirées de Réglages → Site et magasin → Informations légales.</p>';
+    $html = preg_replace('#(<h2[^>]*>\s*Éditeur du site\s*</h2>)(.*?)(?=<h2|<!-- wp:heading|$)#su', '$1' . $note, $html);
+    return preg_replace('#(<h2[^>]*>\s*[0-9. ]*Responsable du traitement\s*</h2>)(.*?)(?=<h2|<!-- wp:heading|$)#su', '$1' . $note, $html);
+}
+
 /** Corrige les contenus enregistrés ; renvoie le nombre d'éléments modifiés. */
 function tatos_rebrand_contents(): int
 {
     global $wpdb;
     $count = 0;
+    // Réglages d'abord : les pages reprennent ensuite l'adresse et les informations légales corrigées.
+    $settings = (array) get_option('tatos_settings', []);
+    $fixed = tatos_rebrand_value($settings);
+    foreach (TATOS_LEGAL_DEFAULTS as $k => $default) {
+        if (trim((string) ($fixed[$k] ?? '')) === '') {
+            $fixed[$k] = $default;
+        }
+    }
+    if ($fixed !== $settings) {
+        update_option('tatos_settings', $fixed);
+        $count++;
+    }
     $types = "'page','post','faq','produit','nav_menu_item'";
-    $posts = $wpdb->get_results("SELECT ID, post_title, post_content, post_excerpt FROM {$wpdb->posts} WHERE post_type IN ($types) AND (post_title LIKE '%TATOS%' OR post_content LIKE '%TATOS%' OR post_excerpt LIKE '%TATOS%' OR post_content LIKE '%Example Hosting%' OR post_content LIKE '%tatos-electromenager@%')");
+    $posts = $wpdb->get_results("SELECT ID, post_title, post_content, post_excerpt FROM {$wpdb->posts} WHERE post_type IN ($types) AND (post_title LIKE '%TATOS%' OR post_content LIKE '%TATOS%' OR post_excerpt LIKE '%TATOS%' OR post_content LIKE '%Example Hosting%' OR post_content LIKE '%tatos-electromenager@%' OR post_content LIKE '%Sevran%' OR post_content LIKE '%51 64 41 84%' OR post_content LIKE '%exemple.fr%' OR post_content LIKE '%Éditeur du site%' OR post_content LIKE '%Responsable du traitement%')");
     foreach ($posts as $p) {
-        $data = ['post_title' => tatos_rebrand_text($p->post_title), 'post_content' => tatos_rebrand_text($p->post_content), 'post_excerpt' => tatos_rebrand_text($p->post_excerpt)];
+        $data = ['post_title' => tatos_rebrand_text($p->post_title), 'post_content' => tatos_company_text(tatos_rebrand_text($p->post_content)), 'post_excerpt' => tatos_rebrand_text($p->post_excerpt)];
         if ($data['post_title'] !== $p->post_title || $data['post_content'] !== $p->post_content || $data['post_excerpt'] !== $p->post_excerpt) {
             $wpdb->update($wpdb->posts, $data, ['ID' => $p->ID]);
             clean_post_cache((int) $p->ID);
             $count++;
         }
     }
-    $metas = $wpdb->get_results("SELECT meta_id, post_id, meta_value FROM {$wpdb->postmeta} WHERE meta_value LIKE '%TATOS%' OR meta_value LIKE '%Example Hosting%' OR meta_value LIKE '%tatos-electromenager@%'");
+    $metas = $wpdb->get_results("SELECT meta_id, post_id, meta_value FROM {$wpdb->postmeta} WHERE meta_value LIKE '%TATOS%' OR meta_value LIKE '%Example Hosting%' OR meta_value LIKE '%tatos-electromenager@%' OR meta_value LIKE '%Sevran%' OR meta_value LIKE '%Langevin%' OR meta_value LIKE '%51644184%' OR meta_value LIKE '%51 64 41 84%' OR meta_value LIKE '%exemple.fr%'");
     foreach ($metas as $m) {
         $value = maybe_unserialize($m->meta_value);
         $fixed = tatos_rebrand_value($value);
@@ -497,24 +569,18 @@ function tatos_rebrand_contents(): int
         clean_term_cache((int) $t->term_id);
         $count++;
     }
-    $settings = (array) get_option('tatos_settings', []);
-    $fixed = tatos_rebrand_value($settings);
-    if ($fixed !== $settings) {
-        update_option('tatos_settings', $fixed);
-        $count++;
-    }
     return $count;
 }
 
 add_action('admin_init', function () {
-    if (get_option('tatos_rebrand_done') === '2.4.0' || !current_user_can('manage_options')) {
+    if (get_option('tatos_rebrand_done') === '2.5.0' || !current_user_can('manage_options')) {
         return;
     }
     // Un seul avis au site à la fin (pas un par contenu corrigé).
     $GLOBALS['tatos_suspend_webhooks'] = true;
     $count = tatos_rebrand_contents();
     $GLOBALS['tatos_suspend_webhooks'] = false;
-    update_option('tatos_rebrand_done', '2.4.0', false);
+    update_option('tatos_rebrand_done', '2.5.0', false);
     if ($count > 0) {
         tatos_notify_frontend('content.updated', ['type' => 'rebrand']);
         set_transient('tatos_rebrand_notice', $count, 300);
@@ -525,7 +591,7 @@ add_action('admin_notices', function () {
     $count = get_transient('tatos_rebrand_notice');
     if ($count) {
         delete_transient('tatos_rebrand_notice');
-        printf('<div class="notice notice-success is-dismissible"><p>Contenus mis au nom de Destocktatos : %d élément(s) corrigé(s) (pages, CGV, mentions légales, produits, réglages).</p></div>', (int) $count);
+        printf('<div class="notice notice-success is-dismissible"><p>Contenus mis au nom de Destocktatos (société REIMS GOLD, établissement de Poissy) : %d élément(s) corrigé(s) — pages, CGV, mentions légales, produits, réglages. Vérifiez Réglages → Site et magasin → Informations légales.</p></div>', (int) $count);
     }
 });
 

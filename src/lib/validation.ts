@@ -27,7 +27,7 @@ export const addressSchema = z.object({
     .string()
     .trim()
     .min(1, "Le téléphone est requis")
-    .refine((v) => phoneRegex.test(v.replace(/\s/g, "")), "Format de téléphone invalide (ex: 06 51 64 41 84)"),
+    .refine((v) => phoneRegex.test(v.replace(/\s/g, "")), "Format de téléphone invalide (ex : 06 12 34 56 78)"),
   additionalInfo: z.string().trim().max(500).default(""),
   floor: z.coerce.number().int().min(0).max(10).default(0),
   isDefault: z.boolean().optional().default(false),

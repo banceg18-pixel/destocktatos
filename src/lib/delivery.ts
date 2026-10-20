@@ -17,8 +17,8 @@ export type DeliveryOptions = Record<DeliveryMethod, DeliveryOption>;
 
 export const DELIVERY_METHODS: DeliveryMethod[] = ["piedDuCamion", "livraisonPiece", "installation"];
 
-/** Coordonnées du magasin (15 Rue Paul Langevin, 93270 Sevran) : distance indicative de l'adresse. */
-export const STORE_COORDINATES = { lat: 48.9325, lng: 2.533 };
+/** Coordonnées de l'établissement (65 Rue d’Aigremont, 78300 Poissy) : distance indicative de l'adresse. */
+export const STORE_COORDINATES = { lat: 48.919589, lng: 2.034745 };
 
 /** Tarifs par mode : tous offerts. `additionalFee` : reprise de l'ancien appareil avec l'installation. */
 export const DELIVERY_OPTIONS: DeliveryOptions = {

@@ -2,6 +2,7 @@ import "server-only";
 import type { Order, OrderItem, User } from "@prisma/client";
 import type { SiteSettings } from "@/lib/cms/types";
 import type { BankDetails } from "@/lib/bank";
+import { company, legalLines } from "@/lib/brand";
 import { PdfDoc } from "./pdf";
 
 const eur = (cents: number) => `${(cents / 100).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
@@ -34,6 +35,9 @@ export interface InvoiceStore {
   city: string;
   email: string;
   phone: string;
+  /** Société qui exploite le site (vendeur) et ses mentions légales obligatoires. */
+  seller?: string;
+  legal?: [string, string];
 }
 
 export function invoiceNumber(o: Pick<Order, "number">) {
@@ -46,7 +50,15 @@ export function quoteNumber(o: Pick<Order, "number">) {
 
 /** Coordonnées du magasin imprimées sur la facture. */
 export function invoiceStore(s: SiteSettings): InvoiceStore {
-  return { name: s.siteName, address: s.addressLine, city: `${s.postalCode} ${s.city}, ${s.country}`, email: s.email, phone: s.phone };
+  return {
+    name: s.siteName,
+    address: s.addressLine,
+    city: `${s.postalCode} ${s.city}, ${s.country}`,
+    email: s.email,
+    phone: s.phone,
+    seller: `${company(s).name} (${company(s).form.split(",")[0]})`,
+    legal: legalLines(s),
+  };
 }
 
 /**
@@ -76,7 +88,7 @@ export function buildInvoicePdf(
   doc.text(W - 230, y + 6, kind === "devis" ? "DEVIS" : "FACTURE", 20, true);
   doc.text(W - 230, y - 12, `N° ${kind === "devis" ? quoteNumber(order) : invoiceNumber(order)}`, 10);
   y -= 40;
-  doc.text(40, y, store.name, 10, true);
+  doc.text(40, y, store.seller ? `${store.name} — ${store.seller}` : store.name, 10, true);
   doc.text(40, y - 14, store.address, 9);
   doc.text(40, y - 26, store.city, 9);
   doc.text(40, y - 38, `${store.email} — ${store.phone}`, 9);
@@ -164,6 +176,10 @@ export function buildInvoicePdf(
       y -= 15;
     }
     doc.text(52, y - 2, "Votre commande est préparée et livrée dès réception du virement.", 9);
+  }
+  if (store.legal) {
+    doc.text(40, 44, store.legal[0], 7, false, GREY);
+    doc.text(40, 34, store.legal[1], 7, false, GREY);
   }
   doc.text(
     40,

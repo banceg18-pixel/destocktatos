@@ -74,7 +74,7 @@ describe("facture PDF", () => {
     expect(invoiceAvailable(pending)).toBe(true);
     expect(invoiceAvailable({ ...order, status: "EN_ATTENTE_PAIEMENT", paidAt: null })).toBe(false);
     const bank = bankDetailsOf({ siteName: "Destocktatos", bankIban: "fr76 3000 6000 0112 3456 7890 189", bankBic: "agrifrpp", bankName: "Banque Test" });
-    expect(bank).toEqual({ holder: "Destocktatos", bank: "Banque Test", iban: "FR76 3000 6000 0112 3456 7890 189", bic: "AGRIFRPP" });
+    expect(bank).toEqual({ holder: "REIMS GOLD", bank: "Banque Test", iban: "FR76 3000 6000 0112 3456 7890 189", bic: "AGRIFRPP" });
     expect(bankDetailsOf({ siteName: "Destocktatos", bankIban: "  " })).toBeNull();
     const s = buildInvoicePdf({ ...pending, items }, { name: "Jean", email: "jean@tatos.test" }, { name: "Destocktatos", address: "1 rue", city: "93270 Sevran", email: "x@tatos.test", phone: "0600000000" }, bank).toString("latin1");
     expect(s).toContain("FR76 3000 6000 0112 3456 7890 189");

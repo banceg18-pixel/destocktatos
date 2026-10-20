@@ -1,120 +1,120 @@
 {
- "slug": "cgv",
- "title": "Conditions Générales de Vente",
- "metaTitle": "Conditions Générales de Vente",
- "metaDescription": "Les conditions générales de vente de Destocktatos, votre spécialiste en électroménager de qualité.",
- "data": {
-  "titlePrefix": "Conditions Générales de",
-  "titleHighlight": "Vente"
- },
- "sections": [
-  {
-   "title": "Préambule",
-   "blocks": [
-    {
-     "type": "html",
-     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Les présentes conditions générales de vente s'appliquent à toutes les ventes de produits électroménagers conclues sur le site Internet Destocktatos entre :</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">D'une part, la société Destocktatos, société par actions simplifiée, dont le siège social est situé 15 rue Paul Langevin, 93270 Sevran, immatriculée au Registre du Commerce et des Sociétés sous le numéro SIRET 94228991900014, activité NAF APE : commerce de gros non spécialisé, dirigée par Franck NEBOT, ci-après dénommée \"Destocktatos\" ou \"le Vendeur\".                       </p><p class=\"text-[color:var(--text-main)] opacity-90\">Et d'autre part, les personnes physiques ou morales souhaitant effectuer un achat via le site Internet de Destocktatos, ci-après dénommées \"l'Acheteur\" ou \"le Client\".                  </p>"
-    }
-   ]
+  "slug": "cgv",
+  "title": "Conditions Générales de Vente",
+  "metaTitle": "Conditions Générales de Vente",
+  "metaDescription": "Les conditions générales de vente de Destocktatos, votre spécialiste en électroménager de qualité.",
+  "data": {
+    "titlePrefix": "Conditions Générales de",
+    "titleHighlight": "Vente"
   },
-  {
-   "title": "Article 1 - Objet et champ d'application",
-   "blocks": [
+  "sections": [
     {
-     "type": "html",
-     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Les présentes conditions générales de vente déterminent les droits et obligations des parties dans le cadre de la vente en ligne de produits électroménagers proposés par Destocktatos.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Elles s'appliquent, sans restriction ni réserve, à l'ensemble des ventes des produits proposés par Destocktatos sur son site Internet.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Ces conditions s'appliquent à l'exclusion de toutes autres conditions, notamment celles applicables pour les ventes en magasin ou au moyen d'autres circuits de distribution et de commercialisation.</p>"
-    }
-   ]
-  },
-  {
-   "title": "Article 2 - Prix",
-   "blocks": [
+      "title": "Préambule",
+      "blocks": [
+        {
+          "type": "html",
+          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Les présentes conditions générales de vente s'appliquent à toutes les ventes de produits électroménagers conclues sur le site Internet Destocktatos entre :</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">D'une part, la société REIMS GOLD, SARL, société à responsabilité limitée au capital de 1 000,00 €, dont le siège social est situé 3 Rue Émile Zola, 51100 Reims, France, immatriculée au Registre du Commerce et des Sociétés sous le numéro 823 456 777 R.C.S. Reims (SIRET du siège : 823 456 777 00015, TVA intracommunautaire : FR48823456777), dont l'établissement est situé 65 Rue d’Aigremont, 78300 Poissy, représentée par Jasmine Touvoli, gérant, exploitant le site Destocktatos, ci-après dénommée \"Destocktatos\" ou \"le Vendeur\".                       </p><p class=\"text-[color:var(--text-main)] opacity-90\">Et d'autre part, les personnes physiques ou morales souhaitant effectuer un achat via le site Internet de Destocktatos, ci-après dénommées \"l'Acheteur\" ou \"le Client\".                  </p>"
+        }
+      ]
+    },
     {
-     "type": "html",
-     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Les prix des produits vendus sur le site Internet sont indiqués en euros toutes taxes comprises (TTC) et précisément déterminés sur les pages de descriptifs des produits. Ils sont également indiqués en euros TTC sur la page de commande des produits.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Les frais de livraison sont indiqués avant la validation de la commande et sont compris dans le prix total affiché.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Destocktatos se réserve le droit de modifier ses prix à tout moment, étant entendu que le prix figurant sur le site le jour de la commande sera le seul applicable à l'acheteur.</p>"
-    }
-   ]
-  },
-  {
-   "title": "Article 3 - Commandes",
-   "blocks": [
+      "title": "Article 1 - Objet et champ d'application",
+      "blocks": [
+        {
+          "type": "html",
+          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Les présentes conditions générales de vente déterminent les droits et obligations des parties dans le cadre de la vente en ligne de produits électroménagers proposés par Destocktatos.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Elles s'appliquent, sans restriction ni réserve, à l'ensemble des ventes des produits proposés par Destocktatos sur son site Internet.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Ces conditions s'appliquent à l'exclusion de toutes autres conditions, notamment celles applicables pour les ventes en magasin ou au moyen d'autres circuits de distribution et de commercialisation.</p>"
+        }
+      ]
+    },
     {
-     "type": "html",
-     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">L'Acheteur qui souhaite acheter un produit doit obligatoirement :</p><ul class=\"list-disc list-inside space-y-2 text-[color:var(--text-main)] opacity-90 mb-3\"><li>Remplir la fiche d'identification ou indiquer son numéro de client s'il en a un</li><li>Remplir le bon de commande en ligne en donnant toutes les références des produits choisis</li><li>Valider sa commande après l'avoir vérifiée</li><li>Effectuer le paiement dans les conditions prévues</li><li>Confirmer sa commande et son règlement</li></ul><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">La confirmation de la commande entraîne acceptation des présentes conditions de vente, la reconnaissance d'en avoir parfaite connaissance et la renonciation à se prévaloir de ses propres conditions d'achat.</p><p class=\"text-[color:var(--text-main)] opacity-90\">L'ensemble des données fournies et la confirmation enregistrée vaudront preuve de la transaction. Destocktatos communiquera par e-mail la confirmation de la commande enregistrée.</p>"
-    }
-   ]
-  },
-  {
-   "title": "Article 4 - Paiement",
-   "blocks": [
+      "title": "Article 2 - Prix",
+      "blocks": [
+        {
+          "type": "html",
+          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Les prix des produits vendus sur le site Internet sont indiqués en euros toutes taxes comprises (TTC) et précisément déterminés sur les pages de descriptifs des produits. Ils sont également indiqués en euros TTC sur la page de commande des produits.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Les frais de livraison sont indiqués avant la validation de la commande et sont compris dans le prix total affiché.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Destocktatos se réserve le droit de modifier ses prix à tout moment, étant entendu que le prix figurant sur le site le jour de la commande sera le seul applicable à l'acheteur.</p>"
+        }
+      ]
+    },
     {
-     "type": "html",
-     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Le paiement est exigible immédiatement à la commande, y compris pour les produits en précommande ou en cours de réapprovisionnement.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">L'Acheteur peut effectuer le règlement par carte bancaire, virement bancaire ou PayPal. Les cartes émises par des banques domiciliées hors de France doivent obligatoirement être des cartes bancaires internationales.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Le paiement sécurisé en ligne par carte bancaire est réalisé par notre prestataire de paiement. Les informations transmises sont chiffrées et ne peuvent être lues au cours du transport sur le réseau. Toute garantie quant à la sécurité de ce système est entièrement de la responsabilité du prestataire de paiement et ne saurait être imputée à Destocktatos.</p>"
-    }
-   ]
-  },
-  {
-   "title": "Article 5 - Livraison",
-   "blocks": [
+      "title": "Article 3 - Commandes",
+      "blocks": [
+        {
+          "type": "html",
+          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">L'Acheteur qui souhaite acheter un produit doit obligatoirement :</p><ul class=\"list-disc list-inside space-y-2 text-[color:var(--text-main)] opacity-90 mb-3\"><li>Remplir la fiche d'identification ou indiquer son numéro de client s'il en a un</li><li>Remplir le bon de commande en ligne en donnant toutes les références des produits choisis</li><li>Valider sa commande après l'avoir vérifiée</li><li>Effectuer le paiement dans les conditions prévues</li><li>Confirmer sa commande et son règlement</li></ul><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">La confirmation de la commande entraîne acceptation des présentes conditions de vente, la reconnaissance d'en avoir parfaite connaissance et la renonciation à se prévaloir de ses propres conditions d'achat.</p><p class=\"text-[color:var(--text-main)] opacity-90\">L'ensemble des données fournies et la confirmation enregistrée vaudront preuve de la transaction. Destocktatos communiquera par e-mail la confirmation de la commande enregistrée.</p>"
+        }
+      ]
+    },
     {
-     "type": "html",
-     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Les livraisons sont effectuées à l'adresse indiquée par l'Acheteur sur le bon de commande. Le délai de livraison indiqué lors de l'enregistrement de la commande n'est donné qu'à titre indicatif et n'est aucunement garanti.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Les retards de livraison ne peuvent donner lieu à aucune pénalité ou indemnité, ni motiver l'annulation de la commande.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Le risque du transport est supporté en totalité par l'Acheteur. En cas de marchandises manquantes ou détériorées lors du transport, l'Acheteur devra formuler toutes les réserves nécessaires à réception desdites marchandises. Ces réserves devront être, en outre, confirmées par écrit dans les cinq jours suivant la livraison, par courrier recommandé avec accusé de réception.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Pour les produits volumineux nécessitant une installation, Destocktatos propose un service de livraison avec installation à domicile moyennant un supplément clairement indiqué lors de la commande.</p>"
-    }
-   ]
-  },
-  {
-   "title": "Article 6 - Droit de rétractation",
-   "blocks": [
+      "title": "Article 4 - Paiement",
+      "blocks": [
+        {
+          "type": "html",
+          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Le paiement est exigible immédiatement à la commande, y compris pour les produits en précommande ou en cours de réapprovisionnement.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">L'Acheteur peut effectuer le règlement par carte bancaire, virement bancaire ou PayPal. Les cartes émises par des banques domiciliées hors de France doivent obligatoirement être des cartes bancaires internationales.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Le paiement sécurisé en ligne par carte bancaire est réalisé par notre prestataire de paiement. Les informations transmises sont chiffrées et ne peuvent être lues au cours du transport sur le réseau. Toute garantie quant à la sécurité de ce système est entièrement de la responsabilité du prestataire de paiement et ne saurait être imputée à Destocktatos.</p>"
+        }
+      ]
+    },
     {
-     "type": "html",
-     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Conformément aux dispositions légales en vigueur, l'Acheteur dispose d'un délai de quatorze (14) jours à compter de la réception des produits pour exercer son droit de rétractation sans avoir à justifier de motifs ni à payer de pénalités.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">En cas d'exercice du droit de rétractation, Destocktatos remboursera l'Acheteur de la totalité des sommes versées, y compris les frais de livraison, au plus tard dans les quatorze (14) jours suivant la date à laquelle Destocktatos est informé de la décision de l'Acheteur de se rétracter.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Le remboursement sera effectué en utilisant le même moyen de paiement que celui utilisé par l'Acheteur pour la transaction initiale, sauf accord exprès de l'Acheteur pour un autre moyen de remboursement.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Les frais de retour sont à la charge de l'Acheteur. Pour les produits volumineux, Destocktatos peut proposer un service de récupération à domicile dont le coût sera précisé à l'Acheteur.</p>"
-    }
-   ]
-  },
-  {
-   "title": "Article 7 - Garanties",
-   "blocks": [
+      "title": "Article 5 - Livraison",
+      "blocks": [
+        {
+          "type": "html",
+          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Les livraisons sont effectuées à l'adresse indiquée par l'Acheteur sur le bon de commande. Le délai de livraison indiqué lors de l'enregistrement de la commande n'est donné qu'à titre indicatif et n'est aucunement garanti.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Les retards de livraison ne peuvent donner lieu à aucune pénalité ou indemnité, ni motiver l'annulation de la commande.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Le risque du transport est supporté en totalité par l'Acheteur. En cas de marchandises manquantes ou détériorées lors du transport, l'Acheteur devra formuler toutes les réserves nécessaires à réception desdites marchandises. Ces réserves devront être, en outre, confirmées par écrit dans les cinq jours suivant la livraison, par courrier recommandé avec accusé de réception.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Pour les produits volumineux nécessitant une installation, Destocktatos propose un service de livraison avec installation à domicile moyennant un supplément clairement indiqué lors de la commande.</p>"
+        }
+      ]
+    },
     {
-     "type": "html",
-     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Tous les produits fournis par Destocktatos bénéficient de la garantie légale de conformité prévue aux articles L. 217-4 et suivants du Code de la consommation et de la garantie des vices cachés prévue aux articles 1641 et suivants du Code civil.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">En cas de non-conformité d'un produit vendu, il pourra être retourné à Destocktatos qui le reprendra, l'échangera ou le remboursera. Toutes les réclamations doivent s'effectuer par voie postale à l'adresse suivante : Destocktatos, Service Clients, 12 rue paul levangin, 93270 Sevran, ou par e-mail à l'adresse : contacts@destocktatos.com.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Certains produits bénéficient en outre d'une garantie commerciale dont les conditions sont précisées sur la fiche produit et dans le livret de garantie accompagnant le produit.</p>"
-    }
-   ]
-  },
-  {
-   "title": "Article 8 - Service après-vente",
-   "blocks": [
+      "title": "Article 6 - Droit de rétractation",
+      "blocks": [
+        {
+          "type": "html",
+          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Conformément aux dispositions légales en vigueur, l'Acheteur dispose d'un délai de quatorze (14) jours à compter de la réception des produits pour exercer son droit de rétractation sans avoir à justifier de motifs ni à payer de pénalités.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">En cas d'exercice du droit de rétractation, Destocktatos remboursera l'Acheteur de la totalité des sommes versées, y compris les frais de livraison, au plus tard dans les quatorze (14) jours suivant la date à laquelle Destocktatos est informé de la décision de l'Acheteur de se rétracter.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Le remboursement sera effectué en utilisant le même moyen de paiement que celui utilisé par l'Acheteur pour la transaction initiale, sauf accord exprès de l'Acheteur pour un autre moyen de remboursement.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Les frais de retour sont à la charge de l'Acheteur. Pour les produits volumineux, Destocktatos peut proposer un service de récupération à domicile dont le coût sera précisé à l'Acheteur.</p>"
+        }
+      ]
+    },
     {
-     "type": "html",
-     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Destocktatos propose un service après-vente accessible par téléphone du lundi au dimanche de 10h à 20h au 06.51.64.41.84 (prix d'un appel local) ou par e-mail à contacts@destocktatos.com.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Pour toute réparation hors garantie, un devis préalable sera établi et soumis à l'acceptation du client avant toute intervention.</p>"
-    }
-   ]
-  },
-  {
-   "title": "Article 9 - Responsabilité",
-   "blocks": [
+      "title": "Article 7 - Garanties",
+      "blocks": [
+        {
+          "type": "html",
+          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Tous les produits fournis par Destocktatos bénéficient de la garantie légale de conformité prévue aux articles L. 217-4 et suivants du Code de la consommation et de la garantie des vices cachés prévue aux articles 1641 et suivants du Code civil.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">En cas de non-conformité d'un produit vendu, il pourra être retourné à Destocktatos qui le reprendra, l'échangera ou le remboursera. Toutes les réclamations doivent s'effectuer par voie postale à l'adresse suivante : Destocktatos (REIMS GOLD), Service Clients, 65 Rue d’Aigremont, 78300 Poissy, ou par e-mail à l'adresse : contacts@destocktatos.com.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Certains produits bénéficient en outre d'une garantie commerciale dont les conditions sont précisées sur la fiche produit et dans le livret de garantie accompagnant le produit.</p>"
+        }
+      ]
+    },
     {
-     "type": "html",
-     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Les produits proposés sont conformes à la législation française en vigueur. La responsabilité de Destocktatos ne saurait être engagée en cas de non-respect de la législation du pays où les produits sont livrés (par exemple en cas d'interdiction d'un produit).</p><p class=\"text-[color:var(--text-main)] opacity-90\">Destocktatos ne pourra être tenue responsable des dommages indirects résultant d'une mauvaise utilisation des produits vendus.</p>"
-    }
-   ]
-  },
-  {
-   "title": "Article 10 - Traitement des réclamations",
-   "blocks": [
+      "title": "Article 8 - Service après-vente",
+      "blocks": [
+        {
+          "type": "html",
+          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Destocktatos propose un service après-vente accessible par téléphone du lundi au dimanche de 10h à 20h au 01 83 75 01 21 (prix d'un appel local) ou par e-mail à contacts@destocktatos.com.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Pour toute réparation hors garantie, un devis préalable sera établi et soumis à l'acceptation du client avant toute intervention.</p>"
+        }
+      ]
+    },
     {
-     "type": "html",
-     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Pour toute réclamation, l'Acheteur peut contacter le service client de Destocktatos par e-mail à contacts@destocktatos.com ou par téléphone au 0123456789 (prix d'un appel local).</p><p class=\"text-[color:var(--text-main)] opacity-90\">En cas de litige, l'Acheteur s'adressera en priorité à Destocktatos pour trouver une solution amiable. À défaut d'accord amiable, l'Acheteur est informé qu'il peut recourir à une médiation conventionnelle ou à tout autre mode alternatif de règlement des différends.</p>"
-    }
-   ]
-  },
-  {
-   "title": "Article 11 - Droit applicable et juridiction compétente",
-   "blocks": [
+      "title": "Article 9 - Responsabilité",
+      "blocks": [
+        {
+          "type": "html",
+          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Les produits proposés sont conformes à la législation française en vigueur. La responsabilité de Destocktatos ne saurait être engagée en cas de non-respect de la législation du pays où les produits sont livrés (par exemple en cas d'interdiction d'un produit).</p><p class=\"text-[color:var(--text-main)] opacity-90\">Destocktatos ne pourra être tenue responsable des dommages indirects résultant d'une mauvaise utilisation des produits vendus.</p>"
+        }
+      ]
+    },
     {
-     "type": "html",
-     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Les présentes conditions générales de vente sont régies par le droit français.</p><p class=\"text-[color:var(--text-main)] opacity-90\">En cas de litige, compétence expresse est attribuée aux tribunaux français, nonobstant pluralité de défendeurs ou appel en garantie, même pour les procédures d'urgence ou les procédures conservatoires en référé ou par requête.</p>"
+      "title": "Article 10 - Traitement des réclamations",
+      "blocks": [
+        {
+          "type": "html",
+          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Pour toute réclamation, l'Acheteur peut contacter le service client de Destocktatos par e-mail à contacts@destocktatos.com ou par téléphone au 0123456789 (prix d'un appel local).</p><p class=\"text-[color:var(--text-main)] opacity-90\">En cas de litige, l'Acheteur s'adressera en priorité à Destocktatos pour trouver une solution amiable. À défaut d'accord amiable, l'Acheteur est informé qu'il peut recourir à une médiation conventionnelle ou à tout autre mode alternatif de règlement des différends.</p>"
+        }
+      ]
+    },
+    {
+      "title": "Article 11 - Droit applicable et juridiction compétente",
+      "blocks": [
+        {
+          "type": "html",
+          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Les présentes conditions générales de vente sont régies par le droit français.</p><p class=\"text-[color:var(--text-main)] opacity-90\">En cas de litige, compétence expresse est attribuée aux tribunaux français, nonobstant pluralité de défendeurs ou appel en garantie, même pour les procédures d'urgence ou les procédures conservatoires en référé ou par requête.</p>"
+        }
+      ]
     }
-   ]
-  }
- ]
+  ]
 }

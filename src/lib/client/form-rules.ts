@@ -42,11 +42,11 @@ export const rules = {
     if (!/^(?:0|\+33)[1-9]\d{8}$/.test(s)) return "Numéro invalide : 10 chiffres, par exemple 06 12 34 56 78.";
     return null;
   },
-  street: (v: string) => (v.trim().length >= 5 ? null : "Indiquez le numéro et le nom de la rue, par exemple 15 rue Paul Langevin."),
+  street: (v: string) => (v.trim().length >= 5 ? null : "Indiquez le numéro et le nom de la rue, par exemple 65 rue d’Aigremont."),
   postalCode: (v: string) => {
     const s = v.trim();
     if (!s) return "Indiquez le code postal.";
-    return /^\d{5}$/.test(s) ? null : "Le code postal compte 5 chiffres, par exemple 93270.";
+    return /^\d{5}$/.test(s) ? null : "Le code postal compte 5 chiffres, par exemple 78300.";
   },
   city: (v: string) => (v.trim().length >= 2 ? null : "Indiquez la ville."),
   choice: (what: string) => (v: string) => (v ? null : `Choisissez ${what}.`),

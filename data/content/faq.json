@@ -1,70 +1,70 @@
 [
- {
-  "title": "Commandes et Livraisons",
-  "items": [
-   {
-    "question": "Comment suivre ma commande ?",
-    "answer": "Vous pouvez suivre votre commande en vous connectant à votre compte client et en accédant à la section \"Mes commandes\". Un numéro de suivi vous sera également envoyé par email dès que votre colis sera expédié."
-   },
-   {
-    "question": "Quels sont les délais de livraison ?",
-    "answer": "Les délais de livraison varient selon le mode choisi : 3-5 jours ouvrables pour la livraison standard, 24-48h pour la livraison express. Ces délais sont indicatifs et peuvent varier selon votre localisation."
-   },
-   {
-    "question": "Puis-je modifier ma commande après l'avoir validée ?",
-    "answer": "Vous pouvez modifier votre commande dans l'heure qui suit sa validation en contactant notre service client. Au-delà de ce délai, la modification ne sera plus possible si la commande est déjà en cours de préparation."
-   }
-  ]
- },
- {
-  "title": "Paiements et Factures",
-  "items": [
-   {
-    "question": "Quels moyens de paiement acceptez-vous ?",
-    "answer": "Nous acceptons les cartes bancaires (Visa, Mastercard), PayPal et les virements bancaires."
-   },
-   {
-    "question": "Comment obtenir ma facture ?",
-    "answer": "Votre facture est automatiquement envoyée par email après la validation de votre commande. Vous pouvez également la retrouver dans votre espace client, rubrique \"Mes commandes\"."
-   },
-   {
-    "question": "Le paiement sur votre site est-il sécurisé ?",
-    "answer": "Oui, toutes les transactions effectuées sur notre site sont sécurisées. Nous utilisons le protocole SSL pour crypter vos données bancaires et collaborons avec des prestataires de paiement certifiés."
-   }
-  ]
- },
- {
-  "title": "Retours et Remboursements",
-  "items": [
-   {
-    "question": "Comment retourner un article ?",
-    "answer": "Pour retourner un article, connectez-vous à votre compte client et suivez la procédure de retour dans la section \"Mes commandes\". Vous recevrez ensuite une étiquette de retour à imprimer et à coller sur votre colis."
-   },
-   {
-    "question": "Quel est le délai pour retourner un produit ?",
-    "answer": "Vous disposez de 30 jours à compter de la réception de votre commande pour nous retourner un article. Le produit doit être retourné dans son état d'origine, avec son emballage et ses accessoires."
-   },
-   {
-    "question": "Sous quel délai serai-je remboursé ?",
-    "answer": "Le remboursement est effectué dans les 14 jours suivant la réception de votre retour en nos locaux. Le délai de crédit sur votre compte bancaire dépend ensuite de votre banque (généralement 3-5 jours ouvrés)."
-   }
-  ]
- },
- {
-  "title": "Compte Client et Services",
-  "items": [
-   {
-    "question": "Comment créer un compte client ?",
-    "answer": "Pour créer un compte, cliquez sur \"Mon compte\" en haut à droite de notre site, puis sur \"Créer un compte\". Remplissez le formulaire avec vos informations personnelles et validez."
-   },
-   {
-    "question": "Comment contacter le service client ?",
-    "answer": "Vous pouvez contacter notre service client par téléphone au 06 51 64 41 84 (du lundi au dimanche, 10h-20h), par email à contact@exemple.fr ou via le formulaire de contact disponible sur notre site."
-   },
-   {
-    "question": "Proposez-vous un service de réparation ?",
-    "answer": "Oui, nous proposons un service de réparation pour tous les produits achetés dans notre magasin, qu'ils soient sous garantie ou non. Contactez notre SAV pour obtenir un devis."
-   }
-  ]
- }
+  {
+    "title": "Commandes et Livraisons",
+    "items": [
+      {
+        "question": "Comment suivre ma commande ?",
+        "answer": "Vous pouvez suivre votre commande en vous connectant à votre compte client et en accédant à la section \"Mes commandes\". Un numéro de suivi vous sera également envoyé par email dès que votre colis sera expédié."
+      },
+      {
+        "question": "Quels sont les délais de livraison ?",
+        "answer": "Les délais de livraison varient selon le mode choisi : 3-5 jours ouvrables pour la livraison standard, 24-48h pour la livraison express. Ces délais sont indicatifs et peuvent varier selon votre localisation."
+      },
+      {
+        "question": "Puis-je modifier ma commande après l'avoir validée ?",
+        "answer": "Vous pouvez modifier votre commande dans l'heure qui suit sa validation en contactant notre service client. Au-delà de ce délai, la modification ne sera plus possible si la commande est déjà en cours de préparation."
+      }
+    ]
+  },
+  {
+    "title": "Paiements et Factures",
+    "items": [
+      {
+        "question": "Quels moyens de paiement acceptez-vous ?",
+        "answer": "Nous acceptons les cartes bancaires (Visa, Mastercard), PayPal et les virements bancaires."
+      },
+      {
+        "question": "Comment obtenir ma facture ?",
+        "answer": "Votre facture est automatiquement envoyée par email après la validation de votre commande. Vous pouvez également la retrouver dans votre espace client, rubrique \"Mes commandes\"."
+      },
+      {
+        "question": "Le paiement sur votre site est-il sécurisé ?",
+        "answer": "Oui, toutes les transactions effectuées sur notre site sont sécurisées. Nous utilisons le protocole SSL pour crypter vos données bancaires et collaborons avec des prestataires de paiement certifiés."
+      }
+    ]
+  },
+  {
+    "title": "Retours et Remboursements",
+    "items": [
+      {
+        "question": "Comment retourner un article ?",
+        "answer": "Pour retourner un article, connectez-vous à votre compte client et suivez la procédure de retour dans la section \"Mes commandes\". Vous recevrez ensuite une étiquette de retour à imprimer et à coller sur votre colis."
+      },
+      {
+        "question": "Quel est le délai pour retourner un produit ?",
+        "answer": "Vous disposez de 30 jours à compter de la réception de votre commande pour nous retourner un article. Le produit doit être retourné dans son état d'origine, avec son emballage et ses accessoires."
+      },
+      {
+        "question": "Sous quel délai serai-je remboursé ?",
+        "answer": "Le remboursement est effectué dans les 14 jours suivant la réception de votre retour en nos locaux. Le délai de crédit sur votre compte bancaire dépend ensuite de votre banque (généralement 3-5 jours ouvrés)."
+      }
+    ]
+  },
+  {
+    "title": "Compte Client et Services",
+    "items": [
+      {
+        "question": "Comment créer un compte client ?",
+        "answer": "Pour créer un compte, cliquez sur \"Mon compte\" en haut à droite de notre site, puis sur \"Créer un compte\". Remplissez le formulaire avec vos informations personnelles et validez."
+      },
+      {
+        "question": "Comment contacter le service client ?",
+        "answer": "Vous pouvez contacter notre service client par téléphone au 01 83 75 01 21 (du lundi au dimanche, 10h-20h), par email à contacts@destocktatos.com ou via le formulaire de contact disponible sur notre site."
+      },
+      {
+        "question": "Proposez-vous un service de réparation ?",
+        "answer": "Oui, nous proposons un service de réparation pour tous les produits achetés dans notre magasin, qu'ils soient sous garantie ou non. Contactez notre SAV pour obtenir un devis."
+      }
+    ]
+  }
 ]

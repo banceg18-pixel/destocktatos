@@ -76,6 +76,8 @@ export interface EmailStore {
   address: string;
   phone: string;
   email: string;
+  /** Mentions légales de la société qui exploite le site. */
+  legal?: string[];
 }
 
 /** Page complète : bandeau, logotype, contenu, pied de page avec les coordonnées du magasin. */
@@ -95,6 +97,7 @@ ${preheader ? `<div style="display:none;max-height:0;overflow:hidden;opacity:0">
 <p style="margin:0 0 6px;font-family:${FONT};font-size:14px;font-weight:700;color:#ffffff">${esc(name)}</p>
 ${contact ? `<p style="margin:0 0 12px;font-family:${FONT};font-size:12px;line-height:1.6;color:#bdbdb8">${contact}</p>` : ""}
 <p style="margin:0;font-family:${FONT};font-size:12px"><a href="${SITE_URL}" style="color:#ffffff;text-decoration:underline">${esc(SITE_URL.replace(/^https?:\/\//, ""))}</a></p>
+${store?.legal?.length ? `<p style="margin:14px 0 0;font-family:${FONT};font-size:10px;line-height:1.5;color:#8d8d88">${store.legal.map(esc).join("<br>")}</p>` : ""}
 </td></tr>
 </table>
 </td></tr></table>

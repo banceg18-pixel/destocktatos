@@ -7,6 +7,7 @@ import { SITE_URL } from "@/lib/seo";
 import { getSiteSettings } from "@/lib/cms";
 import type { SiteSettings } from "@/lib/cms/types";
 import { bankDetailsOf, type BankDetails } from "@/lib/bank";
+import { legalLines } from "@/lib/brand";
 import { buildInvoicePdf, invoiceAvailable, invoiceNumber, invoiceStore, quoteNumber } from "./invoice";
 import { button, emailLayout, heading, infoBox, orderTable, para, subheading, type EmailStore } from "./email-layout";
 import { ACCOUNT_LINK_TTL_MS, passwordLink } from "./password-link";
@@ -68,7 +69,8 @@ function orderAttachments(o: FullOrder, s: SiteSettings | null, withQuote = fals
   ];
 }
 
-const emailStore = (s: SiteSettings | null): EmailStore | null => (s ? { name: s.siteName, address: `${s.addressLine}, ${s.postalCode} ${s.city}`, phone: s.phone, email: s.email } : null);
+const emailStore = (s: SiteSettings | null): EmailStore | null =>
+  s ? { name: s.siteName, address: `${s.addressLine}, ${s.postalCode} ${s.city}`, phone: s.phone, email: s.email, legal: legalLines(s) } : null;
 
 /** Lignes du virement attendu : montant, référence, coordonnées bancaires. */
 function transferRows(o: FullOrder, bank: BankDetails | null): [string, string, boolean?][] {

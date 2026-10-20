@@ -30,6 +30,16 @@ export interface SiteSettings {
   bankName?: string;
   bankIban?: string;
   bankBic?: string;
+  /** Informations légales de la société qui exploite le site (mentions légales, CGV, factures). */
+  legalName?: string;
+  legalForm?: string;
+  legalCapital?: string;
+  legalSiren?: string;
+  legalSiret?: string;
+  legalRcs?: string;
+  legalVat?: string;
+  legalHeadOffice?: string;
+  legalDirector?: string;
 }
 
 export interface MenuSet {

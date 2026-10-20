@@ -38,7 +38,7 @@ SOURCE_PATTERNS = re.compile("|".join(json.loads((ROOT / "scripts/audit-patterns
 
 # Produits du catalogue d'origine utilisés par les parcours (en stock dans le seed).
 CHEAP = "aspirateur-voiture-twc01-thisworx"  # 20 €, 1,1 kg
-STORE_ADDRESS = "15 Rue Paul Langevin 93270 Sevran"
+STORE_ADDRESS = "65 Rue d'Aigremont 78300 Poissy"
 
 VIEWPORTS = {
     "desktop-1440": (1440, 900),
@@ -600,7 +600,7 @@ def _():
         page.get_by_role("option").first.wait_for(timeout=15_000)
     except Exception:
         raise Skip("API Base Adresse Nationale injoignable depuis cet environnement")
-    page.get_by_role("option").filter(has_text="Sevran").first.click()
+    page.get_by_role("option").filter(has_text="Poissy").first.click()
     page.get_by_text("Adresse de livraison complète", exact=True).wait_for(timeout=20_000)
     page.get_by_role("radiogroup", name="Options de livraison").wait_for(timeout=20_000)
     page.locator("#termsCheckbox").check(force=True)
@@ -661,9 +661,9 @@ def _():
         page.get_by_role("option").first.wait_for(timeout=15_000)
     except Exception:
         raise Skip("API Base Adresse Nationale injoignable depuis cet environnement")
-    page.get_by_role("option").filter(has_text="Sevran").first.click()
-    eq(page.locator("#ship-postalCode").input_value(), "93270", "code postal rempli par l'autocomplétion")
-    eq(page.locator("#ship-city").input_value(), "Sevran", "ville remplie par l'autocomplétion")
+    page.get_by_role("option").filter(has_text="Poissy").first.click()
+    eq(page.locator("#ship-postalCode").input_value(), "78300", "code postal rempli par l'autocomplétion")
+    eq(page.locator("#ship-city").input_value(), "Poissy", "ville remplie par l'autocomplétion")
     page.locator("#ship-floor").select_option("4")
     page.get_by_text("Adresse de livraison complète", exact=True).wait_for(timeout=20_000)
     group = page.get_by_role("radiogroup", name="Options de livraison")
