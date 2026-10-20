@@ -31,9 +31,9 @@ d'administration de test, puis enchaîne :
 - **API** : catalogue (pagination, filtres, recherche), SEO et en-têtes de sécurité, accès protégés
   (401), formulaires publics, isolation entre clients (404), adresses, commande avec recalcul
   serveur et refus d'un total falsifié, paiement refusé puis réussi, double paiement refusé, facture,
-  avis réservés aux acheteurs, coupons ; **règlement à la livraison** (confirmation, double envoi
-  refusé, pas de facture avant règlement, statuts magasin, règlement enregistré à la livraison,
-  annulation avec remise en stock) ;
+  avis réservés aux acheteurs, coupons ; **virement bancaire** (confirmation, double envoi
+  refusé, facture avec coordonnées dès la confirmation, pas de livraison avant le virement, virement
+  marqué reçu par le magasin, annulation avec remise en stock) ;
 - **parcours navigateur** : inscription et messages d'erreur par champ, connexion, déconnexion,
   mot de passe oublié, achat en retrait magasin réglé au retrait, achat en livraison (autocomplétion
   d'adresse, distance, options, étage), panier (persistance selon le consentement), recherche et

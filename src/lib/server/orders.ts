@@ -10,7 +10,7 @@ import { invalidateCatalog } from "@/lib/catalog/repository";
 import { notifyOrderPaid } from "./notifications";
 import { ApiError } from "./api";
 import { evaluateCoupon } from "./coupons";
-import { onDeliveryRef } from "./payments";
+import { transferRef } from "./payments";
 
 /** Une commande non payée réserve son stock pendant 30 minutes. */
 export const PENDING_TTL_MS = 30 * 60 * 1000;
@@ -289,13 +289,14 @@ export async function listUserOrders(userId: string) {
   return prisma.order.findMany({ where: { userId }, orderBy: { createdAt: "desc" }, include: orderInclude });
 }
 
-/** Annulation par le client d'une commande non payée (stock libéré). */
+/** Annulation par le client d'une commande non payée, ou dont le virement n'est pas encore reçu (stock libéré). */
 export async function cancelPendingOrder(userId: string, id: string) {
   const o = await getUserOrder(userId, id);
-  if (o.status !== "EN_ATTENTE_PAIEMENT") throw new ApiError(409, "Seule une commande en attente de paiement peut être annulée.");
+  if (o.status !== "EN_ATTENTE_PAIEMENT" && o.status !== "EN_ATTENTE_VIREMENT") throw new ApiError(409, "Seule une commande pas encore payée peut être annulée.");
   await prisma.$transaction(async (tx) => {
-    const r = await tx.order.updateMany({ where: { id, status: "EN_ATTENTE_PAIEMENT" }, data: { status: "ANNULEE" } });
+    const r = await tx.order.updateMany({ where: { id, status: o.status }, data: { status: "ANNULEE" } });
     if (r.count === 1) await restock(tx, o.items);
+    await tx.payment.updateMany({ where: { orderId: id, status: "EN_ATTENTE" }, data: { status: "ANNULE" } });
   });
   invalidateCatalog();
 }
@@ -356,26 +357,27 @@ export async function markOrderPaid(orderId: string, payment: { provider: string
 }
 
 /**
- * Commande confirmée avec règlement à la livraison ou au retrait : aucun paiement en ligne. Les
- * articles restent réservés, le code promo est consommé et la commande passe en préparation. Le
- * magasin constate le règlement en passant la commande à « Livrée » (voir adminSetOrderStatus).
+ * Commande confirmée avec règlement par virement bancaire avant livraison : aucun paiement en ligne.
+ * Les articles restent réservés (sans limite de temps), le code promo est consommé et le client reçoit
+ * la facture avec les coordonnées bancaires. Le magasin passe la commande à « Payée » à réception du
+ * virement (voir adminSetOrderStatus), puis la prépare et la livre.
  */
-export async function confirmPayOnDelivery(orderId: string) {
-  const ref = onDeliveryRef(orderId);
+export async function confirmBankTransfer(orderId: string) {
+  const ref = transferRef(orderId);
   const confirmed = await prisma.$transaction(async (tx) => {
     const o = await tx.order.findUnique({ where: { id: orderId } });
     if (!o) throw new ApiError(404, "Commande introuvable");
     const r = await tx.order.updateMany({
       where: { id: orderId, status: "EN_ATTENTE_PAIEMENT" },
-      data: { status: "EN_PREPARATION", paymentProvider: "sur_place", paymentMode: "live", paymentIntentId: ref },
+      data: { status: "EN_ATTENTE_VIREMENT", paymentProvider: "virement", paymentMode: "live", paymentIntentId: ref },
     });
     if (r.count !== 1) throw new ApiError(409, "Cette commande est déjà confirmée.");
     // Une intention de paiement en ligne préparée puis abandonnée est close.
-    await tx.payment.updateMany({ where: { orderId, status: "EN_ATTENTE", provider: { not: "sur_place" } }, data: { status: "ANNULE" } });
+    await tx.payment.updateMany({ where: { orderId, status: "EN_ATTENTE", provider: { not: "virement" } }, data: { status: "ANNULE" } });
     await tx.payment.upsert({
       where: { id: `${orderId}-${ref}`.slice(0, 190) },
       update: { status: "EN_ATTENTE", amountCents: o.totalCents },
-      create: { id: `${orderId}-${ref}`.slice(0, 190), orderId, provider: "sur_place", mode: "live", providerRef: ref, amountCents: o.totalCents, status: "EN_ATTENTE" },
+      create: { id: `${orderId}-${ref}`.slice(0, 190), orderId, provider: "virement", mode: "live", providerRef: ref, amountCents: o.totalCents, status: "EN_ATTENTE" },
     });
     await redeemCoupon(tx, o);
     return tx.order.findUniqueOrThrow({ where: { id: orderId } });
@@ -402,14 +404,15 @@ export async function recordPaymentFailure(orderId: string, payment: { provider:
 }
 
 /** Statuts que le magasin peut appliquer depuis l'administration. */
-export const ADMIN_ORDER_STATUSES = ["EN_PREPARATION", "EXPEDIEE", "LIVREE", "ANNULEE"] as const;
+export const ADMIN_ORDER_STATUSES = ["PAYEE", "EN_PREPARATION", "EXPEDIEE", "LIVREE", "ANNULEE"] as const;
 export type AdminOrderStatus = (typeof ADMIN_ORDER_STATUSES)[number];
 
 /**
  * Changement de statut décidé par le magasin. Une commande annulée ne peut plus changer ; une
  * annulation remet les articles en stock (le remboursement d'un paiement reçu se fait chez le
- * prestataire de paiement). Seules les commandes payées, ou à régler à la livraison, avancent vers
- * préparation, expédition, livraison ; « Livrée » enregistre alors le règlement reçu sur place.
+ * prestataire de paiement ou par virement). « Payée » enregistre le virement reçu d'une commande en
+ * attente de virement. Seules les commandes payées (ou, pour les anciennes commandes, à régler à la
+ * livraison) avancent vers préparation, expédition, livraison.
  */
 export async function adminSetOrderStatus(orderId: string, status: AdminOrderStatus) {
   const updated = await prisma.$transaction(async (tx) => {
@@ -417,6 +420,16 @@ export async function adminSetOrderStatus(orderId: string, status: AdminOrderSta
     if (!o) throw new ApiError(404, "Commande introuvable");
     if (o.status === status) return o;
     if (o.status === "ANNULEE") throw new ApiError(409, "Cette commande est annulée : son statut ne peut plus changer.");
+    if (status === "PAYEE") {
+      if (o.status !== "EN_ATTENTE_VIREMENT") throw new ApiError(409, o.paidAt ? "Cette commande est déjà payée." : "Seule une commande en attente de virement peut être marquée payée.");
+      // Virement reçu sur le compte du magasin.
+      await tx.payment.updateMany({ where: { orderId, provider: "virement", status: "EN_ATTENTE" }, data: { status: "REUSSI" } });
+      return tx.order.update({ where: { id: orderId }, data: { status, paidAt: new Date() }, include: { items: true } });
+    }
+    if (status !== "ANNULEE" && o.status === "EN_ATTENTE_VIREMENT") {
+      throw new ApiError(409, "Le virement n'est pas encore reçu : passez d'abord la commande à « Payée (virement reçu) ».");
+    }
+    // Anciennes commandes « à régler à la livraison » : « Livrée » enregistre le règlement reçu sur place.
     const onDelivery = o.paymentProvider === "sur_place" && o.status !== "EN_ATTENTE_PAIEMENT";
     if (status !== "ANNULEE" && !o.paidAt && !onDelivery) throw new ApiError(409, "Cette commande n'est pas payée : elle peut seulement être annulée.");
     if (status === "ANNULEE") {

@@ -1,12 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import { ApiError, json, requireUser, route } from "@/lib/server/api";
 import { getLatestPendingOrder } from "@/lib/server/orders";
-import { getPaymentProvider, isPayOnDeliveryEnabled } from "@/lib/server/payments";
+import { getPaymentProvider, isBankTransferEnabled } from "@/lib/server/payments";
 
 /**
  * POST /api/checkout/create-payment-intent — prépare le paiement de la commande en attente.
  * Le montant provient exclusivement de la commande enregistrée (le corps de requête est ignoré).
- * `payOnDelivery` indique si le règlement à la livraison ou au retrait est proposé.
+ * `bankTransfer` indique si le règlement par virement bancaire (avant livraison) est proposé.
  */
 export const POST = route("POST /api/checkout/create-payment-intent", async () => {
   const user = await requireUser();
@@ -27,5 +27,5 @@ export const POST = route("POST /api/checkout/create-payment-intent", async () =
       status: "EN_ATTENTE",
     },
   });
-  return json({ clientSecret, provider: provider.name, mode: provider.mode, payOnDelivery: isPayOnDeliveryEnabled(), orderId: order.id, amount: order.totalCents / 100 });
+  return json({ clientSecret, provider: provider.name, mode: provider.mode, bankTransfer: isBankTransferEnabled(), orderId: order.id, amount: order.totalCents / 100 });
 });

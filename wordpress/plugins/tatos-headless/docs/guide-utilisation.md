@@ -98,10 +98,11 @@ accepte un numéro de commande, un nom ou un email.
 
 | Statut | Signification | Email au client |
 | --- | --- | --- |
-| **Payée** | Payée par carte en ligne, à préparer. | Confirmation de commande avec récapitulatif. |
-| **En préparation** | En cours de préparation (c'est aussi le statut d'une commande confirmée à régler à la livraison ou au retrait). | « Commande en préparation » (ou confirmation de commande). |
+| **En attente de virement** | Commande confirmée par le client, articles réservés : vous attendez son virement. | Confirmation de commande avec la facture PDF et vos coordonnées bancaires. |
+| **Payée** | Payée (virement reçu, ou carte en ligne), à préparer. | « Virement reçu » avec la facture acquittée (ou confirmation de commande pour la carte). |
+| **En préparation** | En cours de préparation. | « Commande en préparation ». |
 | **Expédiée** / **Prête à retirer** | Partie en livraison, ou prête au magasin pour un retrait. | « Commande en route » ou « Commande prête à retirer ». |
-| **Livrée** / **Retirée** | Remise au client. Pour une commande à régler sur place, ce statut enregistre le règlement. | « Commande livrée » (invitation à laisser un avis). |
+| **Livrée** / **Retirée** | Remise au client. | « Commande livrée » (invitation à laisser un avis). |
 | **Annulée** | Annulée : les articles sont remis en stock automatiquement. | « Commande annulée ». |
 | **Paiement refusé** | Le paiement par carte a échoué ; le client peut réessayer depuis son compte. | — |
 
@@ -112,9 +113,10 @@ articles sont réservés 30 minutes, puis remis en vente automatiquement.
 
 - **Carte bancaire en ligne** (si le paiement Stripe est activé) : la commande arrive au statut
   **Payée**, la facture est disponible tout de suite.
-- **À la livraison ou au retrait en magasin** : le client confirme sa commande sans payer en ligne.
-  Elle arrive au statut **En préparation** avec le repère **à encaisser** dans la liste ; le montant à
-  encaisser est rappelé en haut de la fiche de la commande.
+- **Virement bancaire, avant livraison** : le client confirme sa commande et reçoit aussitôt par
+  email la facture PDF avec vos coordonnées bancaires, le montant et la référence à indiquer (son
+  numéro de commande). La commande arrive au statut **En attente de virement** avec le repère
+  **virement attendu** dans la liste ; ses articles restent réservés.
 
 ### Traiter une commande
 
@@ -123,16 +125,19 @@ articles sont réservés 30 minutes, puis remis en vente automatiquement.
    facturation et l'historique des paiements.
 2. Dans **Changer le statut**, choisissez le nouveau statut puis **Mettre à jour**. Laissez cochée
    la case **Prévenir le client par email** pour qu'il reçoive automatiquement le suivi.
-3. Enchaînement habituel : **En préparation** → **Expédiée** (ou **Prête à retirer**) → **Livrée**
-   (ou **Retirée**).
+3. Enchaînement habituel : **Payée (virement reçu)** → **En préparation** → **Expédiée** (ou
+   **Prête à retirer**) → **Livrée** (ou **Retirée**).
 
 ![Détail d'une commande](img/admin-commande-detail.png)
 
-### Encaisser une commande réglée à la livraison ou au retrait
+### Enregistrer un virement reçu
 
-Au moment de la remise des appareils, encaissez le montant indiqué, puis passez la commande à
-**Livrée** (ou **Retirée**). Le règlement est alors enregistré, la commande compte dans le chiffre
-d'affaires et sa facture devient disponible, pour vous comme pour le client.
+Quand le virement arrive sur votre compte (vérifiez le montant et la référence de commande), ouvrez
+la commande et choisissez **Payée (virement reçu)** puis **Mettre à jour**. Le paiement est
+enregistré, la commande compte dans le chiffre d'affaires et le client reçoit sa facture acquittée.
+Vous pouvez ensuite la préparer et la livrer : le site refuse de la passer en préparation ou en
+livraison tant que le virement n'est pas marqué reçu. Sans virement, annulez-la pour remettre les
+articles en vente. La carte **Virements attendus** du tableau de bord liste ces commandes.
 
 ### Annuler une commande ou rembourser
 
@@ -332,6 +337,10 @@ supprimer une image encore utilisée par un produit ou une page.
 - **Coordonnées affichées sur le site** : nom, description, email, téléphone, adresse, horaires,
   adresse pour la carte. Elles apparaissent dans l'en-tête, le pied de page, la page contact, les
   emails et les factures.
+- **Paiement par virement** : titulaire du compte, banque, IBAN et BIC. Ils sont imprimés sur la
+  facture envoyée au client à chaque commande et affichés sur sa page de confirmation. Tant que
+  l'IBAN est vide, le client est prévenu que vos coordonnées lui seront envoyées par email, et
+  l'alerte « nouvelle commande » vous le rappelle.
 - **Liaison avec le site (technique)** : adresse publique du site, clé d'administration, adresse et
   secret du webhook. Ces valeurs sont fournies lors de l'installation ; ne les modifiez pas sans votre
   prestataire.
@@ -353,22 +362,24 @@ Connaître le parcours client aide à répondre à leurs questions.
    CGV obligatoire.
 3. **Compte** : la commande se passe avec un compte client (création en une minute, ou connexion avec
    Google si elle est activée).
-4. **Règlement** : par carte bancaire en ligne (si Stripe est activé) ou à la livraison / au retrait.
-   Les articles sont réservés 30 minutes pendant le règlement.
-5. **Confirmation** : page de confirmation et email récapitulatif.
+4. **Règlement** : par virement bancaire avant livraison (ou par carte si Stripe est activé). Les
+   articles sont réservés 30 minutes le temps de confirmer, puis jusqu'au virement.
+5. **Confirmation** : page de confirmation avec le montant, la référence et vos coordonnées
+   bancaires, et email avec la facture PDF jointe.
 6. **Espace client** (« Mon compte ») : tableau de bord, **Mes commandes** (suivi, factures,
    annulation d'une commande non réglée), adresses de livraison, **Mon profil** (coordonnées, mot de
    passe, suppression du compte), codes de fidélité.
 7. **Après la livraison** : le client peut noter les appareils achetés.
 
-![Règlement à la livraison ou au retrait](img/site-paiement.png)
+![Page de règlement](img/site-paiement.png)
 
 ## Emails envoyés automatiquement
 
 | Événement | Destinataire |
 | --- | --- |
 | Création de compte | Client (bienvenue) |
-| Commande confirmée (payée ou à régler sur place) | Client (récapitulatif) et magasin (alerte « nouvelle commande ») |
+| Commande confirmée (payée, ou en attente de virement) | Client (récapitulatif, facture PDF jointe avec vos coordonnées bancaires) et magasin (alerte « nouvelle commande ») |
+| Virement marqué reçu | Client (facture acquittée jointe) |
 | Changement de statut (si « Prévenir le client » est coché) | Client |
 | Mot de passe oublié | Client (lien valable 1 heure) |
 | Message de contact, demande de rendez-vous, signalement | Magasin (avec réponse directe possible) et accusé de réception au client |

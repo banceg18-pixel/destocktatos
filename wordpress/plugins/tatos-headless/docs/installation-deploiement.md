@@ -97,7 +97,7 @@ npm run docs:plugin
 | Base de données | PostgreSQL ou MySQL managé en production (SQLite convient à une seule instance sur un VPS avec disque persistant). |
 | WordPress | Hébergement PHP/MySQL classique (OVH, o2switch, Hostinger…) ou sur le même VPS. |
 | Emails | Fournisseur SMTP (Brevo, Mailjet, OVH, Gmail/Google Workspace, Outlook…). |
-| Paiement par carte | Compte Stripe activé (facultatif : sans Stripe, les clients règlent à la livraison ou au retrait). |
+| Paiement par carte | Compte Stripe activé (facultatif : sans Stripe, les clients règlent par virement bancaire avant livraison). |
 
 Exemple de noms de domaine : `www.votre-boutique.fr` pour le site, `admin.votre-boutique.fr` pour
 WordPress.
@@ -113,8 +113,9 @@ ajoutées par l'intégration).
   migration PostgreSQL :
   `npx prisma migrate diff --from-schema-datasource prisma/postgres/schema.prisma --to-schema-datamodel prisma/postgres/schema.prisma --script`
   (base à jour) dans un nouveau dossier de `prisma/postgres/migrations/`.
-- Build Vercel (`vercel.json` → `npm run vercel-build`) : vérification du schéma, client PostgreSQL,
-  `prisma migrate deploy`, `next build`.
+- Build (`npm run build`, ou `npm run vercel-build` sur Vercel, même script `scripts/build.mjs`) :
+  avec une `DATABASE_URL` PostgreSQL, vérification du schéma, client PostgreSQL,
+  `prisma migrate deploy`, puis `next build` ; en local (SQLite), `next build` seul.
 - Données initiales (une fois) : avec les variables de production dans l'environnement,
   `npm run db:seed:postgres`.
 - Fichiers écrits par le site : `UPLOAD_DIR=/tmp/uploads`, `MAIL_OUTBOX_DIR=/tmp/outbox` (temporaires
@@ -124,6 +125,37 @@ ajoutées par l'intégration).
 - WordPress ne peut pas s'exécuter sur Vercel (ni PHP ni MySQL) : il s'installe chez un hébergeur
   PHP, l'extension se téléverse depuis https://electro-boutique.vercel.app/telechargements/tatos-headless.zip
   et les contenus s'importent depuis **Réglages → Site et magasin → Importer les contenus du site**.
+
+### Hostinger (Node.js web app, déploiement automatique depuis GitHub)
+
+Dépôt : https://github.com/banceg18-pixel/destocktatos, branche `main`. Chaque `git push` sur `main`
+reconstruit et redémarre le site. La base reste celle de Neon (aucune base à créer chez Hostinger).
+
+1. hPanel → **Sites web → Ajouter un site → Node.js web app → Importez votre dépôt Git →
+   Connectez-vous avec GitHub**, autorisez l'accès au dépôt `destocktatos`, puis choisissez-le.
+2. Paramètres de build (vérifiez ce que Hostinger pré-remplit) :
+
+   | Champ | Valeur |
+   | --- | --- |
+   | Framework | Next.js |
+   | Branche | `main` |
+   | Version de Node.js | 22 (ou 24) |
+   | Répertoire racine | `./` |
+   | Commande de build | `npm run build` |
+   | Répertoire de sortie | `.next` |
+   | Commande de démarrage | `npm start` (le port fourni par Hostinger est pris en compte) |
+
+3. **Variables d'environnement** : avant le premier déploiement, importez le fichier local
+   `.env.hostinger.local` (bouton d'import d'un `.env`), après y avoir remplacé
+   `https://REMPLACEZ-PAR-VOTRE-DOMAINE` par l'adresse du site chez Hostinger (`NEXT_PUBLIC_SITE_URL`
+   et `NEXTAUTH_URL`). Ce fichier n'est jamais envoyé sur GitHub. Variables attendues :
+   `NEXT_PUBLIC_SITE_URL`, `NEXTAUTH_URL`, `NEXTAUTH_SECRET`, `DATABASE_URL`,
+   `DATABASE_URL_UNPOOLED`, `CMS_PROVIDER`, `ADMIN_API_SECRET`, `WORDPRESS_WEBHOOK_SECRET`,
+   `STORE_NOTIFICATION_EMAIL`, `UPLOAD_DIR=./uploads`, `MAIL_OUTBOX_DIR=./outbox`
+   (plus `SMTP_*` / `MAIL_FROM` pour l'envoi réel des emails).
+4. Déployez. Le build applique les migrations sur la base Neon puis compile le site.
+5. Si l'adresse du site change (nom de domaine définitif), mettez à jour `NEXT_PUBLIC_SITE_URL` et
+   `NEXTAUTH_URL` puis redéployez : `NEXT_PUBLIC_SITE_URL` est figée au moment du build.
 
 ### 1. Base de données
 
@@ -220,7 +252,7 @@ actif » une fois le SMTP configuré.
    `https://www.votre-boutique.fr/api/stripe/webhook`, événements `payment_intent.succeeded` et
    `payment_intent.payment_failed` ; copiez le secret de signature dans
    `STRIPE_WEBHOOK_SECRET`.
-4. Pour proposer aussi le règlement à la livraison ou au retrait : `PAY_ON_DELIVERY=true`.
+4. Pour proposer aussi le virement bancaire : `BANK_TRANSFER=true`.
 
 En local, utilisez des clés de test (`sk_test_…`) et relayez le webhook :
 
@@ -254,7 +286,7 @@ stripe listen --forward-to localhost:3000/api/stripe/webhook
 - [ ] Coordonnées du magasin à jour (**Réglages → Site et magasin**).
 - [ ] Pages légales complétées (raison sociale, SIRET, hébergeur, médiateur : passages entre crochets).
 - [ ] SMTP configuré et testé (création de compte, commande, réponse à un message).
-- [ ] Mode de règlement choisi : Stripe en clés `live` avec webhook, et/ou règlement à la livraison.
+- [ ] Mode de règlement choisi : Stripe en clés `live` avec webhook, et/ou virement bancaire (IBAN saisi dans WordPress → Réglages → Site et magasin).
 - [ ] Données de démonstration retirées : `npm run clean:test-data` ; compte client de démonstration supprimé si vous ne le gardez pas.
 - [ ] Commande réelle de bout en bout passée et annulée, facture vérifiée.
 - [ ] Sitemap déclaré dans la Search Console.

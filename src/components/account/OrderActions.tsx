@@ -43,29 +43,14 @@ function InvoiceButton({ orderId, kind }: { orderId: string; kind: "download" | 
   );
 }
 
-/**
- * Actions d'une commande : factures (réglée), reprise du paiement ou annulation confirmée (en
- * attente). Une commande à régler à la livraison a sa facture une fois le règlement reçu.
- */
-export function OrderActions({ orderId, status, paid }: { orderId: string; status: string; paid: boolean }) {
+/** Annulation confirmée d'une commande pas encore payée (articles remis en vente). */
+function CancelOrder({ orderId }: { orderId: string }) {
   const router = useRouter();
   const [confirm, setConfirm] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const active = ["PAYEE", "EN_PREPARATION", "EXPEDIEE", "LIVREE"].includes(status);
-
-  if (active && paid)
-    return (
-      <div className="flex flex-wrap items-start gap-2">
-        <InvoiceButton orderId={orderId} kind="view" />
-        <InvoiceButton orderId={orderId} kind="download" />
-      </div>
-    );
-  if (active) return <p className="text-sm text-graphite">La facture sera disponible ici dès le règlement de la commande.</p>;
-  if (status !== "EN_ATTENTE_PAIEMENT") return null;
-
   return (
-    <div className="flex flex-wrap items-center gap-3 text-sm">
+    <span className="flex flex-wrap items-center gap-3 text-sm">
       {confirm ? (
         <>
           <span>Annuler cette commande ? Les articles seront remis en vente.</span>
@@ -89,20 +74,44 @@ export function OrderActions({ orderId, status, paid }: { orderId: string; statu
           </button>
         </>
       ) : (
-        <>
-          <ButtonLink href="/paiement" size="sm">
-            Finaliser le paiement
-          </ButtonLink>
-          <button type="button" onClick={() => setConfirm(true)} className="text-graphite underline-offset-4 hover:text-danger hover:underline">
-            Annuler la commande
-          </button>
-        </>
+        <button type="button" onClick={() => setConfirm(true)} className="text-graphite underline-offset-4 hover:text-danger hover:underline">
+          Annuler la commande
+        </button>
       )}
       {error && (
         <span role="alert" className="text-danger">
           {error}
         </span>
       )}
+    </span>
+  );
+}
+
+/**
+ * Actions d'une commande : factures (payée, ou en attente de virement : la facture porte alors les
+ * coordonnées bancaires), reprise du paiement ou annulation confirmée (pas encore payée).
+ */
+export function OrderActions({ orderId, status, paid }: { orderId: string; status: string; paid: boolean }) {
+  const active = ["PAYEE", "EN_PREPARATION", "EXPEDIEE", "LIVREE"].includes(status);
+  const awaitingTransfer = status === "EN_ATTENTE_VIREMENT";
+
+  if ((active && paid) || awaitingTransfer)
+    return (
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <InvoiceButton orderId={orderId} kind="view" />
+        <InvoiceButton orderId={orderId} kind="download" />
+        {awaitingTransfer && <CancelOrder orderId={orderId} />}
+      </div>
+    );
+  if (active) return <p className="text-sm text-graphite">La facture sera disponible ici dès le règlement de la commande.</p>;
+  if (status !== "EN_ATTENTE_PAIEMENT") return null;
+
+  return (
+    <div className="flex flex-wrap items-center gap-3 text-sm">
+      <ButtonLink href="/paiement" size="sm">
+        Finaliser le paiement
+      </ButtonLink>
+      <CancelOrder orderId={orderId} />
     </div>
   );
 }

@@ -36,7 +36,7 @@ Légende — **S** : page statique (générée au build, revalidée toutes les 5
 | `/compte/profil` | Nom affiché, mot de passe, suppression du compte |
 | `/compte/ajouter-adresse` | Ajout / modification d'adresse (autocomplétion BAN) |
 | `/compte/commandes` | Historique, statuts, annulation d'une commande non réglée, factures PDF une fois la commande réglée |
-| `/paiement` | Règlement de la commande en cours : carte (Stripe) et/ou à la livraison ou au retrait |
+| `/paiement` | Règlement de la commande en cours : carte (Stripe) et/ou virement bancaire avant livraison |
 | `/confirmation` | Confirmation de commande (état lu en base, jamais dans l'URL) |
 
 ## Fichiers techniques
@@ -53,7 +53,7 @@ API), `/manifest.webmanifest`, icônes locales.
 | Adresses 🔒 | `GET/POST user/addresses` · `GET/PUT/DELETE user/addresses/[id]` · `PUT user/addresses/[id]/default` · `GET addresses/suggestions` · `POST addresses/validate` |
 | Avis | `GET/POST avis` · `PUT/DELETE avis/[id]` 🔒 · `GET avis/verifier` |
 | Commandes 🔒 | `POST orders/create` · `GET orders` · `GET orders/latest` · `GET orders/[id]` · `POST orders/[id]/cancel` · `GET orders/[id]/invoice` (PDF) · `GET orders/[id]/download-invoice` · `GET orders/[id]/view-invoice` |
-| Paiement | `POST checkout/create-payment-intent` 🔒 · `POST checkout/confirm` 🔒 · `POST checkout/pay-on-delivery` 🔒 · `POST checkout/test-payment` 🔒 (tests automatisés uniquement) · `POST stripe/webhook` (signature Stripe) |
+| Paiement | `POST checkout/create-payment-intent` 🔒 · `POST checkout/confirm` 🔒 · `POST checkout/bank-transfer` 🔒 · `POST checkout/test-payment` 🔒 (tests automatisés uniquement) · `POST stripe/webhook` (signature Stripe) |
 | Fidélité 🔒 | `POST loyalty/validate` |
 | Formulaires | `POST contact` · `POST contact/services` · `POST newsletter/subscribe` · `POST tickets/images` · `POST tickets/create` |
 | CMS | `POST webhooks/wordpress` (secret partagé) |

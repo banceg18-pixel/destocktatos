@@ -20,6 +20,8 @@ export interface MailMessage {
   replyTo?: string;
   /** En-têtes supplémentaires (ex. List-Unsubscribe pour la newsletter). */
   headers?: Record<string, string>;
+  /** Pièces jointes (ex. facture PDF). */
+  attachments?: { filename: string; content: Buffer; contentType?: string }[];
 }
 
 /** Dossier des emails non envoyés (MAIL_OUTBOX_DIR, par défaut ./outbox). */
@@ -63,7 +65,9 @@ async function writeOutbox(msg: MailMessage, reason?: string) {
     await fs.mkdir(dir, { recursive: true });
     // Suffixe aléatoire : plusieurs emails écrits dans la même milliseconde (newsletter) ne s'écrasent pas.
     const file = path.join(dir, `${new Date().toISOString().replace(/[:.]/g, "-")}-${crypto.randomBytes(3).toString("hex")}-${msg.tag}.json`);
-    await fs.writeFile(file, JSON.stringify({ ...msg, ...(reason ? { notSentReason: reason } : {}), createdAt: new Date().toISOString() }, null, 2), "utf8");
+    // Pièces jointes conservées en base64 (renvoi possible à la main).
+    const attachments = msg.attachments?.map((a) => ({ filename: a.filename, contentType: a.contentType, size: a.content.length, base64: a.content.toString("base64") }));
+    await fs.writeFile(file, JSON.stringify({ ...msg, attachments, ...(reason ? { notSentReason: reason } : {}), createdAt: new Date().toISOString() }, null, 2), "utf8");
     return file;
   } catch (e) {
     console.error("[mailer] impossible d'écrire la notification", e);
@@ -82,6 +86,7 @@ export async function sendMail(msg: MailMessage): Promise<{ delivered: false; st
       text: msg.text,
       html: toHtml(msg.text),
       headers: msg.headers,
+      attachments: msg.attachments,
     });
     return { delivered: true };
   } catch (e) {

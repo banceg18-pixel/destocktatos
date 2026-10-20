@@ -51,9 +51,9 @@ Légende : 🔒 session client requise (cookie NextAuth) · 🔑 clé d'administ
 | POST 🔒 | `/api/orders/[id]/cancel` | Annulation d'une commande non réglée (stock rendu). |
 | GET 🔒 | `/api/orders/[id]/invoice` | Facture PDF (`?download=1` pour un téléchargement), disponible une fois la commande réglée. |
 | GET 🔒 | `/api/orders/[id]/view-invoice`, `/download-invoice` | Liens vers la facture (format du site d'origine). |
-| POST 🔒 | `/api/checkout/create-payment-intent` | Prépare le règlement : `{ provider: "stripe" \| "sur_place", clientSecret, payOnDelivery }`. |
+| POST 🔒 | `/api/checkout/create-payment-intent` | Prépare le règlement : `{ provider: "stripe" \| "virement", clientSecret, bankTransfer }`. |
 | POST 🔒 | `/api/checkout/confirm` | Vérifie auprès de Stripe un paiement par carte et marque la commande payée. |
-| POST 🔒 | `/api/checkout/pay-on-delivery` | Confirme la commande avec règlement à la livraison ou au retrait (`orderId`, `billingAddress`). |
+| POST 🔒 | `/api/checkout/bank-transfer` | Confirme la commande avec règlement par virement bancaire avant livraison (`orderId`, `billingAddress`) : statut `EN_ATTENTE_VIREMENT`, facture PDF (coordonnées bancaires) envoyée par email. |
 | POST 🔒 | `/api/checkout/test-payment` | Simulation réservée aux tests automatisés (`TEST_PAYMENTS=true`) ; 404 sinon. |
 | POST ✍️ | `/api/stripe/webhook` | Événements Stripe signés (`payment_intent.succeeded`, `payment_intent.payment_failed`). |
 | POST 🔒 | `/api/loyalty/validate` | Vérifie un code promo pour un montant (`couponCode`, `orderTotal`) et renvoie la réduction. |

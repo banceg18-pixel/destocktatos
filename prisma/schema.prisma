@@ -127,6 +127,8 @@ model Address {
 
 enum OrderStatus {
   EN_ATTENTE_PAIEMENT
+  /// Commande confirmée, réglée par virement bancaire avant livraison : en attente de réception.
+  EN_ATTENTE_VIREMENT
   PAYEE
   EN_PREPARATION
   EXPEDIEE
@@ -152,7 +154,7 @@ model Order {
   shippingAddress     Json?
   billingAddress      Json?
   couponCode          String?
-  paymentProvider     String? // stripe | test
+  paymentProvider     String? // stripe | virement | sur_place (anciennes commandes) | test
   paymentMode         String? // live | test
   paymentIntentId     String?           @unique
   paidAt              DateTime?

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TATOS Headless
  * Description: Espace d'administration complet du site TATOS (Next.js) : produits, catégories, pages, articles, FAQ, menus, réglages, et gestion de la boutique (commandes, clients, codes promo, avis, messages, newsletter, stock).
- * Version: 2.1.1
+ * Version: 2.2.0
  * Requires PHP: 8.1
  * License: GPL-2.0-or-later
  * Text Domain: tatos-headless
@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('TATOS_HEADLESS_VERSION', '2.1.1');
+define('TATOS_HEADLESS_VERSION', '2.2.0');
 
 /* -------------------------------------------------------------------------
  * Types de contenu et taxonomies
@@ -121,6 +121,10 @@ const TATOS_SETTINGS_FIELDS = [
     'mapQuery' => 'Adresse pour la carte',
     'bannerMessage1' => 'Message 1',
     'bannerMessage2' => 'Message 2 (alterne avec le 1, facultatif)',
+    'bankHolder' => 'Titulaire du compte',
+    'bankName' => 'Banque',
+    'bankIban' => 'IBAN',
+    'bankBic' => 'BIC',
     'siteUrl' => 'Adresse publique du site, commençant par https://',
     'adminApiSecret' => "Clé d'administration (ADMIN_API_SECRET du site)",
     'webhookUrl' => 'URL du webhook frontend (/api/webhooks/wordpress)',
@@ -132,6 +136,8 @@ const TATOS_TECHNICAL_FIELDS = ['siteUrl', 'adminApiSecret', 'webhookUrl', 'webh
 const TATOS_SECRET_FIELDS = ['adminApiSecret', 'webhookSecret'];
 /** Bandeau rouge fixé tout en haut du site (laisser vide pour le masquer). */
 const TATOS_BANNER_FIELDS = ['bannerMessage1', 'bannerMessage2'];
+/** Coordonnées bancaires du virement : imprimées sur la facture et envoyées au client à la commande. */
+const TATOS_BANK_FIELDS = ['bankHolder', 'bankName', 'bankIban', 'bankBic'];
 
 function tatos_settings(): array
 {
@@ -156,8 +162,9 @@ add_action('admin_menu', function () {
         echo '<form method="post" action="options.php">';
         settings_fields('tatos_settings');
         $groups = [
-            'Coordonnées affichées sur le site' => array_diff(array_keys(TATOS_SETTINGS_FIELDS), TATOS_TECHNICAL_FIELDS, TATOS_BANNER_FIELDS),
+            'Coordonnées affichées sur le site' => array_diff(array_keys(TATOS_SETTINGS_FIELDS), TATOS_TECHNICAL_FIELDS, TATOS_BANNER_FIELDS, TATOS_BANK_FIELDS),
             'Bandeau du haut de page (laisser vide pour le masquer)' => TATOS_BANNER_FIELDS,
+            'Paiement par virement (coordonnées imprimées sur la facture envoyée au client)' => TATOS_BANK_FIELDS,
             'Liaison avec le site (technique)' => TATOS_TECHNICAL_FIELDS,
         ];
         foreach ($groups as $title => $keys) {

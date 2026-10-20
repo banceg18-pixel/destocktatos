@@ -34,7 +34,7 @@ const deleteSchema = z.object({ confirm: z.literal("SUPPRIMER", { errorMap: () =
 export const DELETE = route("DELETE /api/users/me", async (req: Request) => {
   const session = await requireUser();
   await parseBody(req, deleteSchema);
-  const pending = await prisma.order.count({ where: { userId: session.id, status: { in: ["PAYEE", "EN_PREPARATION", "EXPEDIEE"] } } });
+  const pending = await prisma.order.count({ where: { userId: session.id, status: { in: ["EN_ATTENTE_VIREMENT", "PAYEE", "EN_PREPARATION", "EXPEDIEE"] } } });
   if (pending) throw new ApiError(409, "Une commande est encore en cours : le compte pourra être supprimé une fois la livraison effectuée.");
   // Commandes non payées : annulées et leur stock réservé remis en vente.
   for (const o of await prisma.order.findMany({ where: { userId: session.id, status: "EN_ATTENTE_PAIEMENT" }, select: { id: true } })) {

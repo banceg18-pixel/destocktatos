@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 import type { Order, OrderItem } from "@prisma/client";
 import { decode, htmlToSections } from "@/lib/cms/wordpress";
 import { computeDiscount } from "@/lib/server/coupons";
-import { buildInvoicePdf, invoiceNumber } from "@/lib/server/invoice";
+import { bankDetailsOf } from "@/lib/bank";
+import { buildInvoicePdf, invoiceAvailable, invoiceNumber } from "@/lib/server/invoice";
 import { rateLimit, resetRateLimits } from "@/lib/server/rate-limit";
 
 describe("coupons : réduction plafonnée à 10 % de la commande", () => {
@@ -66,6 +67,19 @@ describe("facture PDF", () => {
     // Texte accentué encodé en WinAnsi (é = \351 ou octet 0xE9), pas en UTF-8 brut.
     expect(s).not.toContain("Ã©");
     expect(s).toContain("FAC-20261018-ABC123");
+  });
+
+  it("commande en attente de virement : facture disponible, coordonnées bancaires et référence imprimées", () => {
+    const pending = { ...order, status: "EN_ATTENTE_VIREMENT", paymentProvider: "virement", paidAt: null } as Order;
+    expect(invoiceAvailable(pending)).toBe(true);
+    expect(invoiceAvailable({ ...order, status: "EN_ATTENTE_PAIEMENT", paidAt: null })).toBe(false);
+    const bank = bankDetailsOf({ siteName: "Destocktatos", bankIban: "fr76 3000 6000 0112 3456 7890 189", bankBic: "agrifrpp", bankName: "Banque Test" });
+    expect(bank).toEqual({ holder: "Destocktatos", bank: "Banque Test", iban: "FR76 3000 6000 0112 3456 7890 189", bic: "AGRIFRPP" });
+    expect(bankDetailsOf({ siteName: "Destocktatos", bankIban: "  " })).toBeNull();
+    const s = buildInvoicePdf({ ...pending, items }, { name: "Jean", email: "jean@tatos.test" }, { name: "Destocktatos", address: "1 rue", city: "93270 Sevran", email: "x@tatos.test", phone: "0600000000" }, bank).toString("latin1");
+    expect(s).toContain("FR76 3000 6000 0112 3456 7890 189");
+    expect(s).toContain("AGRIFRPP");
+    expect(s).toContain("TAT-20261018-ABC123");
   });
 });
 

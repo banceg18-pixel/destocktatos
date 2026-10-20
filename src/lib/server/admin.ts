@@ -9,7 +9,8 @@ import { ApiError, clientIp, json } from "./api";
 import { rateLimit } from "./rate-limit";
 import { sendMail } from "./mailer";
 import { ADMIN_ORDER_STATUSES, adminSetOrderStatus } from "./orders";
-import { buildInvoicePdf, invoiceNumber } from "./invoice";
+import { bankDetailsOf } from "@/lib/bank";
+import { buildInvoicePdf, invoiceAvailable, invoiceNumber, invoiceStore } from "./invoice";
 import { getSiteSettings } from "@/lib/cms";
 import { newsletterMessage, notifyOrderStatus } from "./notifications";
 import { exportContent, exportProducts } from "./wp-export";
@@ -93,6 +94,7 @@ async function stats() {
   return json({
     orders: Object.fromEntries(byStatus.map((s) => [s.status, s._count._all])),
     toShip: byStatus.filter((s) => s.status === "PAYEE" || s.status === "EN_PREPARATION").reduce((n, s) => n + s._count._all, 0),
+    awaitingTransfer: byStatus.find((s) => s.status === "EN_ATTENTE_VIREMENT")?._count._all ?? 0,
     revenue30Cents: revenue30._sum.totalCents ?? 0,
     orders30: revenue30._count._all,
     revenueAllCents: revenueAll._sum.totalCents ?? 0,
@@ -140,13 +142,13 @@ async function getOrder(id: string) {
   return json(o);
 }
 
-/** Facture PDF d'une commande payée, pour le magasin (téléchargée par l'administration). */
+/** Facture PDF d'une commande payée ou en attente de virement, pour le magasin (téléchargée par l'administration). */
 async function orderInvoice(id: string) {
   const o = await prisma.order.findUnique({ where: { id }, include: { items: true, user: { select: { name: true, email: true } } } });
   if (!o) throw new ApiError(404, "Commande introuvable");
-  if (!o.paidAt) throw new ApiError(409, "La facture est disponible une fois la commande payée");
+  if (!invoiceAvailable(o)) throw new ApiError(409, "La facture est disponible une fois la commande confirmée");
   const s = await getSiteSettings();
-  const pdf = buildInvoicePdf(o, o.user, { name: s.siteName, address: s.addressLine, city: `${s.postalCode} ${s.city}, ${s.country}`, email: s.email, phone: s.phone });
+  const pdf = buildInvoicePdf(o, o.user, invoiceStore(s), bankDetailsOf(s));
   return new Response(new Uint8Array(pdf), { headers: { "Content-Type": "application/pdf", "Content-Disposition": `inline; filename="facture_${invoiceNumber(o)}.pdf"` } });
 }
 

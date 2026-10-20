@@ -347,7 +347,7 @@ def _():
         eq(getattr(req, method)(url).status, 401, f"{url} sans session")
     eq(req.post("/api/orders/create", data={"items": []}).status, 401, "création de commande sans session")
     eq(req.post("/api/checkout/test-payment", data={}).status, 401, "paiement sans session")
-    eq(req.post("/api/checkout/pay-on-delivery", data={}).status, 401, "confirmation sans session")
+    eq(req.post("/api/checkout/bank-transfer", data={}).status, 401, "confirmation sans session")
     r = req.get("/compte", max_redirects=0)
     check(r.status in (302, 307) and "/connexion" in r.headers.get("location", ""), "middleware : /compte -> /connexion")
     eq(req.post("/api/webhooks/wordpress", data={"event": "sync.full"}).status, 401, "webhook WordPress sans secret")
@@ -431,7 +431,7 @@ def _():
     eq(order["status"], "EN_ATTENTE_PAIEMENT", "statut initial")
     eq(r.get("/api/orders/latest").json()["_id"], order["_id"], "commande en cours")
     intent = r.post("/api/checkout/create-payment-intent").json()
-    eq((intent["provider"], intent["mode"], intent["payOnDelivery"]), ("sur_place", "live", True), "règlement à la livraison proposé sans clé Stripe")
+    eq((intent["provider"], intent["mode"], intent["bankTransfer"]), ("virement", "live", True), "virement bancaire proposé sans clé Stripe")
     billing = {"name": "Client Cmd", "email": buyer["email"], "address": "1 rue Test", "postalCode": "93270", "city": "Sevran", "phone": "0612345678"}
     o = api(other)
     eq(o.get(f"/api/orders/{order['_id']}").status, 404, "commande d'un autre client invisible")
@@ -461,7 +461,7 @@ def _():
     o.dispose()
 
 
-@test("api", "règlement à la livraison : confirmation, double envoi, facture après livraison, statuts magasin")
+@test("api", "virement bancaire : confirmation, double envoi, facture avec coordonnées, paiement avant livraison")
 def _():
     buyer, other = register_user("livr"), register_user("livr-autre")
     p = product(CHEAP)
@@ -470,24 +470,24 @@ def _():
     c = r.post("/api/orders/create", data={"items": [{"_id": p["_id"], "quantity": 1}], "isPickupInStore": True, "totalAmount": expected})
     eq(c.status, 201, "création de commande")
     order = c.json()["order"]
-    check(r.post("/api/checkout/create-payment-intent").json()["payOnDelivery"] is True, "règlement à la livraison proposé")
+    check(r.post("/api/checkout/create-payment-intent").json()["bankTransfer"] is True, "virement bancaire proposé")
     billing = {"name": "Client Livr", "email": buyer["email"], "address": "1 rue Test", "postalCode": "93270", "city": "Sevran", "phone": "0612345678"}
-    url = "/api/checkout/pay-on-delivery"
+    url = "/api/checkout/bank-transfer"
     eq(o.post(url, data={"orderId": order["_id"], "billingAddress": billing}).status, 404, "confirmation de la commande d'autrui refusée")
     eq(r.post(url, data={"orderId": order["_id"], "billingAddress": {**billing, "postalCode": "93"}}).status, 400, "adresse de facturation invalide")
     eq(r.post(url, data={"orderId": order["_id"], "billingAddress": billing}).status, 200, "commande confirmée sans paiement en ligne")
     eq(r.post(url, data={"orderId": order["_id"], "billingAddress": billing}).status, 409, "double confirmation refusée")
     got = r.get(f"/api/orders/{order['_id']}").json()
-    eq((got["status"], got["paymentProvider"], got["paymentMode"], got["paidAt"]), ("EN_PREPARATION", "sur_place", "live", None), "en préparation, à régler au retrait")
-    eq(r.get(f"/api/orders/{order['_id']}/invoice").status, 409, "pas de facture avant règlement")
+    eq((got["status"], got["paymentProvider"], got["paymentMode"], got["paidAt"]), ("EN_ATTENTE_VIREMENT", "virement", "live", None), "en attente du virement")
+    pdf = r.get(f"/api/orders/{order['_id']}/invoice")
+    check(pdf.status == 200 and pdf.body()[:5] == b"%PDF-", "facture (avec coordonnées de virement) disponible dès la confirmation")
     adm = ENV.pw.request.new_context(base_url=ENV.base, extra_http_headers={"Authorization": f"Bearer {ADMIN_SECRET}"})
-    for st in ("EXPEDIEE", "LIVREE"):
+    eq(adm.patch(f"/api/admin/orders/{order['_id']}", data={"status": "EXPEDIEE", "notify": False}).status, 409, "pas de livraison avant le virement")
+    for st in ("PAYEE", "EXPEDIEE", "LIVREE"):
         eq(adm.patch(f"/api/admin/orders/{order['_id']}", data={"status": st, "notify": False}).status, 200, f"statut {st} appliqué par le magasin")
     detail = adm.get(f"/api/admin/orders/{order['_id']}").json()
-    check(detail["paidAt"] and [x["status"] for x in detail["payments"] if x["provider"] == "sur_place"] == ["REUSSI"], "règlement enregistré à la remise de la commande")
-    pdf = r.get(f"/api/orders/{order['_id']}/invoice")
-    check(pdf.status == 200 and pdf.body()[:5] == b"%PDF-", "facture disponible après règlement")
-    # Une commande à régler sur place peut aussi être annulée : le stock revient.
+    check(detail["paidAt"] and [x["status"] for x in detail["payments"] if x["provider"] == "virement"] == ["REUSSI"], "virement enregistré comme reçu")
+    # Une commande en attente de virement peut aussi être annulée : le stock revient.
     c2 = r.post("/api/orders/create", data={"items": [{"_id": p["_id"], "quantity": 1}], "isPickupInStore": True, "totalAmount": expected})
     o2 = c2.json()["order"]
     eq(r.post(url, data={"orderId": o2["_id"], "billingAddress": billing}).status, 200, "seconde commande confirmée")
@@ -580,7 +580,7 @@ def _():
     ctx.close()
 
 
-@test("achat", "client connecté : livraison, règlement à la livraison, confirmation, commandes")
+@test("achat", "client connecté : livraison, virement bancaire, confirmation, commandes")
 def _():
     errors: list[str] = []
     ctx = new_context(consent="accepted")
@@ -604,9 +604,9 @@ def _():
     page.locator("#termsCheckbox").check(force=True)
     page.get_by_test_id("checkout-button").click()
     page.wait_for_url("**/paiement", timeout=30_000)
-    page.get_by_test_id("pay-on-delivery").wait_for()
+    page.get_by_test_id("bank-transfer").wait_for()
     check(page.get_by_text(re.compile("mode test|simuler", re.I)).count() == 0, "aucune mention de test sur la page de paiement")
-    page.get_by_text("Vous réglez votre commande à la livraison, à la remise des appareils.", exact=False).wait_for()
+    page.get_by_text("Paiement par virement bancaire, avant livraison", exact=False).wait_for()
     # Formats d'origine différents (« 40 € » au panier, « 40.00€ » au paiement) : on compare les montants.
     amount = lambda t: float(re.sub(r"[^\d,.]", "", t).replace(",", "."))
     eq(amount(page.get_by_test_id("payment-total").inner_text()), amount(total), "total identique panier / paiement")
@@ -614,24 +614,26 @@ def _():
         field = page.get_by_label(label, exact=True)
         if not field.input_value():
             field.fill(value)
-    page.get_by_test_id("pay-on-delivery").click()
+    page.get_by_test_id("bank-transfer").click()
     page.wait_for_url(re.compile(r"/confirmation\?status=success&order="), timeout=30_000)
     page.get_by_text("Merci pour votre commande !").wait_for()
-    check("à la livraison" in page.locator("main").inner_text(), "règlement à la livraison annoncé")
+    check("par virement bancaire" in page.locator("main").inner_text(), "virement bancaire annoncé")
+    check(page.get_by_test_id("transfer-details").count() == 1, "montant et référence du virement affichés")
+    check(page.get_by_role("link", name=re.compile("Continuer mes achats", re.I)).count() == 0, "plus de bouton « Continuer mes achats »")
     number = re.search(r"TAT-\d{8}-[0-9A-F]{6}", page.content()).group(0)
     go(page, "/compte/commandes")
     page.get_by_text(f"Commande {number}").wait_for()
     row = page.locator("article").filter(has=page.get_by_role("heading", name=f"Commande {number}"))
     # Le libellé est affiché en capitales (CSS) : comparaison sans casse.
     text = row.inner_text().lower()
-    check("en préparation" in text and "à régler à la livraison" in text, "commande en préparation, à régler à la livraison")
-    check("facture sera disponible" in text, "facture annoncée pour après le règlement")
+    check("en attente de virement" in text and "à régler par virement" in text, "commande en attente de virement")
+    check("télécharger la facture" in text, "facture disponible dans l'espace client")
     order_id = re.search(r"order=([A-Za-z0-9]+)", page.evaluate("document.referrer") or "") or None
     resp = page.request.get("/api/orders")
     orders = resp.json()
     orders = orders.get("orders", orders) if isinstance(orders, dict) else orders
     mine = next(o for o in orders if o["number"] == number)
-    eq(page.request.get(f"/api/orders/{mine['_id']}/invoice").status, 409, "pas de facture avant le règlement")
+    eq(page.request.get(f"/api/orders/{mine['_id']}/invoice").status, 200, "facture avec coordonnées de virement")
     # Le panier est vidé après paiement.
     page.goto("/panier")
     page.locator("main").get_by_text("Votre panier est vide").wait_for()
@@ -648,7 +650,8 @@ def _():
     # Visiteur sans compte : il prépare toute sa commande, le compte n'est demandé qu'au paiement.
     add_to_cart(page, CHEAP)
     go(page, "/panier")
-    page.get_by_text("Livraison à domicile", exact=True).click()
+    # Livraison à domicile seule proposée (plus de retrait en magasin).
+    page.get_by_text("Livraison à domicile, offerte", exact=True).wait_for()
     page.locator("#ship-fullName").fill("Client Livraison")
     page.locator("#ship-phone").fill("0612345678")
     page.locator("#ship-address").fill(STORE_ADDRESS)

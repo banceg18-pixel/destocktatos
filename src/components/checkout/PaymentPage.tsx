@@ -10,7 +10,7 @@ import { loadStripe } from "@stripe/stripe-js/pure";
 import { AddressElement, Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import type { SiteSettings } from "@/lib/cms/types";
 import { useCart } from "@/context/CartProvider";
-import { confirmStripePayment, createPaymentIntent, DELIVERY_LABELS, fetchLatestOrder, payOnDelivery, type OrderDTO } from "@/services/orders";
+import { confirmBankTransfer, confirmStripePayment, createPaymentIntent, DELIVERY_LABELS, fetchLatestOrder, type OrderDTO } from "@/services/orders";
 import { trackAddPaymentInfo, trackPaymentError, trackPurchase } from "@/lib/client/analytics";
 import { formatEuros } from "@/lib/money";
 import { displayTitle } from "@/lib/text";
@@ -136,7 +136,7 @@ function StripeForm({ order }: { order: OrderDTO }) {
   );
 }
 
-/** Règlement à la livraison ou au retrait : adresse de facturation, puis confirmation de la commande. */
+/** Virement bancaire avant livraison : adresse de facturation, puis confirmation de la commande. */
 const BILLING_RULES = {
   name: rules.name,
   email: rules.email,
@@ -146,7 +146,7 @@ const BILLING_RULES = {
   phone: rules.phone,
 };
 
-function OnDeliveryForm({ order }: { order: OrderDTO }) {
+function BankTransferForm({ order }: { order: OrderDTO }) {
   const router = useRouter();
   const { clearCart } = useCart();
   const { data: session } = useSession();
@@ -178,8 +178,8 @@ function OnDeliveryForm({ order }: { order: OrderDTO }) {
     setFeedback(null);
     if (!f.validateAll(billing, BILLING_RULES)) return;
     setLoading(true);
-    trackAddPaymentInfo({ payment_type: "on_delivery", value: order.totalAmount, coupon: order.appliedCoupon?.code });
-    const res = await payOnDelivery(order._id, { ...billing, country: "FR" });
+    trackAddPaymentInfo({ payment_type: "bank_transfer", value: order.totalAmount, coupon: order.appliedCoupon?.code });
+    const res = await confirmBankTransfer(order._id, { ...billing, country: "FR" });
     setLoading(false);
     if (res.ok) {
       trackPurchase({ transaction_id: res.data.number, value: order.totalAmount, coupon: order.appliedCoupon?.code });
@@ -202,6 +202,21 @@ function OnDeliveryForm({ order }: { order: OrderDTO }) {
 
   return (
     <form onSubmit={confirm} noValidate className="flex flex-col gap-8">
+      <div className="bg-mist p-5 text-sm sm:p-6" data-testid="transfer-explainer">
+        <p className="font-medium">Paiement par virement bancaire, avant livraison</p>
+        <ol className="mt-4 flex flex-col gap-3 text-graphite">
+          {[
+            "Confirmez la commande : vos articles sont réservés.",
+            "Vous recevez aussitôt par email la facture avec nos coordonnées bancaires et la référence à indiquer.",
+            "Dès réception du virement, nous préparons votre commande et vous appelons pour fixer la livraison.",
+          ].map((step, i) => (
+            <li key={i} className="flex gap-3">
+              <span className="t-spec mt-0.5 text-ink">0{i + 1}</span>
+              <span>{step}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
       <div>
         <p className="mb-5 text-sm font-medium">Adresse de facturation</p>
         <div className="grid gap-5 sm:grid-cols-2">
@@ -222,7 +237,7 @@ function OnDeliveryForm({ order }: { order: OrderDTO }) {
         </div>
       </div>
       {feedback && <Feedback text={feedback} />}
-      <Button type="submit" size="lg" block disabled={loading} plain={loading} data-testid="pay-on-delivery">
+      <Button type="submit" size="lg" block disabled={loading} plain={loading} data-testid="bank-transfer">
         {loading ? (
           <>
             <Spinner /> Confirmation…
@@ -254,8 +269,8 @@ export function PaymentPage({ settings }: { settings: SiteSettings }) {
   const { status } = useSession();
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [card, setCard] = useState(false);
-  const [onDelivery, setOnDelivery] = useState(false);
-  const [method, setMethod] = useState<"card" | "delivery">("card");
+  const [transfer, setTransfer] = useState(false);
+  const [method, setMethod] = useState<"card" | "transfer">("card");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [order, setOrder] = useState<OrderDTO | null>(null);
@@ -285,8 +300,8 @@ export function PaymentPage({ settings }: { settings: SiteSettings }) {
       else {
         const cardReady = intent.data.provider === "stripe" && !!stripePromise && !!intent.data.clientSecret;
         setCard(cardReady);
-        setOnDelivery(intent.data.payOnDelivery || !cardReady);
-        setMethod(cardReady ? "card" : "delivery");
+        setTransfer(intent.data.bankTransfer || !cardReady);
+        setMethod(cardReady ? "card" : "transfer");
         setClientSecret(intent.data.clientSecret);
       }
       setLoading(false);
@@ -319,12 +334,12 @@ export function PaymentPage({ settings }: { settings: SiteSettings }) {
         <h2 id="paiement-titre" className="t-h3 mb-8">
           Règlement
         </h2>
-        {card && onDelivery && (
+        {card && transfer && (
           <div role="radiogroup" aria-label="Mode de règlement" className="mb-8 grid gap-3 sm:grid-cols-2">
             {(
               [
                 ["card", "Carte bancaire en ligne"],
-                ["delivery", order.isPickupInStore ? "Au retrait en magasin" : "À la livraison"],
+                ["transfer", "Virement bancaire"],
               ] as const
             ).map(([value, label]) => (
               <button
@@ -351,7 +366,7 @@ export function PaymentPage({ settings }: { settings: SiteSettings }) {
             <StripeForm order={order} />
           </Elements>
         )}
-        {onDelivery && method === "delivery" && <OnDeliveryForm order={order} />}
+        {transfer && method === "transfer" && <BankTransferForm order={order} />}
       </section>
 
       <aside aria-label="Votre commande" className="lg:sticky lg:top-[calc(var(--header-h)+28px)] lg:self-start">

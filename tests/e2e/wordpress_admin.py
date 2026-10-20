@@ -19,6 +19,7 @@ import subprocess
 import sys
 import time
 import traceback
+from urllib.parse import quote
 from pathlib import Path
 
 from playwright.sync_api import Page, sync_playwright
@@ -88,12 +89,12 @@ def main():
         page.wait_for_url(re.compile(r"/wp-admin/"), wait_until="domcontentloaded")
         check("wp-admin" in page.url, "connexion à l'administration WordPress")
         page.goto(f"{WP}/wp-admin/admin.php?page=tatos-boutique")
-        check(page.locator(".tatos-kpi").count() == 6 and page.locator(".notice-error").count() == 0, "Boutique : tableau de bord alimenté par le site (6 indicateurs)")
+        check(page.locator(".tatos-kpi").count() == 7 and page.locator(".notice-error").count() == 0, "Boutique : tableau de bord alimenté par le site (7 indicateurs)")
         page.goto(f"{WP}/wp-admin/options-general.php?page=tatos-headless&tatos_check=1")
         check("Liaison réussie" in page.locator(".notice").first.inner_text(), "Réglages : liaison avec le site vérifiée")
         page.goto(f"{WP}/wp-admin/")
         page.locator("#tatos_dashboard").wait_for()
-        check(page.locator("#tatos_dashboard .tatos-kpi").count() == 6, "accueil WordPress : widget « Boutique — activité »")
+        check(page.locator("#tatos_dashboard .tatos-kpi").count() == 7, "accueil WordPress : widget « Boutique — activité »")
         check(page.request.get(f"{WP}/", max_redirects=0).headers.get("location", "").startswith(SITE), "WordPress public redirigé vers le site")
 
         # ---------------------------------------------------------------- Page d'accueil du site
@@ -166,7 +167,8 @@ def main():
         check(wait_until(lambda: admin_api.get(f"/api/admin/products/{prod['_id']}").json()["stock"] == live["stock"]), "produit : valeurs d'origine restaurées")
 
         # ---------------------------------------------------------------- Stock (écran Boutique → Stock)
-        page.goto(f"{WP}/wp-admin/admin.php?page=tatos-stock&q={prod['modele']}")
+        # Recherche par référence, ou par titre quand le produit n'en a pas.
+        page.goto(f"{WP}/wp-admin/admin.php?page=tatos-stock&q={quote(prod.get('modele') or prod['titre'])}")
         row_form = page.locator("form.tatos-inline").filter(has=page.locator(f'input[name="product"][value="{prod["_id"]}"]')).first
         row_form.locator('input[name="stock"]').fill(str(live["stock"] + 1))
         row_form.locator("button").click()
@@ -181,28 +183,33 @@ def main():
         site.post("/api/auth/callback/credentials", form={"csrfToken": csrf, "email": email, "mdp": "Recette2026", "json": "true"})
         cheap = site.get("/api/produits?limit=1&tri=prix-asc").json()["produits"][0]
         price = cheap.get("promotionPrix") or cheap["prix"]
-        order = site.post("/api/orders/create", data={"items": [{"_id": cheap["_id"], "quantity": 1}], "isPickupInStore": True, "totalAmount": price}).json()["order"]
+        # Livraison à domicile (offerte) : le retrait en magasin n'est plus proposé.
+        ship = {"fullName": "Recette WP", "address": "15 Rue Paul Langevin", "city": "Sevran", "postalCode": "93270", "phone": "0612345678", "additionalInfo": "", "floor": 0}
+        order = site.post("/api/orders/create", data={"items": [{"_id": cheap["_id"], "quantity": 1}], "isPickupInStore": False, "deliveryMethod": "piedDuCamion", "includeOldItemPickup": False, "shippingAddress": ship, "totalAmount": price}).json()["order"]
         t0 = time.time() - 1
-        confirmed = site.post("/api/checkout/pay-on-delivery", data={"orderId": order["_id"], "billingAddress": {"name": "Recette WP", "email": email, "address": "1 rue Test", "postalCode": "93270", "city": "Sevran", "phone": "0612345678"}})
-        check(confirmed.status == 200, "commande : confirmée sur le site, règlement au retrait")
+        confirmed = site.post("/api/checkout/bank-transfer", data={"orderId": order["_id"], "billingAddress": {"name": "Recette WP", "email": email, "address": "1 rue Test", "postalCode": "93270", "city": "Sevran", "phone": "0612345678"}})
+        check(confirmed.status == 200, "commande : confirmée sur le site, règlement par virement")
         check(wait_until(lambda: newest_outbox("commande-confirmation", t0), timeout=15), "commande : email de confirmation au client")
         check(wait_until(lambda: newest_outbox("commande-magasin", t0), timeout=15), "commande : alerte « nouvelle commande » au magasin")
         page.goto(f"{WP}/wp-admin/admin.php?page=tatos-orders")
-        check(page.locator("tr", has_text=order["number"]).get_by_text("à encaisser").count() == 1, "commande : repérée « à encaisser » dans la liste")
+        check(page.locator("tr", has_text=order["number"]).get_by_text("virement attendu").count() == 1, "commande : repérée « virement attendu » dans la liste")
         page.get_by_role("link", name=order["number"]).first.click()
         check(page.locator("h1").inner_text().startswith(f"Commande {order['number']}"), "commande : visible et détaillée dans WordPress")
-        check("à encaisser au retrait" in page.locator("#wpbody-content").inner_text(), "commande : montant à encaisser au retrait affiché")
-        check(page.locator("a", has_text="Ouvrir la facture PDF").count() == 0, "commande : pas de facture avant le règlement")
+        check("virement attendu de" in page.locator("#wpbody-content").inner_text(), "commande : virement attendu affiché")
+        check(page.locator("a", has_text="Ouvrir la facture PDF").count() == 1, "commande : facture (avec coordonnées bancaires) dès la confirmation")
+        page.select_option('select[name="status"]', "PAYEE")
+        page.locator("form.tatos-confirm-cancel button").click()
+        check("Payée (virement reçu)" in notice(page), "commande : virement marqué reçu")
+        check(site.get(f"/api/orders/{order['_id']}").json()["paidAt"], "commande : paiement enregistré sur le site")
         page.select_option('select[name="status"]', "EXPEDIEE")
         t1 = time.time() - 1
         page.locator("form.tatos-confirm-cancel button").click()
-        check("Statut mis à jour" in notice(page), "commande : statut « Prête à retirer » appliqué")
+        check("Statut mis à jour" in notice(page), "commande : statut « Expédiée » appliqué")
         check(wait_until(lambda: newest_outbox("commande-expediee", t1), timeout=15), "commande : client prévenu par email")
         check(site.get(f"/api/orders/{order['_id']}").json()["status"] == "EXPEDIEE", "commande : statut visible dans l'espace client")
         page.select_option('select[name="status"]', "LIVREE")
         page.locator("form.tatos-confirm-cancel button").click()
-        check("Statut mis à jour" in notice(page), "commande : retirée, règlement encaissé")
-        check(site.get(f"/api/orders/{order['_id']}").json()["paidAt"], "commande : règlement enregistré sur le site")
+        check("Statut mis à jour" in notice(page), "commande : livrée")
         pdf = page.request.get(page.locator("a", has_text="Ouvrir la facture PDF").get_attribute("href"))
         check(pdf.status == 200 and pdf.body()[:4] == b"%PDF", "commande : facture PDF ouverte depuis WordPress")
         page.goto(f"{WP}/wp-admin/admin.php?page=tatos-customers&q={email}")

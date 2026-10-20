@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { CheckoutSteps } from "@/components/cart/CheckoutSteps";
-import { ButtonLink } from "@/components/ui/Button";
+import { TransferDetails } from "@/components/checkout/TransferDetails";
+import { buttonClasses, ButtonLink } from "@/components/ui/Button";
 import { Arrow } from "@/components/ui/Primitives";
 import { IconAlert, IconCheck } from "@/components/ui/Icons";
 import { getSession } from "@/lib/auth";
+import { bankDetailsOf } from "@/lib/bank";
 import { getSiteSettings } from "@/lib/cms";
 import { formatEuros } from "@/lib/money";
 import { getUserOrder, toOrderDTO } from "@/lib/server/orders";
@@ -26,8 +28,25 @@ export default async function ConfirmationPage({ searchParams }: { searchParams:
       order = null;
     }
   }
-  const paid = !!order && ["PAYEE", "EN_PREPARATION", "EXPEDIEE", "LIVREE"].includes(order.status);
+  const awaitingTransfer = order?.status === "EN_ATTENTE_VIREMENT";
+  // Commande confirmée : payée, ou enregistrée en attente du virement (paiement avant livraison).
+  const paid = !!order && (awaitingTransfer || ["PAYEE", "EN_PREPARATION", "EXPEDIEE", "LIVREE"].includes(order.status));
   const count = order?.items.reduce((s, i) => s + i.quantity, 0) ?? 0;
+  const delivery = order
+    ? order.isPickupInStore
+      ? `Nous vous prévenons dès que c'est prêt : ${settings.addressLine}, ${settings.postalCode} ${settings.city}. ${settings.storeHours}.`
+      : order.shippingAddress
+        ? `Nous vous appelons pour fixer le créneau de livraison au ${order.shippingAddress.address}, ${order.shippingAddress.postalCode} ${order.shippingAddress.city}.`
+        : "Nous vous appelons pour fixer le créneau de livraison."
+    : "";
+  const steps: [string, string][] = order
+    ? [
+        ...(awaitingTransfer ? ([["Virement", `Faites le virement de ${formatEuros(order.totalAmount)} avec la référence ${order.number}.`]] as [string, string][]) : []),
+        ["Préparation", `${awaitingTransfer ? "Dès réception du virement, nous" : "Nous"} vérifions et préparons vos ${count} article${count > 1 ? "s" : ""}.`],
+        [order.isPickupInStore ? "Retrait en magasin" : (DELIVERY_LABELS[order.deliveryMethod ?? ""] ?? "Livraison"), delivery],
+        ["Une question ?", `${settings.phone} · ${settings.email}`],
+      ]
+    : [];
 
   return (
     <div className="shell pb-24 pt-8 lg:pt-12">
@@ -42,16 +61,19 @@ export default async function ConfirmationPage({ searchParams }: { searchParams:
           {paid && order ? (
             <>
               <h1 className="t-display mt-8">Merci pour votre commande !</h1>
-              {order.paidAt ? (
+              {!awaitingTransfer ? (
                 <p className="t-lead mt-6 max-w-xl text-graphite">
-                  La commande <strong className="t-spec text-ink">{order.number}</strong> est enregistrée et payée ({formatEuros(order.totalAmount)}). Un récapitulatif est disponible
-                  dans votre compte, avec la facture.
+                  La commande <strong className="t-spec text-ink">{order.number}</strong> est enregistrée{order.paidAt ? ` et payée (${formatEuros(order.totalAmount)})` : ""}. Un
+                  récapitulatif est disponible dans votre compte{order.paidAt ? ", avec la facture" : ""}.
                 </p>
               ) : (
-                <p className="t-lead mt-6 max-w-xl text-graphite">
-                  La commande <strong className="t-spec text-ink">{order.number}</strong> est confirmée. Vous réglerez {formatEuros(order.totalAmount)}{" "}
-                  {order.isPickupInStore ? "au retrait en magasin" : "à la livraison"}. Le récapitulatif vous a été envoyé par email et reste disponible dans votre compte.
-                </p>
+                <>
+                  <p className="t-lead mt-6 max-w-xl text-graphite">
+                    La commande <strong className="t-spec text-ink">{order.number}</strong> est enregistrée et vos articles sont réservés. Pour la valider, réglez{" "}
+                    {formatEuros(order.totalAmount)} par virement bancaire : la facture et nos coordonnées bancaires vous ont été envoyées par email.
+                  </p>
+                  <TransferDetails amount={order.totalAmount} reference={order.number} bank={bankDetailsOf(settings)} className="mt-8 max-w-xl" />
+                </>
               )}
             </>
           ) : (
@@ -63,11 +85,14 @@ export default async function ConfirmationPage({ searchParams }: { searchParams:
             </>
           )}
           <div className="mt-10 flex flex-wrap gap-3">
-            <ButtonLink href="/compte/commandes" size="lg" icon={<Arrow />}>
+            {order && (order.paidAt || awaitingTransfer) && (
+              // Lien direct vers le PDF (route API) : pas de navigation côté client.
+              <a href={`/api/orders/${order._id}/invoice?download=1`} download className={buttonClasses({ size: "lg" })} data-testid="confirmation-invoice">
+                Télécharger la facture
+              </a>
+            )}
+            <ButtonLink href="/compte/commandes" size="lg" variant={paid ? "outline" : "solid"} icon={<Arrow />}>
               Mes commandes
-            </ButtonLink>
-            <ButtonLink href="/boutique" size="lg" variant="outline">
-              Continuer mes achats
             </ButtonLink>
           </div>
         </div>
@@ -76,35 +101,15 @@ export default async function ConfirmationPage({ searchParams }: { searchParams:
           <aside className="self-start bg-mist p-6 lg:p-8" aria-label="Et maintenant ?">
             <h2 className="t-h3">Et maintenant ?</h2>
             <ol className="mt-6 flex flex-col gap-5 text-sm">
-              <li className="flex gap-4">
-                <span className="t-spec mt-0.5 text-graphite">01</span>
-                <span>
-                  <span className="block font-medium">Préparation</span>
-                  <span className="text-graphite">Nous vérifions et préparons vos {count} article{count > 1 ? "s" : ""}.</span>
-                </span>
-              </li>
-              <li className="flex gap-4">
-                <span className="t-spec mt-0.5 text-graphite">02</span>
-                <span>
-                  <span className="block font-medium">{order.isPickupInStore ? "Retrait en magasin" : DELIVERY_LABELS[order.deliveryMethod ?? ""] ?? "Livraison"}</span>
-                  <span className="text-graphite">
-                    {order.isPickupInStore
-                      ? `Nous vous prévenons dès que c'est prêt : ${settings.addressLine}, ${settings.postalCode} ${settings.city}. ${settings.storeHours}.`
-                      : order.shippingAddress
-                        ? `Nous vous appelons pour fixer le créneau de livraison au ${order.shippingAddress.address}, ${order.shippingAddress.postalCode} ${order.shippingAddress.city}.`
-                        : "Nous vous appelons pour fixer le créneau de livraison."}
+              {steps.map(([title, text], i) => (
+                <li key={title} className="flex gap-4">
+                  <span className="t-spec mt-0.5 text-graphite">0{i + 1}</span>
+                  <span>
+                    <span className="block font-medium">{title}</span>
+                    <span className="text-graphite">{text}</span>
                   </span>
-                </span>
-              </li>
-              <li className="flex gap-4">
-                <span className="t-spec mt-0.5 text-graphite">03</span>
-                <span>
-                  <span className="block font-medium">Une question ?</span>
-                  <span className="text-graphite">
-                    {settings.phone} · {settings.email}
-                  </span>
-                </span>
-              </li>
+                </li>
+              ))}
             </ol>
           </aside>
         )}

@@ -5,10 +5,13 @@ import { prisma } from "@/lib/prisma";
 import { formatEuros, toEuros } from "@/lib/money";
 import { SITE_URL } from "@/lib/seo";
 import { getSiteSettings } from "@/lib/cms";
+import type { SiteSettings } from "@/lib/cms/types";
+import { bankDetailsOf, type BankDetails } from "@/lib/bank";
+import { buildInvoicePdf, invoiceAvailable, invoiceNumber, invoiceStore } from "./invoice";
 import { sendMail, sendMailInBackground, STORE_EMAIL } from "./mailer";
 
 /**
- * Emails transactionnels : confirmation de commande (client et magasin), suivi de statut,
+ * Emails transactionnels : confirmation de commande (client et magasin, facture PDF jointe), suivi de statut,
  * bienvenue, newsletter. Texte simple et lisible ; envoi par SMTP ou outbox (voir mailer.ts).
  */
 
@@ -33,7 +36,7 @@ function summary(o: FullOrder) {
   const lines = o.items.map((i) => `- ${i.quantity} × ${i.marque} ${i.titre} — ${eur(i.lineTotalCents)}`);
   const delivery = o.isPickupInStore
     ? "Retrait en magasin : gratuit"
-    : `${DELIVERY[o.deliveryMethod as keyof typeof DELIVERY] ?? "Livraison"}${o.deliveryDistanceKm ? ` (${Math.round(o.deliveryDistanceKm)} km)` : ""}${o.includeOldItemPickup ? ", reprise de l'ancien appareil" : ""} : ${eur(o.deliveryFeeCents)}`;
+    : `${DELIVERY[o.deliveryMethod as keyof typeof DELIVERY] ?? "Livraison"}${o.deliveryDistanceKm ? ` (${Math.round(o.deliveryDistanceKm)} km)` : ""}${o.includeOldItemPickup ? ", reprise de l'ancien appareil" : ""} : ${o.deliveryFeeCents ? eur(o.deliveryFeeCents) : "offerte"}`;
   return [
     ...lines,
     "",
@@ -46,57 +49,98 @@ function summary(o: FullOrder) {
 
 const PAYMENT_LABELS: Record<string, string> = {
   stripe: "carte bancaire en ligne (Stripe)",
+  virement: "virement bancaire avant livraison",
   sur_place: "à régler à la livraison ou au retrait",
   test: "simulation (tests automatisés)",
 };
 
-/** Commande payée ou confirmée (règlement à la livraison) : récapitulatif au client et alerte au magasin. */
+/** Facture PDF en pièce jointe (commande payée ou en attente de virement). */
+function invoiceAttachments(o: FullOrder, s: SiteSettings | null) {
+  if (!s || !invoiceAvailable(o)) return [];
+  return [{ filename: `facture_${invoiceNumber(o)}.pdf`, content: buildInvoicePdf(o, o.user, invoiceStore(s), bankDetailsOf(s)), contentType: "application/pdf" }];
+}
+
+/** Montant, référence et coordonnées bancaires du virement attendu. */
+function transferDetails(o: FullOrder, bank: BankDetails | null) {
+  return [
+    `Montant : ${eur(o.totalCents)}`,
+    `Référence à indiquer : ${o.number}`,
+    ...(bank ? [`Titulaire du compte : ${bank.holder}`, ...(bank.bank ? [`Banque : ${bank.bank}`] : []), `IBAN : ${bank.iban}`, ...(bank.bic ? [`BIC : ${bank.bic}`] : [])] : []),
+  ].join("\n");
+}
+
+/**
+ * Commande payée, ou confirmée avec règlement par virement : récapitulatif au client (facture PDF
+ * jointe, avec les coordonnées bancaires s'il reste à payer) et alerte au magasin.
+ */
 export async function notifyOrderPaid(orderId: string) {
   const o = await loadOrder(orderId);
   if (!o) return;
   const s = await getSiteSettings().catch(() => null);
-  const onDelivery = o.paymentProvider === "sur_place" && !o.paidAt;
+  const bank = bankDetailsOf(s);
+  const awaitingTransfer = o.status === "EN_ATTENTE_VIREMENT" && !o.paidAt;
+  const attachments = invoiceAttachments(o, s);
   const where = o.isPickupInStore
     ? `Retrait en magasin : ${s ? `${s.addressLine}, ${s.postalCode} ${s.city} (${s.storeHours})` : "à l'adresse du magasin"}. Nous vous prévenons dès que votre commande est prête.`
     : `Adresse de livraison :
 ${addressLines(o.shippingAddress as AddressJson)}
 
 Nous vous appelons pour convenir du jour et du créneau de livraison.`;
-  const payment = onDelivery
-    ? `elle est confirmée. Vous réglerez ${eur(o.totalCents)} ${o.isPickupInStore ? "au retrait de la commande en magasin" : "à la livraison"}.`
-    : `le paiement de ${eur(o.totalCents)} a bien été reçu.`;
+  const intro = awaitingTransfer
+    ? `Merci pour votre commande ${o.number} : elle est enregistrée et vos articles sont réservés.
+
+Pour la valider, réglez ${eur(o.totalCents)} par virement bancaire :
+${transferDetails(o, bank)}${bank ? "" : "\n\nNos coordonnées bancaires vous sont envoyées très rapidement par email."}
+
+Indiquez bien la référence ${o.number} dans le libellé du virement. Votre commande est préparée et livrée dès réception du virement.`
+    : `Merci pour votre commande ${o.number} : le paiement de ${eur(o.totalCents)} a bien été reçu.`;
   await sendMail({
     to: o.user.email,
     tag: "commande-confirmation",
-    subject: `Commande ${o.number} confirmée`,
+    subject: awaitingTransfer ? `Commande ${o.number} : facture et coordonnées de paiement` : `Commande ${o.number} confirmée`,
     text: `Bonjour ${o.user.name},
 
-Merci pour votre commande ${o.number} : ${payment}
+${intro}${attachments.length ? "\n\nVotre facture est jointe à cet email (PDF)." : ""}
 
 ${summary(o)}
 
 ${where}
 
-${onDelivery ? "Suivre la commande" : "Suivre la commande et télécharger la facture"} : ${SITE_URL}/compte/commandes
+Suivre la commande et retrouver la facture : ${SITE_URL}/compte/commandes
 
 ${await signature()}`,
+    attachments,
   });
+  const storeAction = awaitingTransfer
+    ? `, en attente (référence ${o.number}).
+À réception du virement, passez la commande à « Payée (virement reçu) » dans WordPress → Boutique → Commandes : le client est prévenu et la commande peut être préparée.${
+        bank
+          ? ""
+          : "\n\nATTENTION : coordonnées bancaires non renseignées, le client ne les a pas reçues. Renseignez l'IBAN dans WordPress → Réglages → Site et magasin, puis envoyez-les-lui en répondant à cet email."
+      }`
+    : "";
   await sendMail({
     to: STORE_EMAIL,
     replyTo: o.user.email,
     tag: "commande-magasin",
-    subject: `Nouvelle commande ${o.number} — ${eur(o.totalCents)}`,
+    subject: `Nouvelle commande ${o.number} — ${eur(o.totalCents)}${awaitingTransfer ? " — virement attendu" : ""}`,
     text: `Client : ${o.user.name} <${o.user.email}>
 ${o.isPickupInStore ? "Retrait en magasin" : `Livraison :
 ${addressLines(o.shippingAddress as AddressJson)}`}
 
 ${summary(o)}
 
-Paiement : ${PAYMENT_LABELS[o.paymentProvider ?? ""] ?? o.paymentProvider ?? "—"}`,
+Paiement : ${PAYMENT_LABELS[o.paymentProvider ?? ""] ?? o.paymentProvider ?? "—"}${storeAction}`,
+    attachments,
   });
 }
 
-const STATUS_MAIL: Partial<Record<OrderStatus, (o: FullOrder) => { subject: string; body: string }>> = {
+const STATUS_MAIL: Partial<Record<OrderStatus, (o: FullOrder) => { subject: string; body: string; invoice?: boolean }>> = {
+  PAYEE: (o) => ({
+    subject: `Virement reçu : commande ${o.number} en préparation`,
+    body: `Nous avons bien reçu votre virement de ${eur(o.totalCents)}. Votre commande passe en préparation : ${o.isPickupInStore ? "nous vous prévenons dès qu'elle est prête à retirer." : "nous vous appelons pour convenir du jour et du créneau de livraison."} Votre facture acquittée est jointe à cet email.`,
+    invoice: true,
+  }),
   EN_PREPARATION: (o) => ({ subject: `Commande ${o.number} en préparation`, body: "Votre commande est en cours de préparation dans notre magasin." }),
   EXPEDIEE: (o) =>
     o.isPickupInStore
@@ -118,12 +162,14 @@ export async function notifyOrderStatus(orderId: string, status: OrderStatus) {
   if (!make) return;
   const o = await loadOrder(orderId);
   if (!o) return;
-  const { subject, body } = make(o);
+  const { subject, body, invoice } = make(o);
+  const attachments = invoice ? invoiceAttachments(o, await getSiteSettings().catch(() => null)) : [];
   await sendMail({
     to: o.user.email,
     tag: `commande-${status.toLowerCase()}`,
     subject,
     text: `Bonjour ${o.user.name},\n\n${body}\n\nCommande ${o.number} — ${eur(o.totalCents)}\nDétail et facture : ${SITE_URL}/compte/commandes\n\n${await signature()}`,
+    attachments,
   });
 }
 

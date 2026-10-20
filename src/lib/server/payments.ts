@@ -6,15 +6,16 @@ import type { Order } from "@prisma/client";
  * Fournisseurs de paiement.
  * - Stripe : utilisé dès que STRIPE_SECRET_KEY est défini. Le statut est toujours vérifié côté
  *   serveur auprès de Stripe (jamais sur la seule parole du client).
- * - Paiement à la livraison ou au retrait (« sur_place ») : proposé sans clé Stripe, ou en plus de
- *   Stripe avec PAY_ON_DELIVERY=true. La commande est confirmée sans paiement en ligne ; le magasin
- *   constate le règlement en passant la commande à « Livrée ».
+ * - Virement bancaire avant livraison (« virement ») : proposé sans clé Stripe, ou en plus de Stripe
+ *   avec BANK_TRANSFER=true. La commande est confirmée et ses articles réservés ; le client reçoit par
+ *   email la facture avec les coordonnées bancaires, et le magasin la passe à « Payée » (virement reçu)
+ *   avant de la préparer et de la livrer.
  * - Simulation (« test ») : réservée aux tests automatisés, activée seulement par TEST_PAYMENTS=true.
  */
 export type PaymentStatus = "succeeded" | "processing" | "requires_action" | "failed" | "canceled";
 
 export interface PaymentProvider {
-  name: "stripe" | "sur_place";
+  name: "stripe" | "virement";
   mode: "live" | "test";
   createIntent(order: Order, email?: string | null): Promise<{ clientSecret: string | null; providerRef: string }>;
   retrieve(providerRef: string): Promise<{ status: PaymentStatus; orderId: string | null; amountCents: number }>;
@@ -60,28 +61,28 @@ const stripeProvider = (stripe: Stripe): PaymentProvider => ({
   },
 });
 
-/** Référence du règlement à la livraison ou au retrait d'une commande. */
-export const onDeliveryRef = (orderId: string) => `sur_place_${orderId}`;
+/** Référence du virement bancaire d'une commande. */
+export const transferRef = (orderId: string) => `virement_${orderId}`;
 
-const onDeliveryProvider: PaymentProvider = {
-  name: "sur_place",
+const bankTransferProvider: PaymentProvider = {
+  name: "virement",
   mode: "live",
   async createIntent(order) {
-    return { clientSecret: null, providerRef: onDeliveryRef(order.id) };
+    return { clientSecret: null, providerRef: transferRef(order.id) };
   },
   async retrieve(ref) {
-    return { status: "processing", orderId: ref.replace(/^sur_place_/, ""), amountCents: 0 };
+    return { status: "processing", orderId: ref.replace(/^virement_/, ""), amountCents: 0 };
   },
 };
 
 export function getPaymentProvider(): PaymentProvider {
   const stripe = getStripe();
-  return stripe ? stripeProvider(stripe) : onDeliveryProvider;
+  return stripe ? stripeProvider(stripe) : bankTransferProvider;
 }
 
-/** Paiement à la livraison ou au retrait : toujours proposé sans Stripe, en option avec Stripe. */
-export function isPayOnDeliveryEnabled() {
-  return !getStripe() || process.env.PAY_ON_DELIVERY === "true";
+/** Virement bancaire avant livraison : toujours proposé sans Stripe, en option avec Stripe. */
+export function isBankTransferEnabled() {
+  return !getStripe() || process.env.BANK_TRANSFER === "true";
 }
 
 /** Simulation de paiement : uniquement pour les tests automatisés (jamais visible des clients). */

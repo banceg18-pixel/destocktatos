@@ -2,10 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { OrderActions } from "@/components/account/OrderActions";
+import { TransferDetails } from "@/components/checkout/TransferDetails";
 import { ButtonLink } from "@/components/ui/Button";
 import { ImageComponent } from "@/components/ui/ImageComponent";
 import { Arrow } from "@/components/ui/Primitives";
 import { getSession } from "@/lib/auth";
+import { bankDetailsOf } from "@/lib/bank";
+import { getSiteSettings } from "@/lib/cms";
 import { formatEuros } from "@/lib/money";
 import { displayTitle } from "@/lib/text";
 import { listUserOrders, toOrderDTO } from "@/lib/server/orders";
@@ -17,7 +20,7 @@ export const metadata: Metadata = { title: "Mes commandes", robots: { index: fal
 export default async function CommandesPage() {
   const session = await getSession();
   if (!session?.user?.id) redirect("/connexion?callbackUrl=/compte/commandes");
-  const orders = (await listUserOrders(session.user.id)).map(toOrderDTO);
+  const [orders, bank] = await Promise.all([listUserOrders(session.user.id).then((list) => list.map(toOrderDTO)), getSiteSettings().then(bankDetailsOf, () => null)]);
 
   return (
     <div>
@@ -41,7 +44,9 @@ export default async function CommandesPage() {
                     Passée le {new Date(o.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
                     {o.paidAt
                       ? ` · payée le ${new Date(o.paidAt).toLocaleDateString("fr-FR")}`
-                      : o.paymentProvider === "sur_place" && o.status !== "ANNULEE" && o.status !== "EN_ATTENTE_PAIEMENT"
+                      : o.status === "EN_ATTENTE_VIREMENT"
+                        ? " · à régler par virement"
+                        : o.paymentProvider === "sur_place" && o.status !== "ANNULEE" && o.status !== "EN_ATTENTE_PAIEMENT"
                         ? ` · à régler ${o.isPickupInStore ? "au retrait" : "à la livraison"}`
                         : ""}
                   </p>
@@ -103,6 +108,7 @@ export default async function CommandesPage() {
                   </dl>
                 </div>
               </div>
+              {o.status === "EN_ATTENTE_VIREMENT" && <TransferDetails amount={o.totalAmount} reference={o.number} bank={bank} className="mx-4 mb-5 sm:mx-5" />}
               <footer className="border-t border-line px-4 py-4 sm:px-5">
                 <OrderActions orderId={o._id} status={o.status} paid={!!o.paidAt} />
               </footer>

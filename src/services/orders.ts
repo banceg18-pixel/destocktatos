@@ -4,7 +4,7 @@ import type { CreateOrderPayload } from "@/types/cart";
 export interface OrderDTO {
   _id: string;
   number: string;
-  status: "EN_ATTENTE_PAIEMENT" | "PAYEE" | "EN_PREPARATION" | "EXPEDIEE" | "LIVREE" | "ANNULEE" | "PAIEMENT_ECHOUE";
+  status: "EN_ATTENTE_PAIEMENT" | "EN_ATTENTE_VIREMENT" | "PAYEE" | "EN_PREPARATION" | "EXPEDIEE" | "LIVREE" | "ANNULEE" | "PAIEMENT_ECHOUE";
   createdAt: string;
   paidAt: string | null;
   expiresAt: string | null;
@@ -44,7 +44,7 @@ export function cancelOrder(id: string) {
 }
 
 export function createPaymentIntent() {
-  return apiFetch<{ clientSecret: string | null; provider: "stripe" | "sur_place"; mode: "live" | "test"; payOnDelivery: boolean; orderId: string; amount: number }>(
+  return apiFetch<{ clientSecret: string | null; provider: "stripe" | "virement"; mode: "live" | "test"; bankTransfer: boolean; orderId: string; amount: number }>(
     "/api/checkout/create-payment-intent",
     { method: "POST", json: {}, timeoutMs: 45_000 },
   );
@@ -58,8 +58,9 @@ export function confirmStripePayment(paymentIntentId: string, billingAddress?: R
   });
 }
 
-export function payOnDelivery(orderId: string, billingAddress: Record<string, string>) {
-  return apiFetch<{ status: string; orderId: string; number: string }>("/api/checkout/pay-on-delivery", {
+/** Confirme la commande avec un règlement par virement bancaire avant livraison. */
+export function confirmBankTransfer(orderId: string, billingAddress: Record<string, string>) {
+  return apiFetch<{ status: string; orderId: string; number: string }>("/api/checkout/bank-transfer", {
     method: "POST",
     json: { orderId, billingAddress },
     timeoutMs: 45_000,
@@ -72,6 +73,7 @@ export function invoiceLink(id: string, kind: "download" | "view") {
 
 export const ORDER_STATUS_LABELS: Record<OrderDTO["status"], { label: string; className: string }> = {
   EN_ATTENTE_PAIEMENT: { label: "En attente de paiement", className: "border border-warning/50 text-warning" },
+  EN_ATTENTE_VIREMENT: { label: "En attente de virement", className: "border border-warning/50 text-warning" },
   PAYEE: { label: "Payée", className: "bg-ink text-paper" },
   EN_PREPARATION: { label: "En préparation", className: "bg-ink text-paper" },
   EXPEDIEE: { label: "En livraison", className: "bg-ink text-paper" },

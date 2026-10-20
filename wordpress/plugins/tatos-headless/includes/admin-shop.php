@@ -11,6 +11,7 @@ if (!defined('ABSPATH')) {
 
 const TATOS_ORDER_LABELS = [
     'EN_ATTENTE_PAIEMENT' => 'En attente de paiement',
+    'EN_ATTENTE_VIREMENT' => 'En attente de virement',
     'PAYEE' => 'Payée',
     'EN_PREPARATION' => 'En préparation',
     'EXPEDIEE' => 'Expédiée',
@@ -38,11 +39,17 @@ function tatos_order_label(string $status, bool $pickup = false): string
 /** Mode de règlement d'une commande, en clair. */
 function tatos_payment_label(?string $provider, ?string $mode = null): string
 {
-    $label = ['stripe' => 'Carte bancaire (Stripe)', 'sur_place' => 'À la livraison ou au retrait', 'test' => 'Simulation (tests automatisés)'][$provider ?? ''] ?? ($provider ?: '—');
+    $label = ['stripe' => 'Carte bancaire (Stripe)', 'virement' => 'Virement bancaire', 'sur_place' => 'À la livraison ou au retrait', 'test' => 'Simulation (tests automatisés)'][$provider ?? ''] ?? ($provider ?: '—');
     return $provider === 'stripe' && $mode === 'test' ? $label . ' — clé Stripe de test' : $label;
 }
 
-/** Commande confirmée dont le règlement se fera à la livraison ou au retrait (pas encore encaissé). */
+/** Commande confirmée en attente du virement du client (à passer à « Payée » à réception). */
+function tatos_order_awaiting_transfer(array $o): bool
+{
+    return ($o['status'] ?? '') === 'EN_ATTENTE_VIREMENT';
+}
+
+/** Ancienne commande confirmée dont le règlement se fait à la livraison ou au retrait (pas encore encaissé). */
 function tatos_order_to_collect(array $o): bool
 {
     return ($o['paymentProvider'] ?? '') === 'sur_place' && empty($o['paidAt']) && !in_array($o['status'], ['ANNULEE', 'EN_ATTENTE_PAIEMENT'], true);
@@ -55,7 +62,7 @@ function tatos_badge(string $text, string $tone = ''): string
 
 function tatos_order_tone(string $status): string
 {
-    return ['PAYEE' => 'warn', 'EN_PREPARATION' => 'warn', 'EXPEDIEE' => 'info', 'LIVREE' => 'ok', 'ANNULEE' => 'muted', 'PAIEMENT_ECHOUE' => 'bad', 'EN_ATTENTE_PAIEMENT' => 'muted'][$status] ?? '';
+    return ['EN_ATTENTE_VIREMENT' => 'info', 'PAYEE' => 'warn', 'EN_PREPARATION' => 'warn', 'EXPEDIEE' => 'info', 'LIVREE' => 'ok', 'ANNULEE' => 'muted', 'PAIEMENT_ECHOUE' => 'bad', 'EN_ATTENTE_PAIEMENT' => 'muted'][$status] ?? '';
 }
 
 function tatos_admin_link(string $page, array $args = []): string
@@ -146,6 +153,7 @@ function tatos_kpis(array $s): string
     $cards = [
         ['Chiffre d\'affaires (30 j)', tatos_eur($s['revenue30Cents'] ?? 0), ($s['orders30'] ?? 0) . ' commande(s) payée(s)', tatos_admin_link('tatos-orders')],
         ['À préparer / expédier', (string) ($s['toShip'] ?? 0), 'confirmées, pas encore parties', tatos_admin_link('tatos-orders', ['status' => 'A_TRAITER'])],
+        ['Virements attendus', (string) ($s['awaitingTransfer'] ?? 0), 'commandes à passer à « Payée » à réception', tatos_admin_link('tatos-orders', ['status' => 'EN_ATTENTE_VIREMENT'])],
         ['Messages à traiter', (string) (($s['messages']['contact'] ?? 0) + ($s['messages']['services'] ?? 0) + ($s['messages']['tickets'] ?? 0)), ($s['messages']['services'] ?? 0) . ' rendez-vous, ' . ($s['messages']['tickets'] ?? 0) . ' signalement(s)', tatos_admin_link('tatos-messages')],
         ['Clients', (string) ($s['customers'] ?? 0), '+' . ($s['newCustomers'] ?? 0) . ' sur 30 jours', tatos_admin_link('tatos-customers')],
         ['Stock faible', (string) ($s['lowStockCount'] ?? 0), 'produits à 0 ou 1 exemplaire', tatos_admin_link('tatos-stock', ['low' => '1'])],
@@ -264,7 +272,7 @@ function tatos_page_orders(): void
             '<tr><td><a href="%s"><strong>%s</strong></a>%s</td><td>%s</td><td>%s<br><span class="description">%s</span></td><td>%s</td><td>%d</td><td>%s</td><td>%s</td></tr>',
             esc_url(tatos_admin_link('tatos-orders', ['order' => $o['id']])),
             esc_html($o['number']),
-            tatos_order_to_collect($o) ? ' ' . tatos_badge('à encaisser', 'info') : '',
+            tatos_order_awaiting_transfer($o) ? ' ' . tatos_badge('virement attendu', 'info') : (tatos_order_to_collect($o) ? ' ' . tatos_badge('à encaisser', 'info') : ''),
             esc_html(tatos_date($o['createdAt'])),
             esc_html($o['customer']),
             esc_html($o['email']),
@@ -300,7 +308,8 @@ function tatos_order_detail(string $id): void
     $pickup = !empty($o['isPickupInStore']);
     printf('<h1>Commande %s %s</h1>', esc_html($o['number']), tatos_badge(tatos_order_label($o['status'], $pickup), tatos_order_tone($o['status'])));
     $collect = tatos_order_to_collect($o);
-    printf('<p>Passée le %s%s · Client : <a href="%s">%s</a> (%s)</p>', esc_html(tatos_date($o['createdAt'])), $o['paidAt'] ? ', payée le ' . esc_html(tatos_date($o['paidAt'])) : ($collect ? ', à encaisser ' . ($pickup ? 'au retrait' : 'à la livraison') . ' (' . esc_html(tatos_eur($o['totalCents'])) . ')' : ''), esc_url(tatos_admin_link('tatos-customers', ['customer' => $o['user']['id']])), esc_html($o['user']['name']), esc_html($o['user']['email']));
+    $transfer = tatos_order_awaiting_transfer($o);
+    printf('<p>Passée le %s%s · Client : <a href="%s">%s</a> (%s)</p>', esc_html(tatos_date($o['createdAt'])), $o['paidAt'] ? ', payée le ' . esc_html(tatos_date($o['paidAt'])) : ($transfer ? ', virement attendu de ' . esc_html(tatos_eur($o['totalCents'])) . ' (référence ' . esc_html($o['number']) . ')' : ($collect ? ', à encaisser ' . ($pickup ? 'au retrait' : 'à la livraison') . ' (' . esc_html(tatos_eur($o['totalCents'])) . ')' : '')), esc_url(tatos_admin_link('tatos-customers', ['customer' => $o['user']['id']])), esc_html($o['user']['name']), esc_html($o['user']['email']));
     echo '<div class="tatos-columns"><div>';
     echo '<h2>Articles</h2><table class="widefat striped"><thead><tr><th>Produit</th><th>Prix unitaire</th><th>Qté</th><th>Total</th></tr></thead><tbody>';
     foreach ($o['items'] as $it) {
@@ -328,16 +337,18 @@ function tatos_order_detail(string $id): void
     if ($o['status'] !== 'ANNULEE') {
         echo '<div class="tatos-card"><h2>Changer le statut</h2>' . tatos_action_form_open('tatos_order_status', 'tatos-confirm-cancel');
         printf('<input type="hidden" name="order" value="%s"><p><select name="status">', esc_attr($o['id']));
-        foreach (['EN_PREPARATION', 'EXPEDIEE', 'LIVREE', 'ANNULEE'] as $st) {
-            if (!$o['paidAt'] && !$collect && $st !== 'ANNULEE') {
+        // En attente de virement : « Payée (virement reçu) » ou annulation ; ensuite préparation, livraison.
+        foreach ($transfer ? ['EN_ATTENTE_VIREMENT', 'PAYEE', 'ANNULEE'] : ['EN_PREPARATION', 'EXPEDIEE', 'LIVREE', 'ANNULEE'] as $st) {
+            if (!$transfer && !$o['paidAt'] && !$collect && $st !== 'ANNULEE') {
                 continue;
             }
-            printf('<option value="%s" %s>%s</option>', esc_attr($st), selected($o['status'], $st, false), esc_html(tatos_order_label($st, $pickup)));
+            $label = $st === 'PAYEE' ? 'Payée (virement reçu)' : tatos_order_label($st, $pickup);
+            printf('<option value="%s" %s %s>%s</option>', esc_attr($st), selected($o['status'], $st, false), $st === 'EN_ATTENTE_VIREMENT' ? 'disabled' : '', esc_html($label));
         }
         echo '</select></p><p><label><input type="checkbox" name="notify" value="1" checked> Prévenir le client par email</label></p>';
-        echo '<p class="description">' . ($collect ? 'Passer la commande à « ' . esc_html(tatos_order_label('LIVREE', $pickup)) . ' » enregistre le règlement reçu sur place et rend la facture disponible. ' : '') . 'Annuler remet les articles en stock. Un paiement par carte se rembourse depuis votre espace Stripe.</p><p><button class="button button-primary">Mettre à jour</button></p></form></div>';
+        echo '<p class="description">' . ($transfer ? 'À réception du virement sur votre compte, choisissez « Payée (virement reçu) » : le client reçoit sa facture acquittée et la commande peut être préparée puis livrée. ' : '') . ($collect ? 'Passer la commande à « ' . esc_html(tatos_order_label('LIVREE', $pickup)) . ' » enregistre le règlement reçu sur place et rend la facture disponible. ' : '') . 'Annuler remet les articles en stock. Un paiement par carte se rembourse depuis votre espace Stripe.</p><p><button class="button button-primary">Mettre à jour</button></p></form></div>';
     }
-    if ($o['paidAt']) {
+    if ($o['paidAt'] || $transfer) {
         printf('<div class="tatos-card"><h2>Facture</h2><p><a class="button" target="_blank" href="%s">Ouvrir la facture PDF</a></p></div>', esc_url(wp_nonce_url(admin_url('admin-post.php?action=tatos_invoice&order=' . rawurlencode($o['id'])), 'tatos_shop_action', '_tatos_nonce')));
     }
     echo '</div></div>';
@@ -649,7 +660,7 @@ add_action('admin_post_tatos_order_status', function () {
     tatos_guard();
     $status = tatos_post('status');
     $res = tatos_site_request('PATCH', 'orders/' . rawurlencode(tatos_post('order')), ['status' => $status, 'notify' => !empty($_POST['notify'])]);
-    tatos_done($res, 'Statut mis à jour : ' . tatos_order_label($status) . (!empty($_POST['notify']) ? ' (client prévenu par email).' : '.'));
+    tatos_done($res, 'Statut mis à jour : ' . ($status === 'PAYEE' ? 'Payée (virement reçu)' : tatos_order_label($status)) . (!empty($_POST['notify']) ? ' (client prévenu par email).' : '.'));
 });
 
 add_action('admin_post_tatos_invoice', function () {

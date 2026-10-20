@@ -16,7 +16,7 @@ vi.mock("@/lib/auth", () => ({
 
 const { handleAdmin } = await import("@/lib/server/admin");
 const { handleError } = await import("@/lib/server/api");
-const { markOrderPaid } = await import("@/lib/server/orders");
+const { confirmBankTransfer, markOrderPaid } = await import("@/lib/server/orders");
 const { unsubscribeToken } = await import("@/lib/server/notifications");
 const me = await import("@/app/api/users/me/route");
 const password = await import("@/app/api/users/me/password/route");
@@ -113,12 +113,56 @@ describe("API d'administration (espace WordPress)", () => {
     expect((await admin("PATCH", `orders/${order.id}`, { status: "ANNULEE", notify: false })).status).toBe(200);
     expect((await prisma.product.findUniqueOrThrow({ where: { id: product.id } })).stock).toBe(5);
     expect((await admin("PATCH", `orders/${order.id}`, { status: "LIVREE" })).status).toBe(409);
-    expect((await admin("PATCH", `orders/${order.id}`, { status: "PAYEE" })).status).toBe(400);
+    expect((await admin("PATCH", `orders/${order.id}`, { status: "PAYEE" })).status).toBe(409);
+    expect((await admin("PATCH", `orders/${order.id}`, { status: "INCONNU" })).status).toBe(400);
 
     const user = await makeUser();
     const p = await makeProduct();
     const pending = await prisma.order.create({ data: { number: "TAT-TEST-PENDING", userId: user.id, subtotalCents: 100, totalCents: 100, items: { create: [{ productId: p.id, titre: p.titre, marque: p.marque, unitPriceCents: 100, quantity: 1, lineTotalCents: 100 }] } } });
     expect((await admin("PATCH", `orders/${pending.id}`, { status: "EN_PREPARATION" })).status).toBe(409);
+    expect((await admin("PATCH", `orders/${pending.id}`, { status: "PAYEE" })).status).toBe(409);
+  });
+
+  it("virement : articles réservés, facture PDF jointe à l'email, « Payée » à réception, puis préparation", async () => {
+    const user = await makeUser();
+    const p = await makeProduct({ stock: 4 });
+    const order = await prisma.order.create({
+      data: {
+        number: "TAT-TEST-VIR001",
+        userId: user.id,
+        subtotalCents: p.prixCents,
+        totalCents: p.prixCents,
+        isPickupInStore: true,
+        items: { create: [{ productId: p.id, titre: p.titre, marque: p.marque, unitPriceCents: p.prixCents, quantity: 1, lineTotalCents: p.prixCents }] },
+      },
+    });
+    await confirmBankTransfer(order.id);
+    const pending = await prisma.order.findUniqueOrThrow({ where: { id: order.id } });
+    expect([pending.status, pending.paymentProvider, pending.paidAt]).toEqual(["EN_ATTENTE_VIREMENT", "virement", null]);
+    await expect(confirmBankTransfer(order.id)).rejects.toThrow(/déjà confirmée/);
+
+    const [file] = await waitForMails("commande-confirmation", 1);
+    const mail = JSON.parse(fs.readFileSync(`${outbox}/${file}`, "utf8"));
+    expect(mail.subject).toContain("facture et coordonnées de paiement");
+    expect(mail.text).toContain("Référence à indiquer : TAT-TEST-VIR001");
+    expect(mail.attachments).toHaveLength(1);
+    expect(mail.attachments[0].filename).toBe("facture_FAC-TEST-VIR001.pdf");
+    expect(Buffer.from(mail.attachments[0].base64, "base64").subarray(0, 5).toString("latin1")).toBe("%PDF-");
+    const [storeFile] = await waitForMails("commande-magasin", 1);
+    expect(JSON.parse(fs.readFileSync(`${outbox}/${storeFile}`, "utf8")).subject).toContain("virement attendu");
+
+    // Paiement avant livraison : ni préparation ni livraison tant que le virement n'est pas reçu.
+    expect((await admin("PATCH", `orders/${order.id}`, { status: "EN_PREPARATION" })).status).toBe(409);
+    expect((await admin("PATCH", `orders/${order.id}`, { status: "LIVREE" })).status).toBe(409);
+    expect((await admin("GET", `orders/${order.id}/invoice`)).headers.get("content-type")).toBe("application/pdf");
+    expect((await admin("PATCH", `orders/${order.id}`, { status: "PAYEE", notify: true })).status).toBe(200);
+    const paid = await prisma.order.findUniqueOrThrow({ where: { id: order.id }, include: { payments: true } });
+    expect(paid.status).toBe("PAYEE");
+    expect(paid.paidAt).not.toBeNull();
+    expect(paid.payments.map((x) => [x.provider, x.status])).toEqual([["virement", "REUSSI"]]);
+    const [paidFile] = await waitForMails("commande-payee", 1);
+    expect(JSON.parse(fs.readFileSync(`${outbox}/${paidFile}`, "utf8")).attachments).toHaveLength(1);
+    expect((await admin("PATCH", `orders/${order.id}`, { status: "EN_PREPARATION", notify: false })).status).toBe(200);
   });
 
   it("codes promo : création, doublon, valeur invalide ; un code déjà utilisé est désactivé plutôt que supprimé", async () => {

@@ -41,10 +41,10 @@ avoir modifiées.
 
 | Variable | Obligatoire | Description |
 | --- | --- | --- |
-| `STRIPE_SECRET_KEY` | non | Clé secrète Stripe. Vide : règlement à la livraison ou au retrait uniquement. |
+| `STRIPE_SECRET_KEY` | non | Clé secrète Stripe. Vide : virement bancaire avant livraison uniquement. |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | avec Stripe | Clé publique Stripe. |
 | `STRIPE_WEBHOOK_SECRET` | avec Stripe | Secret de signature du webhook Stripe. |
-| `PAY_ON_DELIVERY` | non | Avec Stripe, `true` propose aussi le règlement à la livraison ou au retrait. |
+| `BANK_TRANSFER` | non | Avec Stripe, `true` propose aussi le virement bancaire. Les coordonnées bancaires se saisissent dans WordPress → Réglages → Site et magasin. |
 | `TEST_PAYMENTS` | non | Réservé aux tests automatisés (simulation de paiement). Ne jamais définir en production. |
 
 ### Emails

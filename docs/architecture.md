@@ -26,7 +26,7 @@ pour les variables d'environnement, [Configuration](configuration.md).
 | Site | Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS 4 | Pages publiques, espace client, panier, paiement, API JSON. |
 | Base de données | Prisma 6 + SQLite (`prisma/dev.db`) | Catalogue servi au site, comptes, adresses, commandes, paiements, coupons, avis, messages, abonnés. |
 | Authentification | NextAuth 4 (JWT) | Email + mot de passe (bcrypt), connexion Google optionnelle. |
-| Paiement | Stripe (Payment Element) ou règlement à la livraison | Vérification serveur systématique, webhook signé. |
+| Paiement | Stripe (Payment Element) ou virement bancaire avant livraison | Vérification serveur systématique, webhook signé. |
 | Emails | Nodemailer (SMTP) | Envoi transactionnel ; sans SMTP, messages conservés dans `outbox/`. |
 | Contenus et administration | WordPress 6+ + extension `wordpress/plugins/tatos-headless` | Pages, articles, FAQ, menus, produits, catégories, réglages ; écrans Boutique (commandes, clients…). |
 | Adresses | Base Adresse Nationale (api-adresse.data.gouv.fr) | Autocomplétion, géocodage, calcul de distance de livraison. |
@@ -88,15 +88,17 @@ Modèles Prisma (`prisma/schema.prisma`) :
    - **Stripe** : `POST /api/checkout/create-payment-intent` (montant issu de la commande), confirmation
      par Stripe.js, puis vérification serveur `POST /api/checkout/confirm` et webhook signé
      `POST /api/stripe/webhook` ; `markOrderPaid` passe la commande à `PAYEE` (idempotent) ;
-   - **à la livraison / au retrait** : `POST /api/checkout/pay-on-delivery` ; `confirmPayOnDelivery`
-     passe la commande à `EN_PREPARATION` avec `paymentProvider = "sur_place"` et un paiement
-     `EN_ATTENTE`.
-   Dans les deux cas : coupon consommé une seule fois, emails client et magasin.
-4. **Suivi** par le magasin (WordPress → `PATCH /api/admin/orders/:id`) : `EN_PREPARATION`,
-   `EXPEDIEE`, `LIVREE` ou `ANNULEE` (remise en stock). Pour une commande à régler sur place, `LIVREE`
-   enregistre le règlement (`paidAt`, paiement `REUSSI`).
+   - **virement bancaire** : `POST /api/checkout/bank-transfer` ; `confirmBankTransfer` passe la
+     commande à `EN_ATTENTE_VIREMENT` avec `paymentProvider = "virement"` et un paiement `EN_ATTENTE`.
+     Les articles restent réservés (pas d'expiration).
+   Dans les deux cas : coupon consommé une seule fois, emails client et magasin avec la facture PDF
+   jointe (pour un virement : montant, référence et coordonnées bancaires des réglages WordPress).
+4. **Suivi** par le magasin (WordPress → `PATCH /api/admin/orders/:id`) : `PAYEE` (virement reçu :
+   `paidAt`, paiement `REUSSI`, facture acquittée envoyée au client), puis `EN_PREPARATION`,
+   `EXPEDIEE`, `LIVREE`, ou `ANNULEE` (remise en stock). Une commande en attente de virement ne peut
+   ni être préparée ni livrée avant `PAYEE`.
 5. **Facture** PDF (`src/lib/server/invoice.ts`, générateur PDF interne `pdf.ts`) disponible dès que
-   la commande est réglée, côté client (`/compte/commandes`) et côté magasin.
+   la commande est payée ou en attente de virement, côté client (`/compte/commandes`) et côté magasin.
 
 Les commandes non réglées expirent après 30 minutes (`expireStaleOrders`) : statut `ANNULEE`, stock
 rendu.
@@ -107,8 +109,8 @@ rendu.
 
 | Configuration | Modes proposés au client |
 | --- | --- |
-| Sans `STRIPE_SECRET_KEY` | Règlement à la livraison ou au retrait. |
-| Avec Stripe | Carte bancaire ; plus le règlement sur place si `PAY_ON_DELIVERY=true`. |
+| Sans `STRIPE_SECRET_KEY` | Virement bancaire avant livraison. |
+| Avec Stripe | Carte bancaire ; plus le virement si `BANK_TRANSFER=true`. |
 | `TEST_PAYMENTS=true` (sans Stripe) | Active en plus `POST /api/checkout/test-payment`, simulation réservée aux tests automatisés ; jamais visible des clients. |
 
 Le montant facturé provient toujours de la commande enregistrée, jamais du navigateur.

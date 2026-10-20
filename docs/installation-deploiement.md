@@ -97,7 +97,7 @@ npm run docs:plugin
 | Base de données | PostgreSQL ou MySQL managé en production (SQLite convient à une seule instance sur un VPS avec disque persistant). |
 | WordPress | Hébergement PHP/MySQL classique (OVH, o2switch, Hostinger…) ou sur le même VPS. |
 | Emails | Fournisseur SMTP (Brevo, Mailjet, OVH, Gmail/Google Workspace, Outlook…). |
-| Paiement par carte | Compte Stripe activé (facultatif : sans Stripe, les clients règlent à la livraison ou au retrait). |
+| Paiement par carte | Compte Stripe activé (facultatif : sans Stripe, les clients règlent par virement bancaire avant livraison). |
 
 Exemple de noms de domaine : `www.votre-boutique.fr` pour le site, `admin.votre-boutique.fr` pour
 WordPress.
@@ -252,7 +252,7 @@ actif » une fois le SMTP configuré.
    `https://www.votre-boutique.fr/api/stripe/webhook`, événements `payment_intent.succeeded` et
    `payment_intent.payment_failed` ; copiez le secret de signature dans
    `STRIPE_WEBHOOK_SECRET`.
-4. Pour proposer aussi le règlement à la livraison ou au retrait : `PAY_ON_DELIVERY=true`.
+4. Pour proposer aussi le virement bancaire : `BANK_TRANSFER=true`.
 
 En local, utilisez des clés de test (`sk_test_…`) et relayez le webhook :
 
@@ -286,7 +286,7 @@ stripe listen --forward-to localhost:3000/api/stripe/webhook
 - [ ] Coordonnées du magasin à jour (**Réglages → Site et magasin**).
 - [ ] Pages légales complétées (raison sociale, SIRET, hébergeur, médiateur : passages entre crochets).
 - [ ] SMTP configuré et testé (création de compte, commande, réponse à un message).
-- [ ] Mode de règlement choisi : Stripe en clés `live` avec webhook, et/ou règlement à la livraison.
+- [ ] Mode de règlement choisi : Stripe en clés `live` avec webhook, et/ou virement bancaire (IBAN saisi dans WordPress → Réglages → Site et magasin).
 - [ ] Données de démonstration retirées : `npm run clean:test-data` ; compte client de démonstration supprimé si vous ne le gardez pas.
 - [ ] Commande réelle de bout en bout passée et annulée, facture vérifiée.
 - [ ] Sitemap déclaré dans la Search Console.

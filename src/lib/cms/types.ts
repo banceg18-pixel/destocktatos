@@ -25,6 +25,11 @@ export interface SiteSettings {
   /** Messages du bandeau fixe en haut de page (vides : pas de bandeau). */
   bannerMessage1?: string;
   bannerMessage2?: string;
+  /** Coordonnées bancaires du virement (facture, email de commande) ; IBAN vide : pas encore renseignées. */
+  bankHolder?: string;
+  bankName?: string;
+  bankIban?: string;
+  bankBic?: string;
 }
 
 export interface MenuSet {
