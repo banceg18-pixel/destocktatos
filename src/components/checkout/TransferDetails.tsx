@@ -1,14 +1,11 @@
-import type { BankDetails } from "@/lib/bank";
+import { transferLines, type BankDetails } from "@/lib/bank";
 import { formatEuros } from "@/lib/money";
 import { cn } from "@/lib/client/cn";
+import { CopyButton } from "./CopyButton";
 
-/** Virement attendu : montant, référence à indiquer et coordonnées bancaires du magasin. */
+/** Virement attendu : montant, communication, numéro de commande et coordonnées bancaires du magasin. */
 export function TransferDetails({ amount, reference, bank, className }: { amount: number; reference: string; bank: BankDetails | null; className?: string }) {
-  const rows: [string, string, boolean?][] = [
-    ["Montant", formatEuros(amount)],
-    ["Référence à indiquer", reference, true],
-    ...(bank ? ([["Titulaire", bank.holder], ...(bank.bank ? [["Banque", bank.bank]] : []), ["IBAN", bank.iban, true], ...(bank.bic ? [["BIC", bank.bic, true]] : [])] as [string, string, boolean?][]) : []),
-  ];
+  const { rows, note } = transferLines(formatEuros(amount), reference, bank);
   return (
     <div className={cn("border border-ink p-5 sm:p-6", className)} data-testid="transfer-details">
       <p className="font-medium">Virement bancaire à effectuer</p>
@@ -16,14 +13,14 @@ export function TransferDetails({ amount, reference, bank, className }: { amount
         {rows.map(([label, value, mono]) => (
           <div key={label} className="contents">
             <dt className="text-graphite">{label}</dt>
-            <dd className={cn("font-medium break-all", mono && "t-spec !text-sm text-ink select-all")}>{value}</dd>
+            <dd className={cn("flex flex-wrap items-center justify-between gap-2 font-medium", mono && "t-spec !text-sm text-ink select-all")}>
+              {value}
+              {mono && <CopyButton value={label === "IBAN" ? value.replace(/\s+/g, "") : value} label={label} />}
+            </dd>
           </div>
         ))}
       </dl>
-      <p className="mt-4 text-sm text-graphite">
-        {bank ? "Indiquez bien la référence dans le libellé du virement." : "Nos coordonnées bancaires vous sont envoyées par email."} Votre commande est préparée et livrée dès
-        réception du virement.
-      </p>
+      <p className="mt-4 text-sm text-graphite">{note}</p>
     </div>
   );
 }

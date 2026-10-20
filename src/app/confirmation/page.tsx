@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { CheckoutSteps } from "@/components/cart/CheckoutSteps";
-import { TransferDetails } from "@/components/checkout/TransferDetails";
+import { TransferGuide } from "@/components/checkout/TransferGuide";
+import { CopyButton } from "@/components/checkout/CopyButton";
 import { AccountInvite } from "@/components/checkout/AccountInvite";
 import { buttonClasses, ButtonLink } from "@/components/ui/Button";
 import { Arrow } from "@/components/ui/Primitives";
 import { IconAlert, IconCheck } from "@/components/ui/Icons";
 import { getSession } from "@/lib/auth";
-import { bankDetailsOf } from "@/lib/bank";
+import { bankDetailsOf, transferLines } from "@/lib/bank";
 import { getSiteSettings } from "@/lib/cms";
 import { formatEuros } from "@/lib/money";
 import { prisma } from "@/lib/prisma";
@@ -48,12 +49,34 @@ export default async function ConfirmationPage({ searchParams }: { searchParams:
         ? `Nous vous appelons pour fixer le créneau de livraison au ${order.shippingAddress.address}, ${order.shippingAddress.postalCode} ${order.shippingAddress.city}.`
         : "Nous vous appelons pour fixer le créneau de livraison."
     : "";
-  const steps: [string, string][] = order
+  const bank = bankDetailsOf(settings);
+  // Coordonnées du virement directement dans « Et maintenant ? » (copiables, comme dans la procédure).
+  const transfer = order && awaitingTransfer ? transferLines(formatEuros(order.totalAmount), order.number, bank) : null;
+  const steps: { title: string; body: React.ReactNode }[] = order
     ? [
-        ...(awaitingTransfer ? ([["Virement", `Faites le virement de ${formatEuros(order.totalAmount)} avec la référence ${order.number}.`]] as [string, string][]) : []),
-        ["Préparation", `${awaitingTransfer ? "Dès réception du virement, nous" : "Nous"} vérifions et préparons vos ${count} article${count > 1 ? "s" : ""}.`],
-        [order.isPickupInStore ? "Retrait en magasin" : (DELIVERY_LABELS[order.deliveryMethod ?? ""] ?? "Livraison"), delivery],
-        ["Une question ?", `${settings.phone} · ${settings.email}`],
+        ...(transfer
+          ? [
+              {
+                title: "Virement",
+                body: (
+                  <dl className="mt-2 flex flex-col gap-2" data-testid="transfer-account">
+                    {transfer.rows.map(([label, value, mono]) => (
+                      <div key={label} className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-line pb-2 last:border-b-0">
+                        <div className="min-w-0">
+                          <dt className="text-xs text-graphite">{label}</dt>
+                          <dd className={mono ? "t-spec !text-sm text-ink" : "font-medium text-ink"}>{value}</dd>
+                        </div>
+                        {mono && <CopyButton value={label === "IBAN" ? value.replace(/\s+/g, "") : value} label={label} />}
+                      </div>
+                    ))}
+                  </dl>
+                ),
+              },
+            ]
+          : []),
+        { title: "Préparation", body: `${awaitingTransfer ? "Dès réception du virement, nous" : "Nous"} vérifions et préparons vos ${count} article${count > 1 ? "s" : ""}.` },
+        { title: order.isPickupInStore ? "Retrait en magasin" : (DELIVERY_LABELS[order.deliveryMethod ?? ""] ?? "Livraison"), body: delivery },
+        { title: "Une question ?", body: `${settings.phone} · ${settings.email}` },
       ]
     : [];
 
@@ -79,9 +102,9 @@ export default async function ConfirmationPage({ searchParams }: { searchParams:
                 <>
                   <p className="t-lead mt-6 max-w-xl text-graphite">
                     La commande <strong className="t-spec text-ink">{order.number}</strong> est enregistrée et vos articles sont réservés. Pour la valider, réglez{" "}
-                    {formatEuros(order.totalAmount)} par virement bancaire : la facture et nos coordonnées bancaires vous ont été envoyées par email.
+                    {formatEuros(order.totalAmount)} par virement bancaire : la facture et nos coordonnées bancaires vous ont aussi été envoyées par email.
                   </p>
-                  <TransferDetails amount={order.totalAmount} reference={order.number} bank={bankDetailsOf(settings)} className="mt-8 max-w-xl" />
+                  <TransferGuide amount={order.totalAmount} orderNumber={order.number} bank={bank} className="mt-8 max-w-xl" />
                 </>
               )}
               {/* Commande passée sans être connecté : création du compte (ou connexion) pour retrouver ses factures. */}
@@ -102,11 +125,6 @@ export default async function ConfirmationPage({ searchParams }: { searchParams:
                 Télécharger la facture
               </a>
             )}
-            {order && awaitingTransfer && (
-              <a href={`/api/orders/${order._id}/invoice?download=1&type=devis`} download className={buttonClasses({ size: "lg", variant: "outline" })} data-testid="confirmation-quote">
-                Télécharger le devis
-              </a>
-            )}
             {session?.user?.id && (
               <ButtonLink href="/compte/commandes" size="lg" variant={paid ? "outline" : "solid"} icon={<Arrow />}>
                 Mes commandes
@@ -119,13 +137,13 @@ export default async function ConfirmationPage({ searchParams }: { searchParams:
           <aside className="self-start bg-mist p-6 lg:p-8" aria-label="Et maintenant ?">
             <h2 className="t-h3">Et maintenant ?</h2>
             <ol className="mt-6 flex flex-col gap-5 text-sm">
-              {steps.map(([title, text], i) => (
+              {steps.map(({ title, body }, i) => (
                 <li key={title} className="flex gap-4">
                   <span className="t-spec mt-0.5 text-graphite">0{i + 1}</span>
-                  <span>
+                  <div className="min-w-0 flex-1">
                     <span className="block font-medium">{title}</span>
-                    <span className="text-graphite">{text}</span>
-                  </span>
+                    {typeof body === "string" ? <span className="text-graphite">{body}</span> : body}
+                  </div>
                 </li>
               ))}
             </ol>

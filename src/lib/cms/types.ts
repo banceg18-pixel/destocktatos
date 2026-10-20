@@ -30,6 +30,8 @@ export interface SiteSettings {
   bankName?: string;
   bankIban?: string;
   bankBic?: string;
+  /** Communication à indiquer sur le virement (fournie par la banque). */
+  bankReference?: string;
   /** Informations légales de la société qui exploite le site (mentions légales, CGV, factures). */
   legalName?: string;
   legalForm?: string;
@@ -40,6 +42,9 @@ export interface SiteSettings {
   legalVat?: string;
   legalHeadOffice?: string;
   legalDirector?: string;
+  /** Médiateur de la consommation dont relève la société (nom et site internet). */
+  legalMediatorName?: string;
+  legalMediatorUrl?: string;
 }
 
 export interface MenuSet {

@@ -6,7 +6,7 @@ import { formatEuros, toEuros } from "@/lib/money";
 import { SITE_URL } from "@/lib/seo";
 import { getSiteSettings } from "@/lib/cms";
 import type { SiteSettings } from "@/lib/cms/types";
-import { bankDetailsOf, type BankDetails } from "@/lib/bank";
+import { bankDetailsOf, transferLines, type BankDetails } from "@/lib/bank";
 import { legalLines } from "@/lib/brand";
 import { buildInvoicePdf, invoiceAvailable, invoiceNumber, invoiceStore, quoteNumber } from "./invoice";
 import { button, emailLayout, heading, infoBox, orderTable, para, subheading, type EmailStore } from "./email-layout";
@@ -72,14 +72,8 @@ function orderAttachments(o: FullOrder, s: SiteSettings | null, withQuote = fals
 const emailStore = (s: SiteSettings | null): EmailStore | null =>
   s ? { name: s.siteName, address: `${s.addressLine}, ${s.postalCode} ${s.city}`, phone: s.phone, email: s.email, legal: legalLines(s) } : null;
 
-/** Lignes du virement attendu : montant, référence, coordonnées bancaires. */
-function transferRows(o: FullOrder, bank: BankDetails | null): [string, string, boolean?][] {
-  return [
-    ["Montant", eur(o.totalCents)],
-    ["Référence à indiquer", o.number, true],
-    ...(bank ? ([["Titulaire", bank.holder], ...(bank.bank ? [["Banque", bank.bank]] : []), ["IBAN", bank.iban, true], ...(bank.bic ? [["BIC", bank.bic, true]] : [])] as [string, string, boolean?][]) : []),
-  ];
-}
+/** Lignes du virement attendu : montant, communication, numéro de commande, coordonnées bancaires. */
+const transferRows = (o: FullOrder, bank: BankDetails | null) => transferLines(eur(o.totalCents), o.number, bank).rows;
 
 function deliveryLabel(o: FullOrder) {
   if (o.isPickupInStore) return "Retrait en magasin";
@@ -140,7 +134,7 @@ export async function notifyOrderPaid(orderId: string) {
     ? `Retrait en magasin : ${s ? `${s.addressLine}, ${s.postalCode} ${s.city} (${s.storeHours})` : "à l'adresse du magasin"}. Nous vous prévenons dès que votre commande est prête.`
     : `Adresse de livraison :\n${addressLines(ship)}\n\nNous vous appelons pour convenir du jour et du créneau de livraison.`;
   const docs = attachments.length > 1 ? "Votre facture et votre devis sont joints à cet email (PDF)." : attachments.length ? "Votre facture est jointe à cet email (PDF)." : "";
-  const transferNote = `Indiquez bien la référence ${o.number} dans le libellé du virement. Votre commande est préparée et livrée dès réception du virement.`;
+  const transferNote = transferLines(eur(o.totalCents), o.number, bank).note;
   const text = `Bonjour ${o.user.name},
 
 ${

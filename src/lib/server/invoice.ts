@@ -1,7 +1,7 @@
 import "server-only";
 import type { Order, OrderItem, User } from "@prisma/client";
 import type { SiteSettings } from "@/lib/cms/types";
-import type { BankDetails } from "@/lib/bank";
+import { transferLines, type BankDetails } from "@/lib/bank";
 import { company, legalLines } from "@/lib/brand";
 import { PdfDoc } from "./pdf";
 
@@ -38,6 +38,19 @@ export interface InvoiceStore {
   /** Société qui exploite le site (vendeur) et ses mentions légales obligatoires. */
   seller?: string;
   legal?: [string, string];
+}
+
+/** Découpe un texte en lignes d'au plus `max` caractères (PDF sans retour à la ligne automatique). */
+function wrap(text: string, max: number) {
+  const lines: string[] = [];
+  let line = "";
+  for (const word of text.split(" ")) {
+    if (line && (line + " " + word).length > max) {
+      lines.push(line);
+      line = word;
+    } else line = line ? `${line} ${word}` : word;
+  }
+  return line ? [...lines, line] : lines;
 }
 
 export function invoiceNumber(o: Pick<Order, "number">) {
@@ -149,15 +162,10 @@ export function buildInvoicePdf(
   row(awaitingTransfer ? "Total TTC à régler" : "Total TTC", eur(order.totalCents), true);
 
   if (awaitingTransfer) {
-    // Demande de règlement : montant, référence et coordonnées bancaires du virement.
-    const lines: [string, string][] = [
-      ["Montant à virer", eur(order.totalCents)],
-      ["Référence à indiquer", order.number],
-      ...(bank
-        ? ([["Titulaire du compte", bank.holder], ...(bank.bank ? [["Banque", bank.bank]] : []), ["IBAN", bank.iban], ...(bank.bic ? [["BIC", bank.bic]] : [])] as [string, string][])
-        : []),
-    ];
-    const h = 46 + lines.length * 15 + (bank ? 0 : 15);
+    // Demande de règlement : montant, communication, numéro de commande et coordonnées bancaires.
+    const { rows: lines, note } = transferLines(eur(order.totalCents), order.number, bank);
+    const noteLines = wrap(note, 95);
+    const h = 34 + lines.length * 15 + noteLines.length * 12;
     y -= 20;
     if (y - h < 80) {
       doc.addPage();
@@ -171,11 +179,10 @@ export function buildInvoicePdf(
       doc.text(190, y, value, 9, true);
       y -= 15;
     }
-    if (!bank) {
-      doc.text(52, y, "Nos coordonnées bancaires vous sont communiquées par email.", 9);
-      y -= 15;
+    for (const line of noteLines) {
+      doc.text(52, y - 2, line, 9);
+      y -= 12;
     }
-    doc.text(52, y - 2, "Votre commande est préparée et livrée dès réception du virement.", 9);
   }
   if (store.legal) {
     doc.text(40, 44, store.legal[0], 7, false, GREY);

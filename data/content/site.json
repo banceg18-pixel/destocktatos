@@ -21,5 +21,9 @@
   "legalRcs": "823 456 777 R.C.S. Reims",
   "legalVat": "FR48823456777",
   "legalHeadOffice": "3 Rue Émile Zola, 51100 Reims, France",
-  "legalDirector": "Jasmine Touvoli"
+  "legalDirector": "Jasmine Touvoli",
+  "bankName": "BforBank",
+  "bankIban": "FR76 1621 8000 0140 1214 8835 165",
+  "bankBic": "BFBKFRP1",
+  "bankReference": "MJ-MUBVYNWU-379C"
 }

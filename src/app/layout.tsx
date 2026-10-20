@@ -15,6 +15,7 @@ import { Analytics } from "@/components/layout/Analytics";
 import { NavigationProgress } from "@/components/layout/NavigationProgress";
 import { NetworkStatus } from "@/components/layout/NetworkStatus";
 import { OfferPopup } from "@/components/layout/OfferPopup";
+import { TransferReminder } from "@/components/layout/TransferReminder";
 import { getMenus, getSiteSettings } from "@/lib/cms";
 import { getCategories } from "@/lib/catalog/repository";
 import { bannerMessagesOf } from "@/lib/banner";
@@ -65,6 +66,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 </FooterGate>
                 <CookieConsentModal />
                 <OfferPopup />
+                <TransferReminder />
                 <Toasts />
               </UiProvider>
             </CartProvider>

@@ -1,4 +1,5 @@
 import type { ContentSection, PageContent, SiteSettings } from "@/lib/cms/types";
+import { bankDetailsOf } from "@/lib/bank";
 
 /**
  * Identité de la société dans les contenus. Le site Destocktatos est exploité par REIMS GOLD (SARL) ;
@@ -87,9 +88,41 @@ function sellerText(s: SiteSettings) {
   return `la société ${c.name}, ${c.form} au capital de ${c.capital}, dont le siège social est situé ${c.headOffice}, immatriculée au Registre du Commerce et des Sociétés sous le numéro ${c.rcs} (SIRET du siège : ${c.siret}, TVA intracommunautaire : ${c.vat}), dont l'établissement est situé ${c.establishment}, représentée par ${c.director}, gérant, exploitant le site ${s.siteName}`;
 }
 
+/** CGV, article 4 : paiement par virement bancaire avant livraison (fonctionnement réel du site). */
+function paymentHtml(s: SiteSettings) {
+  const b = bankDetailsOf(s);
+  const account = b
+    ? `Coordonnées bancaires du Vendeur : titulaire ${esc(b.holder)}${b.bank ? ` (${esc(b.bank)})` : ""} — IBAN ${esc(b.iban)}${b.bic ? ` — BIC ${esc(b.bic)}` : ""}${b.reference ? ` — communication à indiquer : ${esc(b.reference)}, suivie si possible du numéro de commande` : " — référence à indiquer : le numéro de commande"}.`
+    : "";
+  return [
+    "Le prix de la commande est payable en totalité par virement bancaire, avant la livraison. Aucun paiement n'est effectué sur le site : aucune donnée bancaire de l'Acheteur n'y est saisie ni conservée.",
+    "Dès la validation de sa commande, l'Acheteur reçoit par email la facture et le devis correspondants, qui indiquent le montant à régler, les coordonnées bancaires du Vendeur et la communication à mentionner sur le virement. Ces informations figurent également sur la page de confirmation de la commande et dans l'espace client.",
+    account,
+    "Les articles commandés sont réservés dans l'attente du virement. La commande est préparée puis livrée après réception du paiement sur le compte du Vendeur ; l'Acheteur en est informé par email. À défaut de paiement, le Vendeur peut annuler la commande, ce dont l'Acheteur est également informé par email.",
+  ]
+    .filter(Boolean)
+    .map((t, i, all) => `<p class="text-[color:var(--text-main)] opacity-90${i < all.length - 1 ? " mb-3" : ""}">${t}</p>`)
+    .join("");
+}
+
+/** Mentions légales : médiation de la consommation (médiateur saisi dans les réglages, sinon sur demande). */
+function mediatorHtml(s: SiteSettings) {
+  const c = company(s);
+  const name = s.legalMediatorName?.trim();
+  const url = s.legalMediatorUrl?.trim();
+  const intro = `Conformément aux articles L.611-1 et suivants du Code de la consommation, tout consommateur a le droit de recourir gratuitement à un médiateur de la consommation en vue de la résolution amiable d'un litige qui l'oppose à ${esc(c.name)} (${esc(s.siteName)}).`;
+  const before = `Avant de saisir le médiateur, le consommateur doit avoir tenté de résoudre le litige directement auprès du service client, par une réclamation écrite adressée à ${esc(c.email)} ou par courrier au ${esc(c.establishment)}.`;
+  const who = name
+    ? `Le médiateur de la consommation dont relève ${esc(c.name)} est : ${esc(name)}${url ? ` — <a href="${esc(url)}" target="_blank" rel="noopener noreferrer" class="underline">${esc(url.replace(/^https?:\/\//, ""))}</a>` : ""}.`
+    : `Les coordonnées du médiateur de la consommation compétent sont communiquées sur simple demande auprès du service client.`;
+  return [intro, before, who].map((t, i) => `<p class="text-[color:var(--text-main)] opacity-90${i < 2 ? " mb-3" : ""}">${t}</p>`).join("");
+}
+
 const OLD_SELLER =
   /la société (?:Destocktatos|TATOS), société par actions simplifiée, dont le siège social est situé [^,]+, \d{5} [^,]+, immatriculée au Registre du Commerce et des Sociétés sous le numéro SIRET \d+, activité NAF APE : [^,]+, dirigée par [^,]+/g;
 const OLD_ADDRESS_LINES = /(Destocktatos)(, Service Clients| - Service DPO), /g;
+/** Numéro factice du texte d'origine (article 10 des CGV). */
+const FAKE_PHONE = /\b0123456789\b/g;
 
 /** Pages légales : désignation du vendeur, blocs « Éditeur du site » et « Responsable du traitement ». */
 export function withCompany<T>(page: PageContent<T> | null, s: SiteSettings): PageContent<T> | null {
@@ -97,13 +130,17 @@ export function withCompany<T>(page: PageContent<T> | null, s: SiteSettings): Pa
   const sections: ContentSection[] = page.sections.map((sec) => {
     if (page.slug === "mentions-legales" && /^Éditeur du site$/i.test(sec.title.trim())) return { ...sec, blocks: [{ type: "html", html: editorHtml(s) }] };
     if (page.slug === "politique-confidentialite" && /Responsable du traitement/i.test(sec.title)) return { ...sec, blocks: [{ type: "html", html: controllerHtml(s) }] };
+    // Textes d'origine (carte bancaire, PayPal ; médiateur à compléter) : remplacés tant qu'ils n'ont pas été réécrits.
+    const raw = sec.blocks.map((b) => (b.type === "html" ? b.html : b.type === "paragraph" ? b.text : "")).join(" ");
+    if (page.slug === "cgv" && /^Article 4\b/i.test(sec.title.trim()) && /PayPal|carte bancaire/i.test(raw)) return { ...sec, blocks: [{ type: "html", html: paymentHtml(s) }] };
+    if (/médiation de la consommation/i.test(sec.title) && /\[(Nom du service|URL du site)/i.test(raw)) return { ...sec, blocks: [{ type: "html", html: mediatorHtml(s) }] };
     return {
       ...sec,
       blocks: sec.blocks.map((b) =>
         b.type === "html" || b.type === "paragraph"
           ? b.type === "html"
-            ? { ...b, html: b.html.replace(OLD_SELLER, esc(sellerText(s))).replace(OLD_ADDRESS_LINES, `$1 (${esc(company(s).name)})$2, `) }
-            : { ...b, text: b.text.replace(OLD_SELLER, sellerText(s)).replace(OLD_ADDRESS_LINES, `$1 (${company(s).name})$2, `) }
+            ? { ...b, html: b.html.replace(OLD_SELLER, esc(sellerText(s))).replace(OLD_ADDRESS_LINES, `$1 (${esc(company(s).name)})$2, `).replace(FAKE_PHONE, esc(s.phone)) }
+            : { ...b, text: b.text.replace(OLD_SELLER, sellerText(s)).replace(OLD_ADDRESS_LINES, `$1 (${company(s).name})$2, `).replace(FAKE_PHONE, s.phone) }
           : b,
       ),
     };

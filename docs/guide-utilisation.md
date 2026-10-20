@@ -337,12 +337,14 @@ supprimer une image encore utilisée par un produit ou une page.
 - **Coordonnées affichées sur le site** : nom, description, email, téléphone, adresse, horaires,
   adresse pour la carte. Elles apparaissent dans l'en-tête, le pied de page, la page contact, les
   emails et les factures.
-- **Paiement par virement** : titulaire du compte, banque, IBAN et BIC. Ils sont imprimés sur la
+- **Paiement par virement** : titulaire du compte, banque, IBAN, BIC et communication à indiquer
+  (déjà renseignés : BforBank, communication MJ-MUBVYNWU-379C). Ils sont imprimés sur la
   facture envoyée au client à chaque commande et affichés sur sa page de confirmation. Tant que
   l'IBAN est vide, le client est prévenu que vos coordonnées lui seront envoyées par email, et
   l'alerte « nouvelle commande » vous le rappelle.
 - **Informations légales** : dénomination (REIMS GOLD), forme juridique, capital, SIREN, SIRET, RCS,
-  TVA intracommunautaire, siège social et gérant. Elles alimentent automatiquement les mentions
+  TVA intracommunautaire, siège social, gérant, et le médiateur de la consommation (nom et site
+  internet, à renseigner une fois l'adhésion faite : il apparaît alors dans les mentions légales). Elles alimentent automatiquement les mentions
   légales (« Éditeur du site »), la politique de confidentialité (« Responsable du traitement »), la
   désignation du vendeur dans les CGV, et le bas des factures, devis et emails. L'établissement
   affiché est l'adresse saisie dans les coordonnées ci-dessus.

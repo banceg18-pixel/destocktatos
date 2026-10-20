@@ -58,7 +58,7 @@
       "blocks": [
         {
           "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Conformément aux dispositions du Code de la consommation concernant le règlement amiable des litiges, Destocktatos adhère au service de médiation [Nom du service de médiation].</p><p class=\"text-[color:var(--text-main)] opacity-90\">Après démarche préalable écrite des consommateurs vis-à-vis de Destocktatos, le service de médiation peut être saisi pour tout litige de consommation dont le règlement n'aurait pas abouti. Pour connaître les modalités de saisine du médiateur, veuillez consulter le site : [URL du site du médiateur].</p>"
+          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Conformément aux articles L.611-1 et suivants du Code de la consommation, tout consommateur a le droit de recourir gratuitement à un médiateur de la consommation en vue de la résolution amiable d'un litige qui l'oppose à REIMS GOLD (Destocktatos).</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Avant de saisir le médiateur, le consommateur doit avoir tenté de résoudre le litige directement auprès du service client, par une réclamation écrite adressée à contacts@destocktatos.com ou par courrier au 65 Rue d’Aigremont, 78300 Poissy.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Les coordonnées du médiateur de la consommation compétent sont communiquées sur simple demande auprès du service client.</p>"
         }
       ]
     },
