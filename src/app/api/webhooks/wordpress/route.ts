@@ -24,7 +24,7 @@ interface WebhookBody {
 const PRODUCT_ID = /^[A-Za-z0-9]{1,64}$/;
 
 /**
- * POST /api/webhooks/wordpress — appelé par le plugin « TATOS Headless » à chaque modification.
+ * POST /api/webhooks/wordpress — appelé par le extension WordPress du site à chaque modification.
  * Authentifié par l'en-tête X-Tatos-Secret : WORDPRESS_WEBHOOK_SECRET, ou à défaut la clé
  * d'administration ADMIN_API_SECRET (déjà saisie dans WordPress pour la liaison). Vide les caches des
  * contenus de toutes les copies du site et synchronise le produit modifié (ou tout le catalogue pour

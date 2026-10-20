@@ -16,7 +16,7 @@ import { newsletterMessage, notifyOrderStatus } from "./notifications";
 import { exportContent, exportProducts } from "./wp-export";
 
 /**
- * API d'administration utilisée par l'espace WordPress (plugin TATOS Headless) : commandes, clients,
+ * API d'administration utilisée par l'espace WordPress (extension WordPress du site) : commandes, clients,
  * codes promo, avis, messages, newsletter et stock. Appels serveur à serveur uniquement, authentifiés
  * par la clé partagée `ADMIN_API_SECRET` (en-tête `Authorization: Bearer …`).
  */

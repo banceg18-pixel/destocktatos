@@ -214,7 +214,7 @@ Points d'attention :
 1. Installez WordPress (en français) sur l'hébergement choisi, avec un mot de passe administrateur
    fort.
 2. Copiez le dossier `wordpress/plugins/tatos-headless` dans `wp-content/plugins/` (après
-   `npm run docs:plugin`), puis activez l'extension **TATOS Headless** (menu **Extensions**).
+   `npm run docs:plugin`), puis activez l'extension **Destocktatos — Administration du site** (menu **Extensions**).
 3. **Réglages → Permaliens** : choisissez « Titre de la publication ».
 4. Importez les contenus avec WP-CLI (fichier généré par `npm run wp:export`) :
 

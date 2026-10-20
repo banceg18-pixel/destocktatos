@@ -1,4 +1,4 @@
-# Extension WordPress « TATOS Headless »
+# Extension WordPress « Destocktatos — Administration du site » (dossier tatos-headless)
 
 L'extension (`wordpress/plugins/tatos-headless`, version 2.1) transforme WordPress en administration
 complète du site : contenus, catalogue et gestion de la boutique. Le site public de WordPress n'est pas

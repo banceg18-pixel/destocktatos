@@ -6,7 +6,7 @@
     "infoTitle": "Nos Coordonnées",
     "address": { "title": "Adresse", "lines": ["15 Rue Paul Langevin", "93270 Sevran", "France"] },
     "phone": { "title": "Téléphone", "value": "06 51 64 41 84", "tel": "+33651644184", "note": "Du lundi au dimanchd de 10h à 20h" },
-    "email": { "title": "Email", "value": "tatos-electromenager@outlook.com", "note": "Nous répondons sous 24h" },
+    "email": { "title": "Email", "value": "contacts@destocktatos.com", "note": "Nous répondons sous 24h" },
     "hours": { "title": "Horaires d'ouverture", "value": "Lundi - Dimanche: 10h00 - 20h00" },
     "urgent": {
       "title": "Besoin d'aide urgente?",

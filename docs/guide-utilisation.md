@@ -221,7 +221,7 @@ catégorie pour rester bien classés.
 
 ## Pages du site
 
-**Pages** contient les pages de la boutique : **Accueil**, **Services**, **À propos de TATOS**,
+**Pages** contient les pages de la boutique : **Accueil**, **Services**, **À propos de Destocktatos**,
 **Nous contacter**, **Promotions**, **Modèle de page catégorie** (textes communs aux pages de rayon) et
 les pages légales (**CGV**, **Mentions légales**, **Politique de confidentialité**).
 

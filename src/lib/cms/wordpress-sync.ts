@@ -1,4 +1,5 @@
 import "server-only";
+import { rebrandText } from "@/lib/brand";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/text";
 
@@ -86,7 +87,7 @@ async function upsertProduct(p: WpProduct, categoryId: string, syncStock: boolea
     promotionPrixCents: p.promotionPrix != null ? Math.round(p.promotionPrix * 100) : null,
     categoryId,
     sousCategories: p.sousCategorie ?? [],
-    description: p.description ?? "",
+    description: rebrandText(p.description ?? ""),
     caracteristiques: p.caracteristiques ?? {},
     garantie: p.garantie ?? undefined,
     pose: p.pose,
@@ -97,8 +98,8 @@ async function upsertProduct(p: WpProduct, categoryId: string, syncStock: boolea
     sonore: p.sonore,
     imagePrincipale: localize(p.imagePrincipale),
     etiquetteEnergie: localize(p.etiquetteEnergie),
-    metaTitle: p.metaTitle,
-    metaDescription: p.metaDescription,
+    metaTitle: p.metaTitle ? rebrandText(p.metaTitle) : p.metaTitle,
+    metaDescription: p.metaDescription ? rebrandText(p.metaDescription) : p.metaDescription,
   };
   await prisma.$transaction([
     prisma.product.upsert({

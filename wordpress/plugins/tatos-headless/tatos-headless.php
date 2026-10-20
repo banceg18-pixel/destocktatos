@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: TATOS Headless
- * Description: Espace d'administration complet du site TATOS (Next.js) : produits, catégories, pages, articles, FAQ, menus, réglages, et gestion de la boutique (commandes, clients, codes promo, avis, messages, newsletter, stock).
- * Version: 2.3.0
+ * Plugin Name: Destocktatos — Administration du site
+ * Description: Espace d'administration complet du site Destocktatos (Next.js) : produits, catégories, pages, articles, FAQ, menus, réglages, et gestion de la boutique (commandes, clients, codes promo, avis, messages, newsletter, stock).
+ * Version: 2.4.0
  * Requires PHP: 8.1
  * License: GPL-2.0-or-later
  * Text Domain: tatos-headless
@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('TATOS_HEADLESS_VERSION', '2.3.0');
+define('TATOS_HEADLESS_VERSION', '2.4.0');
 
 /* -------------------------------------------------------------------------
  * Types de contenu et taxonomies
@@ -435,6 +435,98 @@ add_action('rest_api_init', function () {
             return rest_ensure_response(tatos_product_to_array($found[0]));
         },
     ]);
+});
+
+/* -------------------------------------------------------------------------
+ * Contenus au nom de Destocktatos (2.4.0) : les textes repris de l'ancien site (TATOS) — pages
+ * légales, CGV, FAQ, produits, réglages — sont corrigés une fois, juste après la mise à jour :
+ * nom de la société, boîte email du magasin, hébergeur réel. Les autres textes ne changent pas.
+ * ---------------------------------------------------------------------- */
+function tatos_rebrand_text(string $s): string
+{
+    $s = preg_replace('/tatos-electromenager@[a-z0-9.-]+\.[a-z]{2,}/i', 'contacts@destocktatos.com', $s);
+    $s = preg_replace('/\bTATOS\b/', 'Destocktatos', $s);
+    $s = preg_replace(
+        '#Example Hosting<br\s*/?>456 avenue du Web<br\s*/?>69000 Lyon, France<br\s*/?>Téléphone : \+33 \(0\)4 56 78 90 12#u',
+        'Hostinger International Ltd<br/>61 Lordou Vironos Street<br/>6023 Larnaca, Chypre<br/>Site : www.hostinger.fr',
+        $s
+    );
+    return str_replace('Example Hosting', 'Hostinger International Ltd', $s);
+}
+
+function tatos_rebrand_value($v)
+{
+    if (is_string($v)) {
+        return tatos_rebrand_text($v);
+    }
+    if (is_array($v)) {
+        return array_map('tatos_rebrand_value', $v);
+    }
+    return $v;
+}
+
+/** Corrige les contenus enregistrés ; renvoie le nombre d'éléments modifiés. */
+function tatos_rebrand_contents(): int
+{
+    global $wpdb;
+    $count = 0;
+    $types = "'page','post','faq','produit','nav_menu_item'";
+    $posts = $wpdb->get_results("SELECT ID, post_title, post_content, post_excerpt FROM {$wpdb->posts} WHERE post_type IN ($types) AND (post_title LIKE '%TATOS%' OR post_content LIKE '%TATOS%' OR post_excerpt LIKE '%TATOS%' OR post_content LIKE '%Example Hosting%' OR post_content LIKE '%tatos-electromenager@%')");
+    foreach ($posts as $p) {
+        $data = ['post_title' => tatos_rebrand_text($p->post_title), 'post_content' => tatos_rebrand_text($p->post_content), 'post_excerpt' => tatos_rebrand_text($p->post_excerpt)];
+        if ($data['post_title'] !== $p->post_title || $data['post_content'] !== $p->post_content || $data['post_excerpt'] !== $p->post_excerpt) {
+            $wpdb->update($wpdb->posts, $data, ['ID' => $p->ID]);
+            clean_post_cache((int) $p->ID);
+            $count++;
+        }
+    }
+    $metas = $wpdb->get_results("SELECT meta_id, post_id, meta_value FROM {$wpdb->postmeta} WHERE meta_value LIKE '%TATOS%' OR meta_value LIKE '%Example Hosting%' OR meta_value LIKE '%tatos-electromenager@%'");
+    foreach ($metas as $m) {
+        $value = maybe_unserialize($m->meta_value);
+        $fixed = tatos_rebrand_value($value);
+        if ($fixed !== $value) {
+            $wpdb->update($wpdb->postmeta, ['meta_value' => maybe_serialize($fixed)], ['meta_id' => $m->meta_id]);
+            wp_cache_delete((int) $m->post_id, 'post_meta');
+            $count++;
+        }
+    }
+    $terms = $wpdb->get_results("SELECT t.term_id, t.name, tt.term_taxonomy_id, tt.description FROM {$wpdb->terms} t JOIN {$wpdb->term_taxonomy} tt ON tt.term_id = t.term_id WHERE t.name LIKE '%TATOS%' OR tt.description LIKE '%TATOS%'");
+    foreach ($terms as $t) {
+        $wpdb->update($wpdb->terms, ['name' => tatos_rebrand_text($t->name)], ['term_id' => $t->term_id]);
+        $wpdb->update($wpdb->term_taxonomy, ['description' => tatos_rebrand_text($t->description)], ['term_taxonomy_id' => $t->term_taxonomy_id]);
+        clean_term_cache((int) $t->term_id);
+        $count++;
+    }
+    $settings = (array) get_option('tatos_settings', []);
+    $fixed = tatos_rebrand_value($settings);
+    if ($fixed !== $settings) {
+        update_option('tatos_settings', $fixed);
+        $count++;
+    }
+    return $count;
+}
+
+add_action('admin_init', function () {
+    if (get_option('tatos_rebrand_done') === '2.4.0' || !current_user_can('manage_options')) {
+        return;
+    }
+    // Un seul avis au site à la fin (pas un par contenu corrigé).
+    $GLOBALS['tatos_suspend_webhooks'] = true;
+    $count = tatos_rebrand_contents();
+    $GLOBALS['tatos_suspend_webhooks'] = false;
+    update_option('tatos_rebrand_done', '2.4.0', false);
+    if ($count > 0) {
+        tatos_notify_frontend('content.updated', ['type' => 'rebrand']);
+        set_transient('tatos_rebrand_notice', $count, 300);
+    }
+});
+
+add_action('admin_notices', function () {
+    $count = get_transient('tatos_rebrand_notice');
+    if ($count) {
+        delete_transient('tatos_rebrand_notice');
+        printf('<div class="notice notice-success is-dismissible"><p>Contenus mis au nom de Destocktatos : %d élément(s) corrigé(s) (pages, CGV, mentions légales, produits, réglages).</p></div>', (int) $count);
+    }
 });
 
 /* -------------------------------------------------------------------------

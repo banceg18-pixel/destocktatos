@@ -2,7 +2,7 @@
  "slug": "politique-confidentialite",
  "title": "Politique de Confidentialité",
  "metaTitle": "Politique de Confidentialité",
- "metaDescription": "Politique de confidentialité et traitement des données personnelles de TATOS, conforme au RGPD.",
+ "metaDescription": "Politique de confidentialité et traitement des données personnelles de Destocktatos, conforme au RGPD.",
  "data": {
   "titlePrefix": "Politique de",
   "titleHighlight": "Confidentialité"
@@ -13,7 +13,7 @@
    "blocks": [
     {
      "type": "html",
-     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">La présente politique de confidentialité décrit les pratiques de TATOS concernant la collecte, l'utilisation et la divulgation de vos informations à travers notre site web (ci-après, le \"Site\").                        </p><p class=\"text-[color:var(--text-main)] opacity-90\">Cette politique a été élaborée conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi Informatique et Libertés modifiée.</p>"
+     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">La présente politique de confidentialité décrit les pratiques de Destocktatos concernant la collecte, l'utilisation et la divulgation de vos informations à travers notre site web (ci-après, le \"Site\").                        </p><p class=\"text-[color:var(--text-main)] opacity-90\">Cette politique a été élaborée conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi Informatique et Libertés modifiée.</p>"
     }
    ]
   },
@@ -22,7 +22,7 @@
    "blocks": [
     {
      "type": "html",
-     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Le responsable du traitement des données personnelles collectées sur le Site est :</p><p class=\"text-[color:var(--text-main)] opacity-90\">TATOS, société par actions simplifiée<br/>SIRET : 94228991900014<br/>Activité NAF APE : Commerce de gros non spécialisé<br/>15 rue Paul Langevin, 93270 Sevran<br/>Dirigée par : Franck NEBOT<br/>Email : tatos-electromenager@outlook.com<br/>Téléphone : +33 (6) 51 64 41 84</p>"
+     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Le responsable du traitement des données personnelles collectées sur le Site est :</p><p class=\"text-[color:var(--text-main)] opacity-90\">Destocktatos, société par actions simplifiée<br/>SIRET : 94228991900014<br/>Activité NAF APE : Commerce de gros non spécialisé<br/>15 rue Paul Langevin, 93270 Sevran<br/>Dirigée par : Franck NEBOT<br/>Email : contacts@destocktatos.com<br/>Téléphone : +33 (6) 51 64 41 84</p>"
     }
    ]
   },
@@ -31,7 +31,7 @@
    "blocks": [
     {
      "type": "html",
-     "html": "<p class=\"text-[color:var(--text-main)] opacity-90\">Nous avons désigné un délégué à la protection des données que vous pouvez contacter pour toute question relative à la protection de vos données personnelles à l'adresse suivante : tatos-electromenager@outlook.com ou par courrier à l'adresse postale mentionnée ci-dessus.</p>"
+     "html": "<p class=\"text-[color:var(--text-main)] opacity-90\">Nous avons désigné un délégué à la protection des données que vous pouvez contacter pour toute question relative à la protection de vos données personnelles à l'adresse suivante : contacts@destocktatos.com ou par courrier à l'adresse postale mentionnée ci-dessus.</p>"
     }
    ]
   },
@@ -85,7 +85,7 @@
    "blocks": [
     {
      "type": "html",
-     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Conformément à la réglementation applicable en matière de protection des données personnelles, vous disposez des droits suivants :</p><ul class=\"list-disc list-inside space-y-2 text-[color:var(--text-main)] opacity-90\"><li><strong>Droit d'accès</strong> : vous pouvez obtenir une copie de vos données personnelles</li><li><strong>Droit de rectification</strong> : vous pouvez demander la correction des données inexactes</li><li><strong>Droit à l'effacement</strong> : vous pouvez demander la suppression de vos données (sous certaines conditions)</li><li><strong>Droit à la limitation du traitement</strong> : vous pouvez demander la suspension temporaire du traitement</li><li><strong>Droit à la portabilité</strong> : vous pouvez récupérer vos données dans un format structuré</li><li><strong>Droit d'opposition</strong> : vous pouvez vous opposer au traitement de vos données, notamment à des fins de prospection</li><li><strong>Droit de retirer votre consentement</strong> à tout moment lorsque le traitement est fondé sur celui-ci</li><li><strong>Droit de définir des directives</strong> relatives au sort de vos données après votre décès</li></ul><p class=\"text-[color:var(--text-main)] opacity-90 mt-3\">Pour exercer ces droits, vous pouvez nous contacter à l'adresse email suivante : tatos-electromenager@outlook.com ou par courrier à : TATOS - Service DPO, 15 rue Paul Langevin, 93270 Sevran.</p><p class=\"text-[color:var(--text-main)] opacity-90 mt-3\">Vous disposez également du droit d'introduire une réclamation auprès de la Commission Nationale de l'Informatique et des Libertés (CNIL) si vous estimez que le traitement de vos données personnelles n'est pas conforme à la réglementation : www.cnil.fr.</p>"
+     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Conformément à la réglementation applicable en matière de protection des données personnelles, vous disposez des droits suivants :</p><ul class=\"list-disc list-inside space-y-2 text-[color:var(--text-main)] opacity-90\"><li><strong>Droit d'accès</strong> : vous pouvez obtenir une copie de vos données personnelles</li><li><strong>Droit de rectification</strong> : vous pouvez demander la correction des données inexactes</li><li><strong>Droit à l'effacement</strong> : vous pouvez demander la suppression de vos données (sous certaines conditions)</li><li><strong>Droit à la limitation du traitement</strong> : vous pouvez demander la suspension temporaire du traitement</li><li><strong>Droit à la portabilité</strong> : vous pouvez récupérer vos données dans un format structuré</li><li><strong>Droit d'opposition</strong> : vous pouvez vous opposer au traitement de vos données, notamment à des fins de prospection</li><li><strong>Droit de retirer votre consentement</strong> à tout moment lorsque le traitement est fondé sur celui-ci</li><li><strong>Droit de définir des directives</strong> relatives au sort de vos données après votre décès</li></ul><p class=\"text-[color:var(--text-main)] opacity-90 mt-3\">Pour exercer ces droits, vous pouvez nous contacter à l'adresse email suivante : contacts@destocktatos.com ou par courrier à : Destocktatos - Service DPO, 15 rue Paul Langevin, 93270 Sevran.</p><p class=\"text-[color:var(--text-main)] opacity-90 mt-3\">Vous disposez également du droit d'introduire une réclamation auprès de la Commission Nationale de l'Informatique et des Libertés (CNIL) si vous estimez que le traitement de vos données personnelles n'est pas conforme à la réglementation : www.cnil.fr.</p>"
     }
    ]
   },
