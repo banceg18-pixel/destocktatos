@@ -42,7 +42,7 @@
     "bcryptjs": "3.0.2",
     "next": "15.5.28",
     "next-auth": "4.24.15",
-    "nodemailer": "7.0.13",
+    "nodemailer": "10.1.7",
     "react": "19.1.1",
     "react-dom": "19.1.1",
     "react-icons": "5.5.0",
@@ -63,9 +63,9 @@
     "eslint-config-next": "15.5.28",
     "prisma": "6.19.3",
     "tailwindcss": "4.1.13",
-    "tsx": "4.20.5",
+    "tsx": "4.23.15",
     "typescript": "5.9.2",
-    "vitest": "3.2.4"
+    "vitest": "4.1.12"
   },
   "allowScripts": {
     "@prisma/client@6.19.3": true,
@@ -75,5 +75,10 @@
     "@prisma/engines@6.19.3": true,
     "esbuild@0.25.12": true,
     "esbuild@0.28.2": true
+  },
+  "overrides": {
+    "postcss": "8.5.31",
+    "deepmerge-ts": "8.0.2",
+    "nodemailer": "$nodemailer"
   }
 }
