@@ -40,6 +40,10 @@ export function invoiceNumber(o: Pick<Order, "number">) {
   return `FAC-${o.number.replace(/^TAT-/, "")}`;
 }
 
+export function quoteNumber(o: Pick<Order, "number">) {
+  return `DEV-${o.number.replace(/^TAT-/, "")}`;
+}
+
 /** Coordonnées du magasin imprimées sur la facture. */
 export function invoiceStore(s: SiteSettings): InvoiceStore {
   return { name: s.siteName, address: s.addressLine, city: `${s.postalCode} ${s.city}, ${s.country}`, email: s.email, phone: s.phone };
@@ -53,15 +57,24 @@ export function invoiceAvailable(o: Pick<Order, "status" | "paidAt">) {
   return (PAID_STATUSES.includes(o.status) && !!o.paidAt) || o.status === "EN_ATTENTE_VIREMENT";
 }
 
-/** Facture PDF d'une commande (TVA 20 % incluse dans les prix TTC). */
-export function buildInvoicePdf(order: Order & { items: OrderItem[] }, user: Pick<User, "name" | "email">, store: InvoiceStore, bank: BankDetails | null = null) {
+/**
+ * Facture (ou devis) PDF d'une commande, TVA 20 % incluse dans les prix TTC. Tant que le virement est
+ * attendu, le document porte le montant, la référence et les coordonnées bancaires du règlement.
+ */
+export function buildInvoicePdf(
+  order: Order & { items: OrderItem[] },
+  user: Pick<User, "name" | "email">,
+  store: InvoiceStore,
+  bank: BankDetails | null = null,
+  kind: "facture" | "devis" = "facture",
+) {
   const doc = new PdfDoc();
   const W = doc.width;
   const awaitingTransfer = order.status === "EN_ATTENTE_VIREMENT" && !order.paidAt;
   let y = doc.height - 60;
   doc.text(40, y, store.name.toUpperCase(), 20, true);
-  doc.text(W - 230, y + 6, "FACTURE", 20, true);
-  doc.text(W - 230, y - 12, `N° ${invoiceNumber(order)}`, 10);
+  doc.text(W - 230, y + 6, kind === "devis" ? "DEVIS" : "FACTURE", 20, true);
+  doc.text(W - 230, y - 12, `N° ${kind === "devis" ? quoteNumber(order) : invoiceNumber(order)}`, 10);
   y -= 40;
   doc.text(40, y, store.name, 10, true);
   doc.text(40, y - 14, store.address, 9);
@@ -152,6 +165,15 @@ export function buildInvoicePdf(order: Order & { items: OrderItem[] }, user: Pic
     }
     doc.text(52, y - 2, "Votre commande est préparée et livrée dès réception du virement.", 9);
   }
-  doc.text(40, 60, "Merci pour votre confiance. Garantie et conditions : voir nos conditions générales de vente.", 8, false, GREY);
+  doc.text(
+    40,
+    60,
+    kind === "devis"
+      ? `Devis établi pour la commande ${order.number}, selon nos conditions générales de vente.`
+      : "Merci pour votre confiance. Garantie et conditions : voir nos conditions générales de vente.",
+    8,
+    false,
+    GREY,
+  );
   return doc.toBuffer();
 }

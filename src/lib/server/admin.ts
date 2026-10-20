@@ -7,7 +7,7 @@ import { invalidateCatalog } from "@/lib/catalog/repository";
 import { SITE_URL } from "@/lib/seo";
 import { ApiError, clientIp, json } from "./api";
 import { rateLimit } from "./rate-limit";
-import { sendMail } from "./mailer";
+import { sendMail, smtpConfigured } from "./mailer";
 import { ADMIN_ORDER_STATUSES, adminSetOrderStatus } from "./orders";
 import { bankDetailsOf } from "@/lib/bank";
 import { buildInvoicePdf, invoiceAvailable, invoiceNumber, invoiceStore } from "./invoice";
@@ -393,7 +393,7 @@ export async function handleAdmin(req: Request, segments: string[]): Promise<Res
   const url = new URL(req.url);
   const m = req.method;
   const [a, b, c, d] = segments;
-  if (a === "ping" && m === "GET") return json({ ok: true, site: SITE_URL, smtp: !!process.env.SMTP_HOST, time: new Date().toISOString() });
+  if (a === "ping" && m === "GET") return json({ ok: true, site: SITE_URL, smtp: await smtpConfigured(), time: new Date().toISOString() });
   if (a === "stats" && m === "GET") return stats();
   if (a === "export" && m === "GET") return exportForWordPress(url);
   if (a === "orders") {

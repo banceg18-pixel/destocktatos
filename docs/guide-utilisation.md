@@ -341,11 +341,12 @@ supprimer une image encore utilisée par un produit ou une page.
   facture envoyée au client à chaque commande et affichés sur sa page de confirmation. Tant que
   l'IBAN est vide, le client est prévenu que vos coordonnées lui seront envoyées par email, et
   l'alerte « nouvelle commande » vous le rappelle.
-- **Liaison avec le site (technique)** : adresse publique du site, clé d'administration, adresse et
-  secret du webhook. Ces valeurs sont fournies lors de l'installation ; ne les modifiez pas sans votre
-  prestataire.
-- **Vérifier la liaison avec le site** : contrôle que l'administration communique bien avec le site et
-  indique si l'envoi des emails est actif.
+- **Liaison avec le site (technique)** : adresse publique du site et clé d'administration (l'adresse
+  et le secret du webhook sont facultatifs : par défaut, ces deux valeurs suffisent). Ces valeurs sont
+  fournies lors de l'installation ; ne les modifiez pas sans votre prestataire.
+- **Vérifier la liaison avec le site** : contrôle que l'administration communique bien avec le site,
+  que la **mise à jour instantanée** est active (chaque modification enregistrée apparaît sur le site
+  en quelques secondes) et que l'envoi des emails est actif.
 
 ![Réglages du site et du magasin](img/admin-reglages.png)
 
@@ -360,16 +361,18 @@ Connaître le parcours client aide à répondre à leurs questions.
    livraison jusqu'à 80 km, au pied du camion, dans la pièce de son choix ou avec installation, frais
    d'étage au-delà du 3e étage sans ascenseur, reprise possible de l'ancien appareil. Acceptation des
    CGV obligatoire.
-3. **Compte** : la commande se passe avec un compte client (création en une minute, ou connexion avec
-   Google si elle est activée).
+3. **Coordonnées** : au moment de payer, le client commande **sans compte** avec son seul email (ou se
+   connecte s'il a déjà un compte).
 4. **Règlement** : par virement bancaire avant livraison (ou par carte si Stripe est activé). Les
    articles sont réservés 30 minutes le temps de confirmer, puis jusqu'au virement.
 5. **Confirmation** : page de confirmation avec le montant, la référence et vos coordonnées
-   bancaires, et email avec la facture PDF jointe.
-6. **Espace client** (« Mon compte ») : tableau de bord, **Mes commandes** (suivi, factures,
+   bancaires, et email mis en forme avec la **facture et le devis PDF** joints.
+6. **Compte** : l'email et la page de confirmation invitent le client à créer son compte en choisissant
+   son mot de passe (lien personnel valable 7 jours) ; il y retrouve ses commandes et ses factures.
+7. **Espace client** (« Mon compte ») : tableau de bord, **Mes commandes** (suivi, factures,
    annulation d'une commande non réglée), adresses de livraison, **Mon profil** (coordonnées, mot de
    passe, suppression du compte), codes de fidélité.
-7. **Après la livraison** : le client peut noter les appareils achetés.
+8. **Après la livraison** : le client peut noter les appareils achetés.
 
 ![Page de règlement](img/site-paiement.png)
 
@@ -386,16 +389,17 @@ Connaître le parcours client aide à répondre à leurs questions.
 | Réponse depuis **Boutique → Messages** | Client |
 | Inscription à la newsletter, lettre envoyée | Abonné (avec lien de désinscription) |
 
-Les emails partent depuis l'adresse configurée par votre prestataire (serveur d'envoi SMTP). Si
-**Vérifier la liaison** indique que les emails ne sont pas encore envoyés, contactez-le : les messages
-sont conservés sur le serveur et pourront être renvoyés.
+Les emails partent de la boîte du magasin (contacts@destocktatos.com), aux couleurs du site ; les
+alertes du magasin y arrivent aussi. Si **Vérifier la liaison** indique que les emails ne sont pas
+envoyés, contactez votre prestataire : les messages sont conservés sur le serveur et pourront être
+renvoyés.
 
 ## Questions fréquentes
 
 **Ma modification n'apparaît pas sur le site.**
-Rechargez la page du site (touche F5). Les modifications sont transmises immédiatement ; au plus tard,
-le site se met à jour dans les 5 minutes. Si rien ne change, utilisez **Réglages → Site et magasin →
-Vérifier la liaison avec le site**.
+Rechargez la page du site (touche F5) : les modifications apparaissent en quelques secondes. Si rien ne
+change, utilisez **Réglages → Site et magasin → Vérifier la liaison avec le site** : la ligne « Mise à
+jour instantanée » indique ce qui bloque.
 
 **La rubrique Boutique affiche « Le site ne répond pas ».**
 Le site est momentanément injoignable ou la liaison est mal configurée : vérifiez la liaison (voir

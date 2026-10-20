@@ -28,7 +28,7 @@ export function createOrder(payload: CreateOrderPayload) {
 }
 
 export function fetchLatestOrder() {
-  return apiFetch<OrderDTO>("/api/orders/latest");
+  return apiFetch<OrderDTO & { customerEmail?: string | null }>("/api/orders/latest");
 }
 
 export function fetchOrders() {

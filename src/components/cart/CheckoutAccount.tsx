@@ -2,29 +2,37 @@
 
 import { useState } from "react";
 import { Drawer } from "@/components/ui/Drawer";
+import { Button } from "@/components/ui/Button";
+import { Arrow, Field, Input } from "@/components/ui/Primitives";
 import { ConnexionForm } from "@/components/auth/ConnexionForm";
-import { InscriptionForm } from "@/components/auth/InscriptionForm";
+import { rules } from "@/lib/client/form-rules";
+import { useFieldErrors } from "@/lib/client/use-field-errors";
 import { cn } from "@/lib/client/cn";
 
 /**
- * Dernière étape avant le paiement : le visiteur a tout préparé sans compte (articles, adresse,
- * livraison) ; il crée son compte ou se connecte ici, sans quitter le panier ni rien perdre de sa
- * saisie, puis `onDone` lance la commande.
+ * Dernière étape avant le règlement : le visiteur a tout préparé (articles, adresse, livraison). Il
+ * commande sans compte avec son seul email, ou se connecte s'il a déjà un compte. Le compte se crée
+ * après la commande, depuis le lien reçu par email avec la facture : il y retrouvera ses factures.
  */
-export function CheckoutAccount({ open, onClose, onDone }: { open: boolean; onClose: () => void; onDone: () => void }) {
-  const [mode, setMode] = useState<"signup" | "login">("signup");
+export function CheckoutAccount({ open, onClose, onDone, onGuest }: { open: boolean; onClose: () => void; onDone: () => void; onGuest: (email: string) => void }) {
+  const [mode, setMode] = useState<"guest" | "login">("guest");
+  const [email, setEmail] = useState("");
+  const f = useFieldErrors<"email">({ email: "guest-email" });
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!f.validateAll({ email }, { email: rules.email })) return;
+    onGuest(email.trim().toLowerCase());
+  };
+
   return (
-    <Drawer open={open} onClose={onClose} title="Dernière étape : votre compte" closeLabel="Revenir au panier" className="sm:max-w-[480px]">
+    <Drawer open={open} onClose={onClose} title="Dernière étape : vos coordonnées" closeLabel="Revenir au panier" className="sm:max-w-[480px]">
       {open && (
         <div className="flex flex-col gap-6 px-6 pb-10 pt-2">
-          <p className="text-sm text-graphite">
-            Votre commande est prête. Créez votre compte pour suivre votre livraison et retrouver vos factures, puis passez au paiement. Votre panier et votre
-            adresse sont conservés.
-          </p>
-          <div role="tablist" aria-label="Compte" className="grid grid-cols-2 border border-line p-1 text-sm">
+          <div role="tablist" aria-label="Commander" className="grid grid-cols-2 border border-line p-1 text-sm">
             {(
               [
-                ["signup", "Créer mon compte"],
+                ["guest", "Commander sans compte"],
                 ["login", "J'ai déjà un compte"],
               ] as const
             ).map(([m, label]) => (
@@ -41,7 +49,35 @@ export function CheckoutAccount({ open, onClose, onDone }: { open: boolean; onCl
             ))}
           </div>
           <div role="tabpanel">
-            {mode === "signup" ? <InscriptionForm googleEnabled={false} onSuccess={onDone} /> : <ConnexionForm googleEnabled={false} onSuccess={onDone} />}
+            {mode === "guest" ? (
+              <form onSubmit={submit} noValidate className="flex flex-col gap-5">
+                <p className="text-sm text-graphite">
+                  Indiquez votre email : vous y recevrez la confirmation, la facture et le devis avec les informations de paiement. Vous pourrez ensuite créer votre
+                  compte en un clic pour retrouver vos factures.
+                </p>
+                <Field label="Email" htmlFor="guest-email" error={f.errors.email}>
+                  <Input
+                    id="guest-email"
+                    type="email"
+                    value={email}
+                    invalid={!!f.errors.email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      f.onChange("email", e.target.value, rules.email);
+                    }}
+                    onBlur={(e) => f.onBlur("email", e.target.value, rules.email)}
+                    autoComplete="email"
+                    placeholder="nom@exemple.fr"
+                    data-testid="guest-email"
+                  />
+                </Field>
+                <Button type="submit" size="lg" block icon={<Arrow />} data-testid="guest-continue">
+                  Continuer vers le paiement
+                </Button>
+              </form>
+            ) : (
+              <ConnexionForm googleEnabled={false} onSuccess={onDone} />
+            )}
           </div>
         </div>
       )}

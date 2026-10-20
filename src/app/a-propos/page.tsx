@@ -6,7 +6,6 @@ import { Reveal } from "@/components/ui/Reveal";
 import { TextReveal } from "@/components/ui/Motion";
 import { getPage, getSiteSettings } from "@/lib/cms";
 
-export const revalidate = 300;
 
 type Item = { icon?: string; title: string; text: string };
 interface AboutContent {

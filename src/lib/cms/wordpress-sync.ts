@@ -55,7 +55,12 @@ function localize(url: string | null): string | null {
 async function wp<T>(endpoint: string): Promise<{ data: T; totalPages: number }> {
   const api = (process.env.WORDPRESS_API_URL || "").replace(/\/$/, "");
   if (!api) throw new Error("WORDPRESS_API_URL non défini");
-  const res = await fetch(`${api}${endpoint}`, { headers: { Accept: "application/json" }, cache: "no-store" });
+  // Adresse unique : jamais de réponse gardée par LiteSpeed Cache ou le CDN de WordPress.
+  const fresh = `_tatos=${Date.now().toString(36)}`;
+  const res = await fetch(`${api}${endpoint}${endpoint.includes("?") ? "&" : "?"}${fresh}`, {
+    headers: { Accept: "application/json", "Cache-Control": "no-cache", Pragma: "no-cache" },
+    cache: "no-store",
+  });
   if (res.status === 404) throw new WpNotFound(`WordPress ${endpoint} -> HTTP 404`);
   if (!res.ok) throw new Error(`WordPress ${endpoint} -> HTTP ${res.status}`);
   return { data: (await res.json()) as T, totalPages: Number(res.headers.get("X-WP-TotalPages") || 1) };

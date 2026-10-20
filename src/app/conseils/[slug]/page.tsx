@@ -8,12 +8,7 @@ import { getPost, getPosts } from "@/lib/cms";
 import { readingMinutes, sanitizeHtml } from "@/lib/cms/sanitize";
 import { SITE_URL, jsonLd } from "@/lib/seo";
 
-export const revalidate = 300;
 type Params = Promise<{ slug: string }>;
-
-export async function generateStaticParams() {
-  return (await getPosts()).map((p) => ({ slug: p.slug }));
-}
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const post = await getPost((await params).slug);

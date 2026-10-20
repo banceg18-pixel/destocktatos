@@ -345,7 +345,9 @@ def _():
     req = api()
     for method, url in [("get", "/api/users/me"), ("get", "/api/orders"), ("get", "/api/orders/latest"), ("get", "/api/user/addresses")]:
         eq(getattr(req, method)(url).status, 401, f"{url} sans session")
-    eq(req.post("/api/orders/create", data={"items": []}).status, 401, "création de commande sans session")
+    # Commande sans compte autorisée : seul un panier valide (et un email) est exigé.
+    eq(req.post("/api/orders/create", data={"items": []}).status, 400, "commande sans session : panier vide refusé")
+    eq(req.get("/api/orders/latest").status, 401, "aucune commande en cours sans session ni cookie de commande")
     eq(req.post("/api/checkout/test-payment", data={}).status, 401, "paiement sans session")
     eq(req.post("/api/checkout/bank-transfer", data={}).status, 401, "confirmation sans session")
     r = req.get("/compte", max_redirects=0)
@@ -573,7 +575,7 @@ def _():
     page.locator("#mdpv").fill(new_password)
     page.locator('main form button[type="submit"]').click()
     page.get_by_text("Votre mot de passe a été modifié").first.wait_for()
-    page.wait_for_url("**/connexion")
+    page.wait_for_url(re.compile(r"/connexion(\?|$)"))
     ui_login(page, {**user, "password": new_password})
     reuse = api().post("/api/auth/reset-password", data={"token": token, "mdp": "EncoreUn2026"})
     eq(reuse.status, 400, "lien déjà utilisé")
@@ -642,17 +644,17 @@ def _():
     ctx.close()
 
 
-@test("achat", "livraison à domicile sans compte : autocomplétion BAN, livraison offerte, compte créé avant le paiement")
+@test("achat", "commande sans compte : livraison offerte, virement, email avec facture et devis, compte créé ensuite")
 def _():
     errors: list[str] = []
     ctx = new_context(consent="accepted")
     page = new_page(ctx, errors)
-    # Visiteur sans compte : il prépare toute sa commande, le compte n'est demandé qu'au paiement.
+    # Visiteur sans compte : il prépare et passe toute sa commande ; le compte se crée après, depuis l'email.
     add_to_cart(page, CHEAP)
     go(page, "/panier")
     # Livraison à domicile seule proposée (plus de retrait en magasin).
     page.get_by_text("Livraison à domicile, offerte", exact=True).wait_for()
-    page.locator("#ship-fullName").fill("Client Livraison")
+    page.locator("#ship-fullName").fill("Client Invité")
     page.locator("#ship-phone").fill("0612345678")
     page.locator("#ship-address").fill(STORE_ADDRESS)
     try:
@@ -671,19 +673,61 @@ def _():
     group.get_by_text("Installation", exact=True).click()
     page.locator("#termsCheckbox").check(force=True)
     page.get_by_test_id("checkout-button").click()
-    # Panneau « Dernière étape : votre compte » : création du compte sans quitter le panier.
-    panel = page.get_by_role("dialog", name="Dernière étape : votre compte")
+    # Panneau « Dernière étape : vos coordonnées » : email seul, sans compte.
+    panel = page.get_by_role("dialog", name="Dernière étape : vos coordonnées")
     panel.wait_for(timeout=10_000)
     check(page.url.endswith("/panier"), "toujours sur le panier")
-    password = f"Essai{int(time.time())}2026x"
-    panel.locator('[data-cy="signup-email-input"]').fill(f"invite-{int(time.time())}@tatos.test")
-    panel.locator('[data-cy="signup-password-input"]').fill(password)
-    panel.locator('[data-cy="signup-confirm-password-input"]').fill(password)
-    panel.locator('[data-cy="signup-submit"]').click()
+    email = f"invite-{int(time.time())}@tatos.test"
+    panel.get_by_test_id("guest-email").fill(email)
+    panel.get_by_test_id("guest-continue").click()
     page.wait_for_url("**/paiement", timeout=30_000)
     latest = page.request.get("/api/orders/latest").json()
-    eq((latest["deliveryMethod"], latest["deliveryFee"], latest["isPickupInStore"]), ("installation", 0, False), "livraison offerte, recalculée par le serveur")
+    eq((latest["deliveryMethod"], latest["deliveryFee"], latest["isPickupInStore"], latest["customerEmail"]), ("installation", 0, False, email), "commande sans compte, livraison offerte recalculée par le serveur")
     check(latest["deliveryDistance"] <= 2, f"distance magasin calculée côté serveur : {latest['deliveryDistance']} km")
+    eq(page.request.get("/api/orders").status, 401, "aucun accès au compte sans connexion")
+    page.get_by_test_id("bank-transfer").wait_for()
+    eq(page.get_by_label("Email", exact=True).input_value(), email, "email de facturation pré-rempli")
+    page.get_by_test_id("bank-transfer").click()
+    page.wait_for_url(re.compile(r"/confirmation\?status=success&order="), timeout=30_000)
+    page.get_by_text("Merci pour votre commande !").wait_for()
+    check(page.get_by_test_id("transfer-details").count() == 1, "virement à effectuer affiché")
+    check(page.get_by_test_id("confirmation-quote").count() == 1 and page.get_by_test_id("confirmation-invoice").count() == 1, "facture et devis téléchargeables")
+    check(page.get_by_test_id("account-invite").count() == 1, "invitation à créer son compte")
+    order_id = re.search(r"order=([A-Za-z0-9]+)", page.url).group(1)
+    for kind in ("", "&type=devis"):
+        pdf = page.request.get(f"/api/orders/{order_id}/invoice?download=1{kind}")
+        check(pdf.status == 200 and pdf.body()[:5] == b"%PDF-", f"PDF {'devis' if kind else 'facture'} de l'invité")
+    # Email de confirmation : mis en forme, facture + devis joints, lien de création du compte.
+    box = OUT / "outbox"
+    mail = None
+    for _ in range(40):
+        for f in sorted(box.glob("*commande-confirmation.json")) if box.exists() else []:
+            m = json.loads(f.read_text(encoding="utf-8"))
+            if m["to"] == email:
+                mail = m
+        if mail:
+            break
+        time.sleep(0.25)
+    check(mail is not None, "email de confirmation envoyé")
+    eq([a["filename"].split("_")[0] for a in mail["attachments"]], ["facture", "devis"], "facture et devis joints")
+    check("Créer mon compte" in mail["html"] and "Virement bancaire à effectuer" in mail["html"], "email mis en forme : virement et création du compte")
+    link = re.search(r"/connexion/reinitialiser\?token=[a-f0-9]{64}&creation=1", mail["text"]).group(0)
+    # Création du compte depuis le lien, puis connexion : la commande et ses factures sont là.
+    go(page, link)
+    page.get_by_role("heading", name="Créez votre compte").wait_for()
+    password = f"Essai{int(time.time())}2026x"
+    page.get_by_label("Nouveau mot de passe", exact=True).fill(password)
+    page.get_by_label("Confirmez le mot de passe", exact=True).fill(password)
+    page.locator("main form button[type=submit]").click()
+    page.wait_for_url(re.compile(r"/connexion"), timeout=20_000)
+    page.locator('[data-cy="email-input"]').fill(email)
+    page.locator('[data-cy="password-input"]').fill(password)
+    page.locator('[data-cy="login-submit"]').click()
+    page.wait_for_url(re.compile(r"/compte"), timeout=30_000)
+    go(page, "/compte/commandes")
+    row = page.locator("article").filter(has=page.get_by_role("heading", name=f"Commande {latest['number']}"))
+    row.wait_for()
+    check("en attente de virement" in row.inner_text().lower(), "commande retrouvée dans le compte créé")
     check(not errors, f"erreurs pendant le parcours : {errors}")
     ctx.close()
 

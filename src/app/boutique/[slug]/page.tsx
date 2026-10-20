@@ -17,13 +17,6 @@ import { SITE_URL, jsonLd } from "@/lib/seo";
 import { displayTitle } from "@/lib/text";
 import { BIG_TICKET_OFFER, offerApplies, offerUnitEuros } from "@/lib/offers";
 
-// Pages pré-rendues à la première visite puis servies depuis le cache, régénérées au plus toutes les 60 s
-// (même rythme que le cache du catalogue). Le stock est de toute façon revérifié côté serveur à la commande.
-export const revalidate = 60;
-export async function generateStaticParams() {
-  return [];
-}
-
 type Params = Promise<{ slug: string }>;
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {

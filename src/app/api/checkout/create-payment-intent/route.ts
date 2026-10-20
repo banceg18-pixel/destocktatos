@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
-import { ApiError, json, requireUser, route } from "@/lib/server/api";
-import { getLatestPendingOrder } from "@/lib/server/orders";
+import { ApiError, json, route } from "@/lib/server/api";
+import { requireBuyer } from "@/lib/server/buyer";
+import { expireStaleOrders, getLatestPendingOrder } from "@/lib/server/orders";
 import { getPaymentProvider, isBankTransferEnabled } from "@/lib/server/payments";
 
 /**
@@ -9,11 +10,14 @@ import { getPaymentProvider, isBankTransferEnabled } from "@/lib/server/payments
  * `bankTransfer` indique si le règlement par virement bancaire (avant livraison) est proposé.
  */
 export const POST = route("POST /api/checkout/create-payment-intent", async () => {
-  const user = await requireUser();
-  const order = await getLatestPendingOrder(user.id);
+  const buyer = await requireBuyer();
+  if (buyer.guestOrderId) await expireStaleOrders();
+  const order = buyer.userId
+    ? await getLatestPendingOrder(buyer.userId)
+    : await prisma.order.findFirst({ where: { id: buyer.guestOrderId!, status: "EN_ATTENTE_PAIEMENT" }, include: { user: { select: { email: true } } } });
   if (!order) throw new ApiError(404, "Aucune commande en attente de paiement");
   const provider = getPaymentProvider();
-  const { clientSecret, providerRef } = await provider.createIntent(order, user.email);
+  const { clientSecret, providerRef } = await provider.createIntent(order, buyer.email ?? ("user" in order ? order.user.email : null));
   await prisma.payment.upsert({
     where: { id: `${order.id}-${providerRef}`.slice(0, 190) },
     update: {},

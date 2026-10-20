@@ -9,7 +9,6 @@ import { IconCheck } from "@/components/ui/Icons";
 import { cn } from "@/lib/client/cn";
 import { getPage, getSiteSettings } from "@/lib/cms";
 
-export const revalidate = 300;
 
 interface ServicesContent {
   intro: string;

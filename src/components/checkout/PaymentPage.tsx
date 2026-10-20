@@ -146,14 +146,14 @@ const BILLING_RULES = {
   phone: rules.phone,
 };
 
-function BankTransferForm({ order }: { order: OrderDTO }) {
+function BankTransferForm({ order, customerEmail }: { order: OrderDTO; customerEmail?: string | null }) {
   const router = useRouter();
   const { clearCart } = useCart();
   const { data: session } = useSession();
   const ship = order.shippingAddress;
   const [billing, setBilling] = useState({
     name: ship?.fullName ?? session?.user?.name ?? "",
-    email: session?.user?.email ?? "",
+    email: session?.user?.email ?? customerEmail ?? "",
     address: ship?.address ?? "",
     postalCode: ship?.postalCode ?? "",
     city: ship?.city ?? "",
@@ -274,19 +274,17 @@ export function PaymentPage({ settings }: { settings: SiteSettings }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [order, setOrder] = useState<OrderDTO | null>(null);
+  const [customerEmail, setCustomerEmail] = useState<string | null>(null);
   const left = useCountdown(order?.expiresAt);
 
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/connexion?callbackUrl=/paiement");
-      return;
-    }
-    if (status !== "authenticated") return;
+    // Avec ou sans compte : la commande en cours est retrouvée par la session ou par le cookie de commande.
+    if (status === "loading") return;
     (async () => {
       setLoading(true);
       const latest = await fetchLatestOrder();
       if (!latest.ok) {
-        if (latest.status === 404) {
+        if (latest.status === 404 || latest.status === 401) {
           router.push("/panier");
           return;
         }
@@ -295,6 +293,7 @@ export function PaymentPage({ settings }: { settings: SiteSettings }) {
         return;
       }
       setOrder(latest.data);
+      setCustomerEmail(latest.data.customerEmail ?? null);
       const intent = await createPaymentIntent();
       if (!intent.ok) setError(intent.error || "Le paiement n'a pas pu être initialisé. Réessayez dans un instant.");
       else {
@@ -366,7 +365,7 @@ export function PaymentPage({ settings }: { settings: SiteSettings }) {
             <StripeForm order={order} />
           </Elements>
         )}
-        {transfer && method === "transfer" && <BankTransferForm order={order} />}
+        {transfer && method === "transfer" && <BankTransferForm order={order} customerEmail={customerEmail} />}
       </section>
 
       <aside aria-label="Votre commande" className="lg:sticky lg:top-[calc(var(--header-h)+28px)] lg:self-start">

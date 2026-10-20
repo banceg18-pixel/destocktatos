@@ -7,12 +7,15 @@ import { SITE_URL } from "@/lib/seo";
 import { getSiteSettings } from "@/lib/cms";
 import type { SiteSettings } from "@/lib/cms/types";
 import { bankDetailsOf, type BankDetails } from "@/lib/bank";
-import { buildInvoicePdf, invoiceAvailable, invoiceNumber, invoiceStore } from "./invoice";
+import { buildInvoicePdf, invoiceAvailable, invoiceNumber, invoiceStore, quoteNumber } from "./invoice";
+import { button, emailLayout, heading, infoBox, orderTable, para, subheading, type EmailStore } from "./email-layout";
+import { ACCOUNT_LINK_TTL_MS, passwordLink } from "./password-link";
 import { sendMail, sendMailInBackground, STORE_EMAIL } from "./mailer";
 
 /**
  * Emails transactionnels : confirmation de commande (client et magasin, facture PDF jointe), suivi de statut,
- * bienvenue, newsletter. Texte simple et lisible ; envoi par SMTP ou outbox (voir mailer.ts).
+ * bienvenue, newsletter. HTML aux couleurs du site (email-layout.ts) avec sa version texte ; envoi par
+ * SMTP ou outbox (voir mailer.ts).
  */
 
 const DELIVERY = { piedDuCamion: "Livraison au pied du camion", livraisonPiece: "Livraison dans la pièce", installation: "Livraison avec installation" } as const;
@@ -28,7 +31,7 @@ type AddressJson = { fullName?: string; address?: string; postalCode?: string; c
 const addressLines = (a: AddressJson) => (a ? [a.fullName, a.address, `${a.postalCode ?? ""} ${a.city ?? ""}`.trim(), a.phone].filter(Boolean).join("\n") : "");
 
 async function loadOrder(orderId: string) {
-  return prisma.order.findUnique({ where: { id: orderId }, include: { items: true, user: { select: { name: true, email: true } } } });
+  return prisma.order.findUnique({ where: { id: orderId }, include: { items: true, user: { select: { name: true, email: true, passwordHash: true } } } });
 }
 type FullOrder = NonNullable<Awaited<ReturnType<typeof loadOrder>>>;
 
@@ -54,24 +57,73 @@ const PAYMENT_LABELS: Record<string, string> = {
   test: "simulation (tests automatisés)",
 };
 
-/** Facture PDF en pièce jointe (commande payée ou en attente de virement). */
-function invoiceAttachments(o: FullOrder, s: SiteSettings | null) {
+/** Facture PDF en pièce jointe, et le devis tant que le virement est attendu. */
+function orderAttachments(o: FullOrder, s: SiteSettings | null, withQuote = false) {
   if (!s || !invoiceAvailable(o)) return [];
-  return [{ filename: `facture_${invoiceNumber(o)}.pdf`, content: buildInvoicePdf(o, o.user, invoiceStore(s), bankDetailsOf(s)), contentType: "application/pdf" }];
+  const store = invoiceStore(s);
+  const bank = bankDetailsOf(s);
+  return [
+    { filename: `facture_${invoiceNumber(o)}.pdf`, content: buildInvoicePdf(o, o.user, store, bank), contentType: "application/pdf" },
+    ...(withQuote ? [{ filename: `devis_${quoteNumber(o)}.pdf`, content: buildInvoicePdf(o, o.user, store, bank, "devis"), contentType: "application/pdf" }] : []),
+  ];
 }
 
-/** Montant, référence et coordonnées bancaires du virement attendu. */
-function transferDetails(o: FullOrder, bank: BankDetails | null) {
+const emailStore = (s: SiteSettings | null): EmailStore | null => (s ? { name: s.siteName, address: `${s.addressLine}, ${s.postalCode} ${s.city}`, phone: s.phone, email: s.email } : null);
+
+/** Lignes du virement attendu : montant, référence, coordonnées bancaires. */
+function transferRows(o: FullOrder, bank: BankDetails | null): [string, string, boolean?][] {
   return [
-    `Montant : ${eur(o.totalCents)}`,
-    `Référence à indiquer : ${o.number}`,
-    ...(bank ? [`Titulaire du compte : ${bank.holder}`, ...(bank.bank ? [`Banque : ${bank.bank}`] : []), `IBAN : ${bank.iban}`, ...(bank.bic ? [`BIC : ${bank.bic}`] : [])] : []),
-  ].join("\n");
+    ["Montant", eur(o.totalCents)],
+    ["Référence à indiquer", o.number, true],
+    ...(bank ? ([["Titulaire", bank.holder], ...(bank.bank ? [["Banque", bank.bank]] : []), ["IBAN", bank.iban, true], ...(bank.bic ? [["BIC", bank.bic, true]] : [])] as [string, string, boolean?][]) : []),
+  ];
+}
+
+function deliveryLabel(o: FullOrder) {
+  if (o.isPickupInStore) return "Retrait en magasin";
+  return `${DELIVERY[o.deliveryMethod as keyof typeof DELIVERY] ?? "Livraison"}${o.includeOldItemPickup ? " + reprise de l'ancien appareil" : ""}`;
+}
+
+/** Récapitulatif HTML (articles et totaux). */
+function summaryTable(o: FullOrder) {
+  return orderTable(
+    o.items.map((i) => ({ label: `${i.marque} ${i.titre}`.trim(), detail: `Quantité ${i.quantity} · ${eur(i.unitPriceCents)} l'unité`, amount: eur(i.lineTotalCents) })),
+    [
+      { label: "Sous-total", amount: eur(o.subtotalCents) },
+      ...(o.discountCents ? [{ label: `Réduction${o.couponCode ? ` (${o.couponCode})` : ""}`, amount: `−${eur(o.discountCents)}` }] : []),
+      { label: deliveryLabel(o), amount: o.deliveryFeeCents ? eur(o.deliveryFeeCents) : "Offerte" },
+      { label: "Total TTC", amount: eur(o.totalCents), strong: true },
+    ],
+  );
 }
 
 /**
- * Commande payée, ou confirmée avec règlement par virement : récapitulatif au client (facture PDF
- * jointe, avec les coordonnées bancaires s'il reste à payer) et alerte au magasin.
+ * Espace client : un client sans mot de passe (commande passée sans compte) reçoit un lien personnel
+ * pour créer son compte ; les autres sont invités à se connecter. Dans les deux cas, il y retrouve
+ * ses commandes et ses factures.
+ */
+async function accountInvite(o: FullOrder) {
+  if (o.user.passwordHash) {
+    const url = `${SITE_URL}/connexion?callbackUrl=${encodeURIComponent("/compte/commandes")}`;
+    return {
+      text: `Retrouvez vos commandes et vos factures dans votre compte : ${url}`,
+      html: subheading("Votre espace client") + para("Suivez votre commande et retrouvez vos factures à tout moment dans votre compte.") + button("Me connecter", url),
+    };
+  }
+  const link = await passwordLink(o.userId, ACCOUNT_LINK_TTL_MS, true);
+  return {
+    text: `Créez votre compte pour suivre votre commande et retrouver vos factures : choisissez simplement votre mot de passe (lien personnel valable 7 jours) :\n${link}`,
+    html:
+      subheading("Créez votre compte") +
+      para("Pour suivre votre commande et retrouver vos factures à tout moment, choisissez simplement votre mot de passe : votre compte est déjà prêt, à votre adresse email.") +
+      button("Créer mon compte", link) +
+      para("Lien personnel, valable 7 jours.", { muted: true, size: 13 }),
+  };
+}
+
+/**
+ * Commande payée, ou confirmée avec règlement par virement : email au client (récapitulatif, facture
+ * et devis PDF joints avec les informations de paiement, invitation à créer son compte) et alerte au magasin.
  */
 export async function notifyOrderPaid(orderId: string) {
   const o = await loadOrder(orderId);
@@ -79,36 +131,60 @@ export async function notifyOrderPaid(orderId: string) {
   const s = await getSiteSettings().catch(() => null);
   const bank = bankDetailsOf(s);
   const awaitingTransfer = o.status === "EN_ATTENTE_VIREMENT" && !o.paidAt;
-  const attachments = invoiceAttachments(o, s);
+  const attachments = orderAttachments(o, s, awaitingTransfer);
+  const account = await accountInvite(o);
+  const ship = o.shippingAddress as AddressJson;
   const where = o.isPickupInStore
     ? `Retrait en magasin : ${s ? `${s.addressLine}, ${s.postalCode} ${s.city} (${s.storeHours})` : "à l'adresse du magasin"}. Nous vous prévenons dès que votre commande est prête.`
-    : `Adresse de livraison :
-${addressLines(o.shippingAddress as AddressJson)}
+    : `Adresse de livraison :\n${addressLines(ship)}\n\nNous vous appelons pour convenir du jour et du créneau de livraison.`;
+  const docs = attachments.length > 1 ? "Votre facture et votre devis sont joints à cet email (PDF)." : attachments.length ? "Votre facture est jointe à cet email (PDF)." : "";
+  const transferNote = `Indiquez bien la référence ${o.number} dans le libellé du virement. Votre commande est préparée et livrée dès réception du virement.`;
+  const text = `Bonjour ${o.user.name},
 
-Nous vous appelons pour convenir du jour et du créneau de livraison.`;
-  const intro = awaitingTransfer
+${
+  awaitingTransfer
     ? `Merci pour votre commande ${o.number} : elle est enregistrée et vos articles sont réservés.
 
 Pour la valider, réglez ${eur(o.totalCents)} par virement bancaire :
-${transferDetails(o, bank)}${bank ? "" : "\n\nNos coordonnées bancaires vous sont envoyées très rapidement par email."}
+${transferRows(o, bank)
+  .map(([l, v]) => `${l} : ${v}`)
+  .join("\n")}${bank ? "" : "\n\nNos coordonnées bancaires vous sont envoyées très rapidement par email."}
 
-Indiquez bien la référence ${o.number} dans le libellé du virement. Votre commande est préparée et livrée dès réception du virement.`
-    : `Merci pour votre commande ${o.number} : le paiement de ${eur(o.totalCents)} a bien été reçu.`;
-  await sendMail({
-    to: o.user.email,
-    tag: "commande-confirmation",
-    subject: awaitingTransfer ? `Commande ${o.number} : facture et coordonnées de paiement` : `Commande ${o.number} confirmée`,
-    text: `Bonjour ${o.user.name},
-
-${intro}${attachments.length ? "\n\nVotre facture est jointe à cet email (PDF)." : ""}
+${transferNote}`
+    : `Merci pour votre commande ${o.number} : le paiement de ${eur(o.totalCents)} a bien été reçu.`
+}${docs ? `\n\n${docs}` : ""}
 
 ${summary(o)}
 
 ${where}
 
-Suivre la commande et retrouver la facture : ${SITE_URL}/compte/commandes
+${account.text}
 
-${await signature()}`,
+${await signature()}`;
+  const html = emailLayout({
+    store: emailStore(s),
+    preheader: awaitingTransfer ? `Commande ${o.number} : réglez ${eur(o.totalCents)} par virement pour la valider.` : `Commande ${o.number} confirmée et payée.`,
+    body:
+      heading("Merci pour votre commande !") +
+      para(`Bonjour ${o.user.name},`) +
+      (awaitingTransfer
+        ? para(`Votre commande ${o.number} est enregistrée et vos articles sont réservés. Pour la valider, réglez ${eur(o.totalCents)} par virement bancaire.`) +
+          infoBox("Virement bancaire à effectuer", transferRows(o, bank), bank ? transferNote : `Nos coordonnées bancaires vous sont envoyées très rapidement par email. ${transferNote}`)
+        : para(`Votre commande ${o.number} est confirmée : le paiement de ${eur(o.totalCents)} a bien été reçu.`)) +
+      (docs ? para(docs, { muted: true }) : "") +
+      subheading("Votre commande") +
+      summaryTable(o) +
+      subheading(o.isPickupInStore ? "Retrait" : "Livraison") +
+      para(o.isPickupInStore ? where : `${addressLines(ship)}`) +
+      (o.isPickupInStore ? "" : para("Nous vous appelons pour convenir du jour et du créneau de livraison.", { muted: true })) +
+      account.html,
+  });
+  await sendMail({
+    to: o.user.email,
+    tag: "commande-confirmation",
+    subject: awaitingTransfer ? `Commande ${o.number} : facture, devis et informations de paiement` : `Commande ${o.number} confirmée`,
+    text,
+    html,
     attachments,
   });
   const storeAction = awaitingTransfer
@@ -124,9 +200,8 @@ ${await signature()}`,
     replyTo: o.user.email,
     tag: "commande-magasin",
     subject: `Nouvelle commande ${o.number} — ${eur(o.totalCents)}${awaitingTransfer ? " — virement attendu" : ""}`,
-    text: `Client : ${o.user.name} <${o.user.email}>
-${o.isPickupInStore ? "Retrait en magasin" : `Livraison :
-${addressLines(o.shippingAddress as AddressJson)}`}
+    text: `Client : ${o.user.name} <${o.user.email}>${o.user.passwordHash ? "" : " (commande passée sans compte)"}
+${o.isPickupInStore ? "Retrait en magasin" : `Livraison :\n${addressLines(ship)}`}
 
 ${summary(o)}
 
@@ -163,12 +238,27 @@ export async function notifyOrderStatus(orderId: string, status: OrderStatus) {
   const o = await loadOrder(orderId);
   if (!o) return;
   const { subject, body, invoice } = make(o);
-  const attachments = invoice ? invoiceAttachments(o, await getSiteSettings().catch(() => null)) : [];
+  const s = await getSiteSettings().catch(() => null);
+  const attachments = invoice ? orderAttachments(o, s) : [];
+  const url = `${SITE_URL}/compte/commandes`;
   await sendMail({
     to: o.user.email,
     tag: `commande-${status.toLowerCase()}`,
     subject,
-    text: `Bonjour ${o.user.name},\n\n${body}\n\nCommande ${o.number} — ${eur(o.totalCents)}\nDétail et facture : ${SITE_URL}/compte/commandes\n\n${await signature()}`,
+    text: `Bonjour ${o.user.name},\n\n${body}\n\nCommande ${o.number} — ${eur(o.totalCents)}\nDétail et facture : ${url}\n\n${await signature()}`,
+    html: emailLayout({
+      store: emailStore(s),
+      preheader: body.slice(0, 120),
+      body:
+        heading(subject) +
+        para(`Bonjour ${o.user.name},`) +
+        para(body) +
+        infoBox(`Commande ${o.number}`, [
+          ["Montant", eur(o.totalCents)],
+          ["Livraison", deliveryLabel(o)],
+        ]) +
+        button("Suivre ma commande", url),
+    }),
     attachments,
   });
 }

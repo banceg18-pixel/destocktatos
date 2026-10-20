@@ -43,4 +43,6 @@ export interface CreateOrderPayload {
   isPickupInStore: boolean;
   shippingAddress: ShippingAddress | null;
   appliedCoupon: AppliedCoupon | null;
+  /** Commande sans compte : email de l'acheteur (confirmation, facture, création du compte ensuite). */
+  guest?: { email: string };
 }

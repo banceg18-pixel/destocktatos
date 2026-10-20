@@ -56,7 +56,7 @@ export function ClientPanier() {
   const [processing, setProcessing] = useState(false);
   const [attempted, setAttempted] = useState(false);
   const [confirmClear, setConfirmClear] = useState(false);
-  // Le compte n'est demandé qu'au moment de payer, une fois tout le reste rempli.
+  // Coordonnées demandées au moment de payer, une fois tout le reste rempli : email seul (sans compte) ou connexion.
   const [accountOpen, setAccountOpen] = useState(false);
 
   const missing: string[] = [];
@@ -78,13 +78,17 @@ export function ClientPanier() {
     void placeOrder();
   };
 
-  // Compte créé ou connexion faite dans le panneau : la commande part aussitôt, sans rien ressaisir.
+  // Connexion faite dans le panneau, ou email saisi (sans compte) : la commande part aussitôt, sans rien ressaisir.
   const onAccountReady = () => {
     setAccountOpen(false);
     void placeOrder();
   };
+  const onGuest = (email: string) => {
+    setAccountOpen(false);
+    void placeOrder(email);
+  };
 
-  const placeOrder = async () => {
+  const placeOrder = async (guestEmail?: string) => {
     setProcessing(true);
     const total = calculateTotalWithDelivery();
     trackBeginCheckout(cart, total, appliedCoupon?.code);
@@ -99,6 +103,7 @@ export function ClientPanier() {
       isPickupInStore,
       shippingAddress: isPickupInStore ? null : shippingAddress,
       appliedCoupon,
+      ...(guestEmail ? { guest: { email: guestEmail } } : {}),
     });
     if (res.ok) {
       router.push("/paiement");
@@ -259,7 +264,7 @@ export function ClientPanier() {
           </p>
         </div>
       </aside>
-      <CheckoutAccount open={accountOpen} onClose={() => setAccountOpen(false)} onDone={onAccountReady} />
+      <CheckoutAccount open={accountOpen} onClose={() => setAccountOpen(false)} onDone={onAccountReady} onGuest={onGuest} />
     </div>
   );
 }

@@ -16,10 +16,11 @@ export class ApiError extends Error {
 }
 
 /**
- * Réponses publiques du catalogue (identiques pour tous les visiteurs) : le navigateur les garde 30 s,
- * un CDN 60 s, puis les sert encore 5 min pendant leur rafraîchissement. Allège le serveur aux pics de trafic.
+ * Réponses publiques du catalogue : jamais gardées par un CDN ni par le navigateur, pour qu'une
+ * modification (prix, stock, contenu) soit visible aussitôt. Le serveur les calcule depuis son
+ * cache mémoire du catalogue : elles restent rapides aux pics de trafic.
  */
-export const PUBLIC_CACHE = { headers: { "Cache-Control": "public, max-age=30, s-maxage=60, stale-while-revalidate=300" } };
+export const PUBLIC_CACHE = { headers: { "Cache-Control": "private, no-cache, max-age=0, must-revalidate" } };
 
 export function json<T>(data: T, init?: number | ResponseInit) {
   return NextResponse.json(data, typeof init === "number" ? { status: init } : init);

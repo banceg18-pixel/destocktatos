@@ -7,7 +7,6 @@ import { getFaq } from "@/lib/cms";
 import { jsonLd } from "@/lib/seo";
 import { slugify } from "@/lib/text";
 
-export const revalidate = 300;
 export const metadata: Metadata = {
   title: "Questions fréquentes",
   description: "Commandes, livraison, installation, paiement, garantie : les réponses aux questions les plus courantes.",

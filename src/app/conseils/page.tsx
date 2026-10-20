@@ -7,7 +7,6 @@ import { Arrow } from "@/components/ui/Primitives";
 import { getPosts } from "@/lib/cms";
 import { readingMinutes } from "@/lib/cms/sanitize";
 
-export const revalidate = 300;
 export const metadata: Metadata = {
   title: "Conseils",
   description: "Guides d'achat, entretien et services : nos conseils pour bien choisir et faire durer vos appareils électroménagers.",

@@ -21,6 +21,7 @@ export default defineConfig({
     env: {
       DATABASE_URL: "file:./test.db",
       MAIL_OUTBOX_DIR: path.resolve(__dirname, "tests/.tmp/outbox"),
+      MAIL_OUTBOX_ONLY: "true",
       STRIPE_SECRET_KEY: "",
       NEXTAUTH_SECRET: "test-secret-not-used-in-production",
       // Contenus locaux et cache du catalogue coupé : les tests écrivent directement en base.

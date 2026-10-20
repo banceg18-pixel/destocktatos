@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { WP_CACHE_TAG } from "@/lib/cms/wordpress";
 import { syncCatalogFromWordPress, syncCategoriesFromWordPress, syncProductFromWordPress } from "@/lib/cms/wordpress-sync";
 import { invalidateCatalog } from "@/lib/catalog/repository";
+import { bumpVersion } from "@/lib/server/sync-version";
 
 function safeEqual(a: string, b: string) {
   const x = Buffer.from(a);
@@ -24,14 +25,16 @@ const PRODUCT_ID = /^[A-Za-z0-9]{1,64}$/;
 
 /**
  * POST /api/webhooks/wordpress — appelé par le plugin « TATOS Headless » à chaque modification.
- * Authentifié par l'en-tête X-Tatos-Secret (WORDPRESS_WEBHOOK_SECRET). Invalide le cache des contenus
- * et synchronise le produit modifié (ou tout le catalogue pour « sync.full »). Un produit supprimé
- * ou dépublié dans WordPress n'est pas effacé (historique des commandes) : son stock passe à 0.
+ * Authentifié par l'en-tête X-Tatos-Secret : WORDPRESS_WEBHOOK_SECRET, ou à défaut la clé
+ * d'administration ADMIN_API_SECRET (déjà saisie dans WordPress pour la liaison). Vide les caches des
+ * contenus de toutes les copies du site et synchronise le produit modifié (ou tout le catalogue pour
+ * « sync.full »). Un produit supprimé ou dépublié dans WordPress n'est pas effacé (historique des
+ * commandes) : son stock passe à 0. « ping » sert au test de la liaison depuis WordPress.
  */
 export async function POST(req: Request) {
-  const secret = process.env.WORDPRESS_WEBHOOK_SECRET;
   const given = req.headers.get("x-tatos-secret") ?? "";
-  if (!secret || !safeEqual(given, secret)) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  const secrets = [process.env.WORDPRESS_WEBHOOK_SECRET, process.env.ADMIN_API_SECRET].filter((s): s is string => !!s);
+  if (!given || !secrets.some((s) => safeEqual(given, s))) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
   let body: WebhookBody = {};
   try {
     body = (await req.json()) as WebhookBody;
@@ -55,6 +58,8 @@ export async function POST(req: Request) {
     console.error("[webhook wordpress] synchronisation impossible:", e);
     return NextResponse.json({ error: "Synchronisation impossible" }, { status: 502 });
   }
+  // Contenus et catalogue relus partout (version partagée), pages régénérées.
+  await bumpVersion("content");
   invalidateCatalog();
   revalidatePath("/", "layout");
   return NextResponse.json({ ok: true, event: body.event ?? null, result });

@@ -2,6 +2,7 @@ import "server-only";
 import type { Category as DbCategory, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { invalidateMemo, memo } from "@/lib/server/memo";
+import { bumpVersion, syncCaches } from "@/lib/server/sync-version";
 import { toEuros } from "@/lib/money";
 import { normalize } from "@/lib/text";
 import type { Category, Product, ProductFilters, ProductListResult } from "@/types/catalog";
@@ -129,11 +130,18 @@ async function readSnapshot(): Promise<Snapshot> {
   };
 }
 
-const snapshot = () => memo("catalog:snapshot", CATALOG_TTL_MS, readSnapshot);
+const snapshot = async () => {
+  await syncCaches();
+  return memo("catalog:snapshot", CATALOG_TTL_MS, readSnapshot);
+};
 
-/** À appeler après toute écriture qui touche le catalogue (stock, prix, avis, catégories). */
+/**
+ * À appeler après toute écriture qui touche le catalogue (stock, prix, avis, catégories) : cache vidé
+ * ici tout de suite, et dans les autres copies du site sous 2 s (version partagée en base).
+ */
 export function invalidateCatalog() {
   invalidateMemo("catalog:");
+  void bumpVersion("catalog");
 }
 
 /** Correspondance de recherche : sans casse ni accents, sur titre, marque, modèle et slug. */

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { CheckoutSteps } from "@/components/cart/CheckoutSteps";
 import { TransferDetails } from "@/components/checkout/TransferDetails";
+import { AccountInvite } from "@/components/checkout/AccountInvite";
 import { buttonClasses, ButtonLink } from "@/components/ui/Button";
 import { Arrow } from "@/components/ui/Primitives";
 import { IconAlert, IconCheck } from "@/components/ui/Icons";
@@ -8,7 +9,9 @@ import { getSession } from "@/lib/auth";
 import { bankDetailsOf } from "@/lib/bank";
 import { getSiteSettings } from "@/lib/cms";
 import { formatEuros } from "@/lib/money";
-import { getUserOrder, toOrderDTO } from "@/lib/server/orders";
+import { prisma } from "@/lib/prisma";
+import { getBuyerOrder } from "@/lib/server/buyer";
+import { toOrderDTO } from "@/lib/server/orders";
 import { DELIVERY_LABELS } from "@/services/orders";
 
 export const dynamic = "force-dynamic";
@@ -16,14 +19,20 @@ export const metadata: Metadata = { title: "Confirmation de commande", robots: {
 
 type SP = Promise<{ status?: string; order?: string; payment_id?: string }>;
 
-/** Page de retour après paiement : l'état affiché vient de la base (jamais des seuls paramètres d'URL). */
+/**
+ * Page de retour après le règlement, avec ou sans compte (invité : sa commande seulement, par cookie
+ * signé). L'état affiché vient de la base (jamais des seuls paramètres d'URL).
+ */
 export default async function ConfirmationPage({ searchParams }: { searchParams: SP }) {
   const { order: orderId } = await searchParams;
   const [session, settings] = await Promise.all([getSession(), getSiteSettings()]);
   let order: ReturnType<typeof toOrderDTO> | null = null;
-  if (session?.user?.id && orderId && /^[A-Za-z0-9_-]{1,64}$/.test(orderId)) {
+  let customer: { email: string; passwordHash: string | null } | null = null;
+  if (orderId && /^[A-Za-z0-9_-]{1,64}$/.test(orderId)) {
     try {
-      order = toOrderDTO(await getUserOrder(session.user.id, orderId));
+      const o = await getBuyerOrder(orderId);
+      order = toOrderDTO(o);
+      customer = await prisma.user.findUnique({ where: { id: o.userId }, select: { email: true, passwordHash: true } });
     } catch {
       order = null;
     }
@@ -75,6 +84,8 @@ export default async function ConfirmationPage({ searchParams }: { searchParams:
                   <TransferDetails amount={order.totalAmount} reference={order.number} bank={bankDetailsOf(settings)} className="mt-8 max-w-xl" />
                 </>
               )}
+              {/* Commande passée sans être connecté : création du compte (ou connexion) pour retrouver ses factures. */}
+              {!session?.user?.id && customer && <AccountInvite email={customer.email} hasPassword={!!customer.passwordHash} />}
             </>
           ) : (
             <>
@@ -91,9 +102,16 @@ export default async function ConfirmationPage({ searchParams }: { searchParams:
                 Télécharger la facture
               </a>
             )}
-            <ButtonLink href="/compte/commandes" size="lg" variant={paid ? "outline" : "solid"} icon={<Arrow />}>
-              Mes commandes
-            </ButtonLink>
+            {order && awaitingTransfer && (
+              <a href={`/api/orders/${order._id}/invoice?download=1&type=devis`} download className={buttonClasses({ size: "lg", variant: "outline" })} data-testid="confirmation-quote">
+                Télécharger le devis
+              </a>
+            )}
+            {session?.user?.id && (
+              <ButtonLink href="/compte/commandes" size="lg" variant={paid ? "outline" : "solid"} icon={<Arrow />}>
+                Mes commandes
+              </ButtonLink>
+            )}
           </div>
         </div>
 

@@ -164,13 +164,13 @@ export async function expireStaleOrders(userId?: string) {
  * Crée la commande : recalcul serveur, contrôle du total affiché, réservation atomique du stock,
  * annulation des précédentes commandes non payées du client. Tout ou rien (transaction).
  */
-export async function createOrder(userId: string, req: OrderRequest, geocoder?: Geocoder) {
+export async function createOrder(userId: string, req: OrderRequest, geocoder?: Geocoder, opts: { keepOtherPending?: boolean } = {}) {
   await expireStaleOrders(userId);
   // Appel réseau (géocodage) hors transaction ; tout le reste est recalculé dans la transaction.
   const distanceKm = req.isPickupInStore || !req.shippingAddress ? undefined : await distanceTo(req.shippingAddress, geocoder);
   const created = await prisma.$transaction(async (tx) => {
     // Une seule commande à payer à la fois : les précédentes commandes en attente sont annulées.
-    const previous = await tx.order.findMany({ where: { userId, status: "EN_ATTENTE_PAIEMENT" }, include: { items: true } });
+    const previous = opts.keepOtherPending ? [] : await tx.order.findMany({ where: { userId, status: "EN_ATTENTE_PAIEMENT" }, include: { items: true } });
     for (const o of previous) {
       await tx.order.update({ where: { id: o.id }, data: { status: "ANNULEE" } });
       await restock(tx, o.items);

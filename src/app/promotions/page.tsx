@@ -10,7 +10,6 @@ import { ImageComponent } from "@/components/ui/ImageComponent";
 import { getCategories, getPromotionProducts } from "@/lib/catalog/repository";
 import { discountPercent } from "@/lib/money";
 
-export const revalidate = 300;
 export const metadata: Metadata = {
   title: "Promotions",
   description: "Tous les appareils électroménagers à prix réduit, livrés gratuitement partout en France, avec installation sur demande.",

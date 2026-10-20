@@ -306,3 +306,11 @@ model NewsletterSubscriber {
   source    String   @default("site")
   createdAt DateTime @default(now())
 }
+
+/// Versions partagées des caches mémoire (« content » : contenus WordPress, « catalog » : produits et
+/// stock). Chaque copie du site la relit toutes les 2 s : voir src/lib/server/sync-version.ts.
+model SiteState {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}

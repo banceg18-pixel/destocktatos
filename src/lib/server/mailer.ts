@@ -3,18 +3,23 @@ import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import nodemailer, { type Transporter } from "nodemailer";
+import { getSiteSettings } from "@/lib/cms";
+import { textEmail } from "./email-layout";
 
 /**
  * Notifications email.
- * - Avec un serveur SMTP configuré (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM`),
- *   les messages sont réellement envoyés (Brevo, Mailjet, OVH, Gmail, Outlook… : tout fournisseur SMTP).
- * - Sans configuration, ou si l'envoi échoue, ils sont écrits dans `MAIL_OUTBOX_DIR` (par défaut
- *   ./outbox) : rien n'est perdu et l'opération métier (commande, message…) n'échoue jamais.
+ * - Serveur d'envoi SMTP : variables d'environnement (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`,
+ *   `SMTP_PASS`, `MAIL_FROM`, `STORE_NOTIFICATION_EMAIL`), ou à défaut configuration enregistrée en
+ *   base (clé « smtp », voir scripts/configure-email.ts) : rien à saisir chez l'hébergeur.
+ * - Sans configuration, ou si l'envoi échoue, les messages sont écrits dans `MAIL_OUTBOX_DIR` (par
+ *   défaut ./outbox) : rien n'est perdu et l'opération métier (commande, message…) n'échoue jamais.
  */
 export interface MailMessage {
   to: string;
   subject: string;
   text: string;
+  /** Version HTML mise en forme ; à défaut, le texte est présenté dans le gabarit aux couleurs du site. */
+  html?: string;
   tag: string;
   /** Adresse de réponse (ex. email du client pour un message de contact). */
   replyTo?: string;
@@ -24,39 +29,99 @@ export interface MailMessage {
   attachments?: { filename: string; content: Buffer; contentType?: string }[];
 }
 
-/** Dossier des emails non envoyés (MAIL_OUTBOX_DIR, par défaut ./outbox). */
-const outboxDir = () => process.env.MAIL_OUTBOX_DIR || path.join(process.cwd(), "outbox");
-export const STORE_EMAIL = process.env.STORE_NOTIFICATION_EMAIL || "tatos-electromenager@outlook.com";
-
-export const smtpConfigured = () => !!process.env.SMTP_HOST;
-
-let transporter: Transporter | null = null;
-function smtp(): Transporter {
-  if (!transporter) {
-    const port = Number(process.env.SMTP_PORT || 587);
-    transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port,
-      secure: process.env.SMTP_SECURE ? process.env.SMTP_SECURE === "true" : port === 465,
-      auth: process.env.SMTP_USER ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } : undefined,
-      pool: true,
-      maxConnections: 3,
-      connectionTimeout: 15_000,
-      socketTimeout: 30_000,
-    });
-  }
-  return transporter;
+export interface MailConfig {
+  host: string;
+  port: number;
+  secure: boolean;
+  user: string;
+  pass: string;
+  /** Expéditeur affiché, ex. « Destocktatos <contacts@destocktatos.com> ». */
+  from: string;
+  /** Boîte qui reçoit les alertes du magasin (nouvelle commande, messages). */
+  store?: string;
 }
 
-const escapeHtml = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+/** Dossier des emails non envoyés (MAIL_OUTBOX_DIR, par défaut ./outbox). */
+const outboxDir = () => process.env.MAIL_OUTBOX_DIR || path.join(process.cwd(), "outbox");
 
-/** Version HTML sobre du texte (paragraphes, liens cliquables), lisible dans tous les clients mail. */
-function toHtml(text: string) {
-  const body = escapeHtml(text)
-    .split(/\n{2,}/)
-    .map((p) => `<p style="margin:0 0 16px">${p.replace(/\n/g, "<br>").replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" style="color:#121212">$1</a>')}</p>`)
-    .join("");
-  return `<!doctype html><html lang="fr"><body style="margin:0;background:#f4f4f2;padding:24px;font-family:Arial,Helvetica,sans-serif;color:#121212;font-size:15px;line-height:1.6"><div style="max-width:560px;margin:0 auto;background:#ffffff;padding:32px">${body}</div></body></html>`;
+/** Destinataire « magasin » : remplacé à l'envoi par la boîte du magasin configurée. */
+export const STORE_EMAIL = "magasin@destinataire.invalid";
+const DEFAULT_STORE = "contacts@destocktatos.com";
+
+function envConfig(): MailConfig | null {
+  if (!process.env.SMTP_HOST) return null;
+  const port = Number(process.env.SMTP_PORT || 587);
+  return {
+    host: process.env.SMTP_HOST,
+    port,
+    secure: process.env.SMTP_SECURE ? process.env.SMTP_SECURE === "true" : port === 465,
+    user: process.env.SMTP_USER || "",
+    pass: process.env.SMTP_PASS || "",
+    from: process.env.MAIL_FROM || process.env.SMTP_USER || "",
+    store: process.env.STORE_NOTIFICATION_EMAIL,
+  };
+}
+
+const CONFIG_TTL_MS = 60_000;
+let cached: { at: number; value: MailConfig | null } | null = null;
+
+/** Configuration d'envoi : environnement, sinon base (relue toutes les minutes) ; null = outbox. */
+export async function mailConfig(): Promise<MailConfig | null> {
+  const env = envConfig();
+  if (env) return env;
+  // Tests et développement : jamais d'envoi réel tant que MAIL_OUTBOX_ONLY est actif.
+  if (process.env.MAIL_OUTBOX_ONLY === "true") return null;
+  if (cached && Date.now() - cached.at < CONFIG_TTL_MS) return cached.value;
+  let value: MailConfig | null = null;
+  try {
+    const { prisma } = await import("@/lib/prisma");
+    const row = await prisma.siteState.findUnique({ where: { key: "smtp" } });
+    const c = row ? (JSON.parse(row.value) as Partial<MailConfig>) : null;
+    value = c?.host && c.user && c.pass ? { host: c.host, port: Number(c.port || 465), secure: c.secure ?? Number(c.port || 465) === 465, user: c.user, pass: c.pass, from: c.from || c.user, store: c.store } : null;
+  } catch (e) {
+    console.error("[mailer] configuration d'envoi illisible :", (e as Error).message);
+    value = cached?.value ?? null;
+  }
+  cached = { at: Date.now(), value };
+  return value;
+}
+
+export async function smtpConfigured() {
+  return !!(await mailConfig());
+}
+
+/** Boîte du magasin (alertes) : configuration d'envoi, sinon STORE_NOTIFICATION_EMAIL. */
+async function storeAddress(config: MailConfig | null) {
+  return config?.store || process.env.STORE_NOTIFICATION_EMAIL || config?.user || DEFAULT_STORE;
+}
+
+let transporter: { key: string; t: Transporter } | null = null;
+function smtp(c: MailConfig): Transporter {
+  const key = `${c.host}:${c.port}:${c.user}:${crypto.createHash("sha256").update(c.pass).digest("hex")}`;
+  if (transporter?.key !== key) {
+    transporter?.t.close();
+    transporter = {
+      key,
+      t: nodemailer.createTransport({
+        host: c.host,
+        port: c.port,
+        secure: c.secure,
+        auth: c.user ? { user: c.user, pass: c.pass } : undefined,
+        pool: true,
+        maxConnections: 3,
+        connectionTimeout: 15_000,
+        socketTimeout: 30_000,
+      }),
+    };
+  }
+  return transporter.t;
+}
+
+/** Version HTML : celle du message, ou le texte dans le gabarit du site (coordonnées du magasin en pied). */
+async function toHtml(msg: MailMessage) {
+  if (msg.html) return msg.html;
+  const s = await getSiteSettings().catch(() => null);
+  return textEmail(msg.text, s ? { name: s.siteName, address: `${s.addressLine}, ${s.postalCode} ${s.city}`, phone: s.phone, email: s.email } : null);
 }
 
 async function writeOutbox(msg: MailMessage, reason?: string) {
@@ -75,16 +140,19 @@ async function writeOutbox(msg: MailMessage, reason?: string) {
   }
 }
 
-export async function sendMail(msg: MailMessage): Promise<{ delivered: false; stored: string } | { delivered: true }> {
-  if (!smtpConfigured()) return { delivered: false, stored: await writeOutbox(msg) };
+export async function sendMail(input: MailMessage): Promise<{ delivered: false; stored: string } | { delivered: true }> {
+  const config = await mailConfig();
+  const to = input.to === STORE_EMAIL ? await storeAddress(config) : input.to;
+  const msg = { ...input, to, html: await toHtml(input) };
+  if (!config) return { delivered: false, stored: await writeOutbox(msg) };
   try {
-    await smtp().sendMail({
-      from: process.env.MAIL_FROM || process.env.SMTP_USER,
+    await smtp(config).sendMail({
+      from: config.from,
       to: msg.to,
       replyTo: msg.replyTo,
       subject: msg.subject,
       text: msg.text,
-      html: toHtml(msg.text),
+      html: msg.html,
       headers: msg.headers,
       attachments: msg.attachments,
     });

@@ -22,6 +22,13 @@ import { jsonLd, organizationJsonLd, rootMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = rootMetadata;
 
+/**
+ * Pages rendues à chaque visite, depuis les caches mémoire du serveur (catalogue, contenus WordPress)
+ * vidés dès qu'une modification est signalée : une modification faite dans WordPress est visible tout
+ * de suite, et aucun CDN (celui de l'hébergeur notamment) ne garde une ancienne version d'une page.
+ */
+export const dynamic = "force-dynamic";
+
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,

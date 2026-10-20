@@ -37,7 +37,8 @@ export function ResetPasswordForm({ token }: { token: string }) {
       return Object.keys(byField).length ? f.setServerErrors(byField) : setError(res.error);
     }
     setMessage("Votre mot de passe a été modifié. Vous pouvez vous connecter.");
-    router.push("/connexion");
+    // Connexion, puis directement les commandes et factures.
+    router.push(`/connexion?callbackUrl=${encodeURIComponent("/compte/commandes")}`);
   };
 
   return (

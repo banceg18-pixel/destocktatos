@@ -1,4 +1,6 @@
 import "server-only";
+import { memo } from "@/lib/server/memo";
+import { currentVersion, syncCaches } from "@/lib/server/sync-version";
 import { localProvider } from "./local";
 import type { ContentBlock, ContentProvider, ContentSection, FaqCategory, MenuSet, PageContent, Post, SiteSettings } from "./types";
 
@@ -11,9 +13,10 @@ import type { ContentBlock, ContentProvider, ContentSection, FaqCategory, MenuSe
  *   GET /tatos/v1/faq               FAQ groupée par catégorie
  *   GET /tatos/v1/pages/<slug>      page brute (HTML non filtré + `data` JSON + méta SEO)
  *   GET /wp/v2/posts?_embed         articles
- * Les réponses sont mises en cache (ISR, tag "wordpress") et invalidées par le webhook
- * `/api/webhooks/wordpress`. En cas d'indisponibilité, on retombe sur les contenus locaux
- * afin de ne jamais casser le rendu.
+ * Les réponses sont gardées en mémoire 5 min au plus, et oubliées dès qu'une modification est
+ * signalée par le webhook `/api/webhooks/wordpress` (version « content » partagée entre toutes les
+ * copies du site, voir sync-version.ts). En cas d'indisponibilité, on retombe sur les contenus
+ * locaux afin de ne jamais casser le rendu.
  */
 
 const API = (process.env.WORDPRESS_API_URL || "").replace(/\/$/, "");
@@ -55,15 +58,31 @@ function authHeader(): Record<string, string> {
   return user && pass ? { Authorization: `Basic ${Buffer.from(`${user}:${pass}`).toString("base64")}` } : {};
 }
 
+const WP_TTL_MS = 5 * 60 * 1000;
+
+/**
+ * Lecture brute de l'API REST, sans aucun cache HTTP : l'adresse porte la version des contenus (et
+ * change toutes les 5 min), si bien que LiteSpeed Cache ou le CDN de l'hébergeur de WordPress ne
+ * peuvent jamais renvoyer une ancienne réponse après une modification.
+ */
+async function wpGet(endpoint: string): Promise<{ status: 404 } | { status: 200; data: unknown }> {
+  const fresh = `_tatos=${currentVersion("content")}-${Math.floor(Date.now() / WP_TTL_MS)}`;
+  const res = await fetch(`${API}${endpoint}${endpoint.includes("?") ? "&" : "?"}${fresh}`, {
+    headers: { Accept: "application/json", "Cache-Control": "no-cache", Pragma: "no-cache", ...authHeader() },
+    cache: "no-store",
+    signal: AbortSignal.timeout(10_000),
+  });
+  if (res.status === 404) return { status: 404 };
+  if (!res.ok) throw new Error(`WordPress ${endpoint} -> HTTP ${res.status}`);
+  return { status: 200, data: await res.json() };
+}
+
 export async function wpFetch<T>(endpoint: string): Promise<T> {
   if (!API) throw new Error("WORDPRESS_API_URL non défini");
-  const res = await fetch(`${API}${endpoint}`, {
-    headers: { Accept: "application/json", ...authHeader() },
-    next: { revalidate: 300, tags: [WP_CACHE_TAG] },
-  });
-  if (res.status === 404) throw new NotFound(`WordPress ${endpoint} -> HTTP 404`);
-  if (!res.ok) throw new Error(`WordPress ${endpoint} -> HTTP ${res.status}`);
-  return (await res.json()) as T;
+  await syncCaches();
+  const r = await memo(`wp:${endpoint}`, WP_TTL_MS, () => wpGet(endpoint));
+  if (r.status === 404) throw new NotFound(`WordPress ${endpoint} -> HTTP 404`);
+  return r.data as T;
 }
 
 async function withFallback<T>(label: string, fn: () => Promise<T>, fallback: () => Promise<T>): Promise<T> {

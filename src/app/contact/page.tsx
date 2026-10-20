@@ -7,7 +7,6 @@ import { Arrow } from "@/components/ui/Primitives";
 import { IconClock, IconMail, IconPhone } from "@/components/ui/Icons";
 import { getSiteSettings } from "@/lib/cms";
 
-export const revalidate = 300;
 export const metadata: Metadata = {
   title: "Contact",
   description: "Une question sur un appareil, une commande ou une livraison ? Écrivez-nous ou appelez le magasin.",

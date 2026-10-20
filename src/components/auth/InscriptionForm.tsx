@@ -36,7 +36,7 @@ export function InscriptionForm({ googleEnabled, onSuccess }: { googleEnabled: b
     const res = await registerAccount({ email, mdp: password, mdpv: confirm });
     if (!res.ok) {
       setLoading(false);
-      if (res.status === 409) return f.setServerErrors({ email: "Un compte existe déjà avec cette adresse : connectez-vous, ou utilisez « Mot de passe oublié ? »." });
+      if (res.status === 409) return f.setServerErrors({ email: res.error && /déjà commandé/.test(res.error) ? res.error : "Un compte existe déjà avec cette adresse : connectez-vous, ou utilisez « Mot de passe oublié ? »." });
       const byField = serverFieldErrors(res.details);
       if (Object.keys(byField).length) return f.setServerErrors(byField);
       return setError(res.status === 0 ? "Le serveur ne répond pas. Vérifiez votre connexion puis réessayez." : res.error || "Le compte n'a pas pu être créé.");

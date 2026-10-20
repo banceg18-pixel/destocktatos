@@ -15,7 +15,6 @@ import { getPage, getSiteSettings } from "@/lib/cms";
 import { discountPercent, formatEuros } from "@/lib/money";
 import type { HomeContent, ServiceIcon } from "@/types/home";
 
-export const revalidate = 300;
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPage<HomeContent>("accueil");

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TATOS Headless
  * Description: Espace d'administration complet du site TATOS (Next.js) : produits, catégories, pages, articles, FAQ, menus, réglages, et gestion de la boutique (commandes, clients, codes promo, avis, messages, newsletter, stock).
- * Version: 2.2.0
+ * Version: 2.3.0
  * Requires PHP: 8.1
  * License: GPL-2.0-or-later
  * Text Domain: tatos-headless
@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('TATOS_HEADLESS_VERSION', '2.2.0');
+define('TATOS_HEADLESS_VERSION', '2.3.0');
 
 /* -------------------------------------------------------------------------
  * Types de contenu et taxonomies
@@ -127,8 +127,8 @@ const TATOS_SETTINGS_FIELDS = [
     'bankBic' => 'BIC',
     'siteUrl' => 'Adresse publique du site, commençant par https://',
     'adminApiSecret' => "Clé d'administration (ADMIN_API_SECRET du site)",
-    'webhookUrl' => 'URL du webhook frontend (/api/webhooks/wordpress)',
-    'webhookSecret' => 'Secret partagé du webhook (WORDPRESS_WEBHOOK_SECRET du site)',
+    'webhookUrl' => 'URL du webhook (facultatif : adresse du site + /api/webhooks/wordpress par défaut)',
+    'webhookSecret' => 'Secret du webhook (facultatif : clé d\'administration par défaut)',
 ];
 
 /** Réglages techniques (liaison avec le site), regroupés à part sur la page de réglages. */
@@ -158,6 +158,14 @@ add_action('admin_menu', function () {
             echo $ping['ok']
                 ? '<div class="notice notice-success"><p>Liaison réussie avec ' . esc_html($ping['data']['site'] ?? tatos_site_url()) . '. Emails : ' . (!empty($ping['data']['smtp']) ? 'envoi actif' : 'pas encore envoyés (serveur d\'envoi SMTP à configurer sur le site, voir le guide d\'utilisation)') . '.</p></div>'
                 : '<div class="notice notice-error"><p>' . esc_html($ping['error']) . '</p></div>';
+            // Mise à jour instantanée : le site reçoit-il les modifications faites ici ?
+            $hook = tatos_send_webhook('ping', [], true);
+            $code = is_wp_error($hook) ? 0 : (int) wp_remote_retrieve_response_code($hook);
+            echo $code === 200
+                ? '<div class="notice notice-success"><p>Mise à jour instantanée active : chaque modification enregistrée ici apparaît sur le site en quelques secondes.</p></div>'
+                : '<div class="notice notice-error"><p>Mise à jour instantanée en échec ('
+                    . esc_html(is_wp_error($hook) ? $hook->get_error_message() : ($code === 401 ? 'clé refusée par le site : vérifiez la clé d\'administration ou le secret du webhook' : 'réponse HTTP ' . $code))
+                    . '). Les modifications n\'arriveront pas sur le site tant que ce point n\'est pas corrigé.</p></div>';
         }
         echo '<form method="post" action="options.php">';
         settings_fields('tatos_settings');
@@ -432,19 +440,44 @@ add_action('rest_api_init', function () {
 /* -------------------------------------------------------------------------
  * Webhook : prévient le frontend à chaque modification de contenu
  * ---------------------------------------------------------------------- */
-function tatos_notify_frontend(string $event, array $payload = []): void
+/**
+ * Adresse et secret du webhook : réglages dédiés, ou à défaut l'adresse publique du site et la clé
+ * d'administration (déjà saisies pour la liaison). Ainsi chaque modification est transmise au site,
+ * même si les champs du webhook sont restés vides.
+ */
+function tatos_webhook_target(): ?array
 {
     $s = tatos_settings();
-    // Suspendu pendant les imports en masse (un seul événement « sync.full » est envoyé à la fin).
-    if (!empty($GLOBALS['tatos_suspend_webhooks']) || empty($s['webhookUrl']) || empty($s['webhookSecret'])) {
-        return;
+    $url = trim((string) ($s['webhookUrl'] ?? ''));
+    if ($url === '' && tatos_site_url() !== '') {
+        $url = tatos_site_url() . '/api/webhooks/wordpress';
     }
-    wp_remote_post($s['webhookUrl'], [
-        'timeout' => 5,
-        'blocking' => false,
-        'headers' => ['Content-Type' => 'application/json', 'X-Tatos-Secret' => $s['webhookSecret']],
+    $secret = trim((string) ($s['webhookSecret'] ?? '')) ?: trim((string) ($s['adminApiSecret'] ?? ''));
+    return $url !== '' && $secret !== '' ? ['url' => $url, 'secret' => $secret] : null;
+}
+
+/** Envoie l'événement au site ; `$wait` attend sa réponse (test de la liaison). */
+function tatos_send_webhook(string $event, array $payload = [], bool $wait = false)
+{
+    $target = tatos_webhook_target();
+    if (!$target) {
+        return new WP_Error('tatos_webhook', 'Adresse publique du site ou clé d\'administration manquante (Réglages → Site et magasin).');
+    }
+    return wp_remote_post($target['url'], [
+        'timeout' => $wait ? 20 : 5,
+        'blocking' => $wait,
+        'headers' => ['Content-Type' => 'application/json', 'X-Tatos-Secret' => $target['secret'], 'Cache-Control' => 'no-cache'],
         'body' => wp_json_encode(['event' => $event] + $payload),
     ]);
+}
+
+function tatos_notify_frontend(string $event, array $payload = []): void
+{
+    // Suspendu pendant les imports en masse (un seul événement « sync.full » est envoyé à la fin).
+    if (!empty($GLOBALS['tatos_suspend_webhooks'])) {
+        return;
+    }
+    tatos_send_webhook($event, $payload);
 }
 
 // wp_after_insert_post (et non save_post) : déclenché une fois l'article, ses termes ET ses
