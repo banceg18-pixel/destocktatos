@@ -189,6 +189,7 @@ ${await signature()}`;
           : "\n\nATTENTION : coordonnées bancaires non renseignées, le client ne les a pas reçues. Renseignez l'IBAN dans WordPress → Réglages → Site et magasin, puis envoyez-les-lui en répondant à cet email."
       }`
     : "";
+  const soldOut = await prisma.product.findMany({ where: { id: { in: o.items.map((i) => i.productId) }, stock: { lte: 0 } }, select: { titre: true, marque: true } });
   await sendMail({
     to: STORE_EMAIL,
     replyTo: o.user.email,
@@ -199,7 +200,10 @@ ${o.isPickupInStore ? "Retrait en magasin" : `Livraison :\n${addressLines(ship)}
 
 ${summary(o)}
 
-Paiement : ${PAYMENT_LABELS[o.paymentProvider ?? ""] ?? o.paymentProvider ?? "—"}${storeAction}`,
+Paiement : ${PAYMENT_LABELS[o.paymentProvider ?? ""] ?? o.paymentProvider ?? "—"}${storeAction}${soldOut.length ? `
+
+RUPTURE DE STOCK : ${soldOut.map((p) => `${p.marque} ${p.titre}`.trim()).join(", ")}.
+Renseignez le nouveau stock s'il en reste (WordPress → Boutique → Stock → Épuisés), ou laissez-le à 0 : le produit reste affiché « en rupture ».` : ""}`,
     attachments,
   });
 }

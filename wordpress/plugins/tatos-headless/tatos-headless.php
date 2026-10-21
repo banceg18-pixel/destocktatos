@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Destocktatos — Administration du site
  * Description: Espace d'administration complet du site Destocktatos (Next.js) : produits, catégories, pages, articles, FAQ, menus, réglages, et gestion de la boutique (commandes, clients, codes promo, avis, messages, newsletter, stock).
- * Version: 2.11.0
+ * Version: 2.12.0
  * Requires PHP: 8.1
  * License: GPL-2.0-or-later
  * Text Domain: tatos-headless
@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('TATOS_HEADLESS_VERSION', '2.11.0');
+define('TATOS_HEADLESS_VERSION', '2.12.0');
 
 /* -------------------------------------------------------------------------
  * Types de contenu et taxonomies
@@ -594,7 +594,7 @@ function tatos_rebrand_contents(): int
 }
 
 add_action('admin_init', function () {
-    if (get_option('tatos_rebrand_done') === '2.11.0' || !current_user_can('manage_options')) {
+    if (get_option('tatos_rebrand_done') === '2.12.0' || !current_user_can('manage_options')) {
         return;
     }
     // Un seul avis au site à la fin (pas un par contenu corrigé).
@@ -605,7 +605,7 @@ add_action('admin_init', function () {
     $GLOBALS['tatos_suspend_webhooks'] = false;
     // Site injoignable : pages légales reprises au prochain passage dans l'administration.
     if ($legal !== null) {
-        update_option('tatos_rebrand_done', '2.11.0', false);
+        update_option('tatos_rebrand_done', '2.12.0', false);
     }
     if ($count > 0) {
         tatos_notify_frontend('content.updated', ['type' => 'rebrand']);
@@ -619,6 +619,52 @@ add_action('admin_notices', function () {
         delete_transient('tatos_rebrand_notice');
         printf('<div class="notice notice-success is-dismissible"><p>Contenus mis au nom de Destocktatos : %d élément(s) mis à jour (mentions légales, CGV, politique de confidentialité, réglages). Vérifiez Réglages → Site et magasin.</p></div>', (int) $count);
     }
+});
+
+/* -------------------------------------------------------------------------
+ * Sous-administrateur : compte « gestionnaire » au rôle « Gestionnaire de boutique » (commandes,
+ * clients, stock, codes promo, messages, produits, pages, articles, FAQ, menus) — sans accès aux
+ * extensions, aux réglages, aux utilisateurs ni à la liaison technique. Créé une seule fois ; son
+ * mot de passe est montré aux administrateurs jusqu'à ce qu'ils confirment l'avoir noté.
+ * ---------------------------------------------------------------------- */
+add_action('admin_init', function () {
+    if (!current_user_can('manage_options')) {
+        return;
+    }
+    if (!get_option('tatos_manager_created') && get_role('tatos_shop_manager')) {
+        if (!username_exists('gestionnaire')) {
+            $password = wp_generate_password(16, false);
+            $id = wp_insert_user([
+                'user_login' => 'gestionnaire',
+                'user_pass' => $password,
+                'user_email' => 'gestionnaire@destocktatos.com',
+                'display_name' => 'Gestionnaire boutique',
+                'role' => 'tatos_shop_manager',
+            ]);
+            if (!is_wp_error($id)) {
+                update_option('tatos_manager_password', $password, false);
+            }
+        }
+        update_option('tatos_manager_created', 1, false);
+    }
+    if (isset($_GET['tatos_manager_noted']) && check_admin_referer('tatos_manager_noted')) {
+        delete_option('tatos_manager_password');
+        wp_safe_redirect(remove_query_arg(['tatos_manager_noted', '_wpnonce']));
+        exit;
+    }
+});
+
+add_action('admin_notices', function () {
+    $password = get_option('tatos_manager_password');
+    if (!$password || !current_user_can('manage_options')) {
+        return;
+    }
+    printf(
+        '<div class="notice notice-info"><p><strong>Compte sous-administrateur créé</strong> (rôle « Gestionnaire de boutique » : boutique, contenus et stock, sans accès aux extensions, réglages ni utilisateurs).<br>Adresse : <code>%s</code> — identifiant : <code>gestionnaire</code> — mot de passe : <code>%s</code><br>Notez-le maintenant : il ne sera plus affiché. Il peut être changé dans Utilisateurs → gestionnaire. <a class="button button-small" href="%s">J\'ai noté le mot de passe</a></p></div>',
+        esc_html(wp_login_url()),
+        esc_html($password),
+        esc_url(wp_nonce_url(add_query_arg('tatos_manager_noted', '1'), 'tatos_manager_noted'))
+    );
 });
 
 /* -------------------------------------------------------------------------

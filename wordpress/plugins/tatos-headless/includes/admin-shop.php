@@ -134,11 +134,12 @@ add_action('admin_menu', function () {
     $bubble = fn(int $n) => $n > 0 ? ' <span class="awaiting-mod"><span>' . $n . '</span></span>' : '';
     $toShip = (int) ($stats['toShip'] ?? 0);
     $messages = (int) (($stats['messages']['contact'] ?? 0) + ($stats['messages']['services'] ?? 0) + ($stats['messages']['tickets'] ?? 0));
-    add_menu_page('Boutique', 'Boutique' . $bubble($toShip + $messages), $cap, 'tatos-boutique', 'tatos_page_dashboard', 'dashicons-store', 3);
+    add_menu_page('Boutique', 'Boutique' . $bubble($toShip + $messages + ($stats ? count(tatos_sold_out($stats)) : 0)), $cap, 'tatos-boutique', 'tatos_page_dashboard', 'dashicons-store', 3);
     add_submenu_page('tatos-boutique', 'Tableau de bord', 'Tableau de bord', $cap, 'tatos-boutique', 'tatos_page_dashboard');
     add_submenu_page('tatos-boutique', 'Commandes', 'Commandes' . $bubble($toShip), $cap, 'tatos-orders', 'tatos_page_orders');
     add_submenu_page('tatos-boutique', 'Clients', 'Clients', $cap, 'tatos-customers', 'tatos_page_customers');
-    add_submenu_page('tatos-boutique', 'Stock', 'Stock', $cap, 'tatos-stock', 'tatos_page_stock');
+    $soldOut = $stats ? count(tatos_sold_out($stats)) : 0;
+    add_submenu_page('tatos-boutique', 'Stock', 'Stock' . $bubble($soldOut), $cap, 'tatos-stock', 'tatos_page_stock');
     add_submenu_page('tatos-boutique', 'Codes promo', 'Codes promo', $cap, 'tatos-coupons', 'tatos_page_coupons');
     add_submenu_page('tatos-boutique', 'Avis clients', 'Avis clients', $cap, 'tatos-reviews', 'tatos_page_reviews');
     add_submenu_page('tatos-boutique', 'Messages', 'Messages' . $bubble($messages), $cap, 'tatos-messages', 'tatos_page_messages');
@@ -415,10 +416,22 @@ function tatos_page_stock(): void
 {
     echo '<div class="wrap tatos-wrap"><h1>Stock</h1><p>Le stock du site baisse automatiquement à chaque commande. Corrigez-le ici après une livraison fournisseur ou un inventaire.</p>';
     $low = !empty($_GET['low']);
+    $out = !empty($_GET['out']);
     $q = sanitize_text_field(wp_unslash($_GET['q'] ?? ''));
-    printf('<ul class="subsubsub"><li><a class="%s" href="%s">Tous les produits</a> | </li><li><a class="%s" href="%s">Stock faible (0 ou 1)</a></li></ul>', $low ? '' : 'current', esc_url(tatos_admin_link('tatos-stock')), $low ? 'current' : '', esc_url(tatos_admin_link('tatos-stock', ['low' => '1'])));
-    tatos_search_box('tatos-stock', 'Produit, marque ou référence', $low ? ['low' => '1'] : []);
-    $res = tatos_site_request('GET', 'products?' . http_build_query(array_filter(['q' => $q, 'low' => $low ? '1' : '', 'page' => tatos_paged(), 'per' => 40])));
+    printf(
+        '<ul class="subsubsub"><li><a class="%s" href="%s">Tous les produits</a> | </li><li><a class="%s" href="%s">Épuisés (0)</a> | </li><li><a class="%s" href="%s">Stock faible (0 ou 1)</a></li></ul>',
+        $low || $out ? '' : 'current',
+        esc_url(tatos_admin_link('tatos-stock')),
+        $out ? 'current' : '',
+        esc_url(tatos_admin_link('tatos-stock', ['out' => '1'])),
+        $low ? 'current' : '',
+        esc_url(tatos_admin_link('tatos-stock', ['low' => '1']))
+    );
+    if ($out) {
+        echo '<p class="description">Produits vendus jusqu\'au dernier exemplaire : indiquez le nouveau stock s\'il vous en reste (puis « Enregistrer »), ou cliquez sur « Laisser épuisé » : le produit reste affiché « en rupture » sur le site et l\'alerte disparaît.</p>';
+    }
+    tatos_search_box('tatos-stock', 'Produit, marque ou référence', $out ? ['out' => '1'] : ($low ? ['low' => '1'] : []));
+    $res = tatos_site_request('GET', 'products?' . http_build_query(array_filter(['q' => $q, 'low' => $low ? '1' : '', 'out' => $out ? '1' : '', 'page' => tatos_paged(), 'per' => 40])));
     if (!$res['ok']) {
         tatos_error_box($res);
         echo '</div>';
@@ -437,7 +450,12 @@ function tatos_page_stock(): void
         $edit = isset($wp[$p['id']]) ? ' · <a href="' . esc_url(get_edit_post_link($wp[$p['id']], 'url')) . '">Modifier la fiche</a>' : '';
         printf('<tr><td><strong>%s %s</strong><br><span class="description">%s · <a href="%s" target="_blank" rel="noopener">Voir ↗</a>%s</span></td><td>%s</td><td>', esc_html($p['marque']), esc_html($p['titre']), esc_html($p['modele']), esc_url($p['url']), $edit, wp_kses($price, ['del' => []]));
         echo tatos_action_form_open('tatos_stock_update', 'tatos-inline');
-        printf('<input type="hidden" name="product" value="%s"><input type="number" name="stock" min="0" step="1" value="%d" class="small-text"> <button class="button">Enregistrer</button></form></td></tr>', esc_attr($p['id']), (int) $p['stock']);
+        printf('<input type="hidden" name="product" value="%s"><input type="number" name="stock" min="0" step="1" value="%d" class="small-text"> <button class="button">Enregistrer</button></form>', esc_attr($p['id']), (int) $p['stock']);
+        if ((int) $p['stock'] <= 0 && !in_array($p['id'], (array) get_option('tatos_soldout_ack', []), true)) {
+            echo tatos_action_form_open('tatos_soldout_ack', 'tatos-inline');
+            printf('<input type="hidden" name="product" value="%s"><button class="button-link">Laisser épuisé</button></form>', esc_attr($p['id']));
+        }
+        echo '</td></tr>';
     }
     if (!$res['data']['items']) {
         echo '<tr><td colspan="3">Aucun produit.</td></tr>';
@@ -676,11 +694,24 @@ add_action('admin_post_tatos_invoice', function () {
     exit;
 });
 
+// Produit laissé épuisé : plus d'alerte pour lui (jusqu'à un réapprovisionnement puis une nouvelle rupture).
+add_action('admin_post_tatos_soldout_ack', function () {
+    tatos_guard();
+    $ack = array_values(array_unique(array_merge((array) get_option('tatos_soldout_ack', []), [tatos_post('product')])));
+    update_option('tatos_soldout_ack', array_slice($ack, -2000), false);
+    delete_transient('tatos_stats');
+    tatos_done(['ok' => true], 'Produit laissé épuisé : il reste affiché « en rupture » sur le site.');
+});
+
 add_action('admin_post_tatos_stock_update', function () {
     tatos_guard();
     $stock = max(0, (int) ($_POST['stock'] ?? 0));
     $id = tatos_post('product');
     $res = tatos_site_request('PATCH', 'products/' . rawurlencode($id), ['stock' => $stock]);
+    if ($res['ok'] && $stock > 0) {
+        update_option('tatos_soldout_ack', array_values(array_diff((array) get_option('tatos_soldout_ack', []), [$id])), false);
+        delete_transient('tatos_stats');
+    }
     if ($res['ok']) {
         foreach (get_posts(['post_type' => 'produit', 'post_status' => 'any', 'numberposts' => 1, 'meta_key' => 'tatos_id', 'meta_value' => $id]) as $p) {
             update_post_meta($p->ID, 'stock', $stock);
@@ -760,4 +791,33 @@ add_action('admin_post_tatos_newsletter_export', function () {
     header('Content-Disposition: attachment; filename="newsletter-' . gmdate('Y-m-d') . '.csv"');
     echo $res['body']; // phpcs:ignore WordPress.Security.EscapeOutput -- fichier CSV
     exit;
+});
+
+/** Produits épuisés après des ventes, sauf ceux que le magasin a choisi de laisser épuisés. */
+function tatos_sold_out(?array $stats = null): array
+{
+    $stats ??= tatos_stats();
+    $ack = (array) get_option('tatos_soldout_ack', []);
+    return array_values(array_filter((array) ($stats['outOfStock'] ?? []), fn($p) => !in_array($p['id'] ?? '', $ack, true)));
+}
+
+/* ------------------------------------------------------------------------------------------------
+ * Alerte de rupture de stock, en haut de toutes les pages de l'administration
+ * --------------------------------------------------------------------------------------------- */
+add_action('admin_notices', function () {
+    if (!current_user_can(tatos_shop_cap()) || (($_GET['page'] ?? '') === 'tatos-stock' && !empty($_GET['out']))) {
+        return;
+    }
+    $sold = tatos_sold_out();
+    $count = count($sold);
+    if ($count < 1) {
+        return;
+    }
+    $names = array_map(fn($p) => trim(($p['marque'] ?? '') . ' ' . ($p['titre'] ?? '')), array_slice($sold, 0, 3));
+    printf(
+        '<div class="notice notice-warning"><p><strong>Rupture de stock : %d produit(s) épuisé(s)</strong>%s. Indiquez le nouveau stock s\'il vous en reste, ou cliquez sur « Laisser épuisé ». <a class="button button-small" href="%s">Voir les produits épuisés</a></p></div>',
+        $count,
+        $names ? ' — ' . esc_html(implode(', ', $names)) . ($count > count($names) ? '…' : '') : '',
+        esc_url(tatos_admin_link('tatos-stock', ['out' => '1']))
+    );
 });

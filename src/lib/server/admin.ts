@@ -104,6 +104,8 @@ async function stats() {
     subscribers,
     lowStock,
     lowStockCount: await prisma.product.count({ where: { stock: { lte: 1 } } }),
+    // Produits épuisés : signalés dans toute l'administration WordPress (stock à renseigner).
+    outOfStock: await prisma.product.findMany({ where: { stock: { lte: 0 }, orderItems: { some: { order: { status: { in: ["EN_ATTENTE_VIREMENT", "PAYEE", "EN_PREPARATION", "EXPEDIEE", "LIVREE"] } } } } }, select: { id: true, titre: true, marque: true, modele: true }, orderBy: { updatedAt: "desc" }, take: 200 }),
     reviews: { count: reviews._count._all, average: Math.round((reviews._avg.note ?? 0) * 10) / 10 },
     recentOrders: recent.map((o) => ({ id: o.id, number: o.number, status: o.status, totalCents: o.totalCents, createdAt: o.createdAt, customer: o.user.name, email: o.user.email })),
   });
@@ -364,8 +366,10 @@ async function listProducts(url: URL) {
   const { page, per, skip, take } = paging(url);
   const term = q(url);
   const low = url.searchParams.get("low") === "1";
+  const out = url.searchParams.get("out") === "1";
   const where: Prisma.ProductWhereInput = {
-    ...(low ? { stock: { lte: 1 } } : {}),
+    // « Épuisés » : produits vendus jusqu'au dernier exemplaire (le stock jamais vendu n'est pas signalé).
+    ...(out ? { stock: { lte: 0 }, orderItems: { some: { order: { status: { in: ["EN_ATTENTE_VIREMENT", "PAYEE", "EN_PREPARATION", "EXPEDIEE", "LIVREE"] } } } } } : low ? { stock: { lte: 1 } } : {}),
     ...(term ? { OR: [...caseVariants(term).map((v) => ({ titre: { contains: v } })), { marque: { contains: term.toUpperCase() } }, { modele: { contains: term.toUpperCase() } }] } : {}),
   };
   const [rows, total] = await Promise.all([
