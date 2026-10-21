@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Destocktatos — Administration du site
  * Description: Espace d'administration complet du site Destocktatos (Next.js) : produits, catégories, pages, articles, FAQ, menus, réglages, et gestion de la boutique (commandes, clients, codes promo, avis, messages, newsletter, stock).
- * Version: 2.10.0
+ * Version: 2.11.0
  * Requires PHP: 8.1
  * License: GPL-2.0-or-later
  * Text Domain: tatos-headless
@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('TATOS_HEADLESS_VERSION', '2.10.0');
+define('TATOS_HEADLESS_VERSION', '2.11.0');
 
 /* -------------------------------------------------------------------------
  * Types de contenu et taxonomies
@@ -594,7 +594,7 @@ function tatos_rebrand_contents(): int
 }
 
 add_action('admin_init', function () {
-    if (get_option('tatos_rebrand_done') === '2.10.0' || !current_user_can('manage_options')) {
+    if (get_option('tatos_rebrand_done') === '2.11.0' || !current_user_can('manage_options')) {
         return;
     }
     // Un seul avis au site à la fin (pas un par contenu corrigé).
@@ -605,7 +605,7 @@ add_action('admin_init', function () {
     $GLOBALS['tatos_suspend_webhooks'] = false;
     // Site injoignable : pages légales reprises au prochain passage dans l'administration.
     if ($legal !== null) {
-        update_option('tatos_rebrand_done', '2.10.0', false);
+        update_option('tatos_rebrand_done', '2.11.0', false);
     }
     if ($count > 0) {
         tatos_notify_frontend('content.updated', ['type' => 'rebrand']);
