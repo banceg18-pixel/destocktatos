@@ -119,7 +119,7 @@ export default async function ConfirmationPage({ searchParams }: { searchParams:
             </>
           )}
           <div className="mt-10 flex flex-wrap gap-3">
-            {order && (order.paidAt || awaitingTransfer) && (
+            {order?.paidAt && (
               // Lien direct vers le PDF (route API) : pas de navigation côté client.
               <a href={`/api/orders/${order._id}/invoice?download=1`} download className={buttonClasses({ size: "lg" })} data-testid="confirmation-invoice">
                 Télécharger la facture

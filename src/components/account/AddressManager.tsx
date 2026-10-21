@@ -129,10 +129,10 @@ export function AddressManager() {
         />
       </Field>
       <Field label="Code postal" htmlFor="adr-postalCode" required error={f.errors.postalCode}>
-        <Input id="adr-postalCode" value={form.postalCode} onChange={set("postalCode")} onBlur={blur("postalCode")} invalid={!!f.errors.postalCode} autoComplete="postal-code" inputMode="numeric" maxLength={5} placeholder="78300" />
+        <Input id="adr-postalCode" value={form.postalCode} onChange={set("postalCode")} onBlur={blur("postalCode")} invalid={!!f.errors.postalCode} autoComplete="postal-code" inputMode="numeric" maxLength={5} placeholder="93270" />
       </Field>
       <Field label="Ville" htmlFor="adr-city" required error={f.errors.city}>
-        <Input id="adr-city" value={form.city} onChange={set("city")} onBlur={blur("city")} invalid={!!f.errors.city} autoComplete="address-level2" placeholder="Poissy" />
+        <Input id="adr-city" value={form.city} onChange={set("city")} onBlur={blur("city")} invalid={!!f.errors.city} autoComplete="address-level2" placeholder="Sevran" />
       </Field>
       <Field label="Étage" htmlFor="adr-floor">
         <NativeSelect id="adr-floor" value={form.floor} onChange={set("floor")}>

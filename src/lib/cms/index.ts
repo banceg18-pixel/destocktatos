@@ -1,6 +1,6 @@
 import "server-only";
 import { cache } from "react";
-import { normalizeAddress, rebrand, withCompany } from "@/lib/brand";
+import { hasObsoleteIdentity, legalPage, normalizeAddress, rebrand } from "@/lib/brand";
 import { localProvider } from "./local";
 import { wordpressProvider } from "./wordpress";
 import type { ContentProvider } from "./types";
@@ -15,8 +15,10 @@ export function getContentProvider(): ContentProvider {
 export const getSiteSettings = cache(async () => normalizeAddress(rebrand(await getContentProvider().getSiteSettings())));
 export const getMenus = cache(async () => rebrand(await getContentProvider().getMenus()));
 export const getPage = cache(async <T,>(slug: string) => {
-  const [page, settings] = await Promise.all([getContentProvider().getPage<T>(slug), getSiteSettings()]);
-  return withCompany(rebrand(page), settings);
+  const [stored, settings] = await Promise.all([getContentProvider().getPage<T>(slug), getSiteSettings()]);
+  // Page légale réécrite par une ancienne version de l'extension : texte de référence du site.
+  const page = hasObsoleteIdentity(stored) ? await localProvider.getPage<T>(slug) : stored;
+  return legalPage(rebrand(page), settings);
 });
 export const getFaq = cache(async () => rebrand(await getContentProvider().getFaq()));
 export const getPosts = cache(async () => rebrand(await getContentProvider().getPosts()));

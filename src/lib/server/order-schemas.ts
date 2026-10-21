@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { FR_PHONE_HINT, isFrPhone, normalizeFrPhone } from "@/lib/phone";
 import { addressSchema, objectId } from "@/lib/validation";
 
 export const createOrderSchema = z
@@ -34,6 +35,6 @@ export const billingSchema = z.object({
   address: z.string().trim().min(1, "L'adresse est requise").max(250),
   postalCode: z.string().trim().regex(/^\d{5}$/, "Le code postal doit contenir 5 chiffres"),
   city: z.string().trim().min(1, "La ville est requise").max(120),
-  phone: z.string().trim().min(6, "Le téléphone est requis").max(30),
+  phone: z.string().trim().min(1, "Le téléphone est requis").max(30).refine(isFrPhone, FR_PHONE_HINT).transform(normalizeFrPhone),
   country: z.string().trim().max(2).default("FR"),
 });

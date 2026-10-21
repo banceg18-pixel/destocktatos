@@ -4,7 +4,7 @@ import { decode, htmlToSections } from "@/lib/cms/wordpress";
 import { computeDiscount } from "@/lib/server/coupons";
 import { bankDetailsOf } from "@/lib/bank";
 import { normalizeAddress, rebrandText } from "@/lib/brand";
-import { buildInvoicePdf, invoiceAvailable, invoiceNumber } from "@/lib/server/invoice";
+import { buildInvoicePdf, invoiceAvailable, invoiceNumber, quoteAvailable } from "@/lib/server/invoice";
 import { rateLimit, resetRateLimits } from "@/lib/server/rate-limit";
 
 describe("coupons : réduction plafonnée à 10 % de la commande", () => {
@@ -72,12 +72,15 @@ describe("facture PDF", () => {
 
   it("commande en attente de virement : facture disponible, coordonnées bancaires et référence imprimées", () => {
     const pending = { ...order, status: "EN_ATTENTE_VIREMENT", paymentProvider: "virement", paidAt: null } as Order;
-    expect(invoiceAvailable(pending)).toBe(true);
+    // Avant le paiement : devis (pas de facture) ; la facture une fois payée.
+    expect(invoiceAvailable(pending)).toBe(false);
+    expect(quoteAvailable(pending)).toBe(true);
+    expect(invoiceAvailable(order)).toBe(true);
     expect(invoiceAvailable({ ...order, status: "EN_ATTENTE_PAIEMENT", paidAt: null })).toBe(false);
     const bank = bankDetailsOf({ siteName: "Destocktatos", bankIban: "fr76 3000 6000 0112 3456 7890 189", bankBic: "agrifrpp", bankName: "Banque Test" });
-    expect(bank).toEqual({ holder: "REIMS GOLD", bank: "Banque Test", iban: "FR76 3000 6000 0112 3456 7890 189", bic: "AGRIFRPP", reference: "" });
+    expect(bank).toEqual({ holder: "Destocktatos", bank: "Banque Test", iban: "FR76 3000 6000 0112 3456 7890 189", bic: "AGRIFRPP", reference: "" });
     // Sans IBAN saisi : compte fourni par le gérant (BforBank) et sa communication.
-    expect(bankDetailsOf({ siteName: "Destocktatos", bankIban: "  " })).toEqual({ holder: "REIMS GOLD", bank: "BforBank", iban: "FR76 1621 8000 0140 1214 8835 165", bic: "BFBKFRP1", reference: "MJ-MUBVYNWU-379C" });
+    expect(bankDetailsOf({ siteName: "Destocktatos", bankIban: "  " })).toEqual({ holder: "Destocktatos", bank: "B For Bank", iban: "FR76 1621 8000 0140 1214 8835 165", bic: "BFBKFRP1", reference: "MJ-MUBVYNWU-379C" });
     const s = buildInvoicePdf({ ...pending, items }, { name: "Jean", email: "jean@tatos.test" }, { name: "Destocktatos", address: "1 rue", city: "93270 Sevran", email: "x@tatos.test", phone: "0600000000" }, bank).toString("latin1");
     expect(s).toContain("FR76 3000 6000 0112 3456 7890 189");
     expect(s).toContain("AGRIFRPP");
@@ -123,9 +126,9 @@ describe("identité de la société", () => {
     expect(normalizeAddress(separate)).toEqual(separate);
   });
 
-  it("anciens textes TATOS : nom, email, adresse et téléphone de Destocktatos", () => {
+  it("textes d'origine : seuls le nom (Destocktatos) et l'email changent, adresse et téléphone gardés", () => {
     expect(rebrandText("TATOS, Service Clients, 12 rue paul levangin, 93270 Sevran — 06.51.64.41.84 — tatos-electromenager@gmail.com")).toBe(
-      "Destocktatos, Service Clients, 65 Rue d’Aigremont, 78300 Poissy — 01 83 75 01 21 — contacts@destocktatos.com",
+      "Destocktatos, Service Clients, 12 rue paul levangin, 93270 Sevran — 06.51.64.41.84 — contacts@destocktatos.com",
     );
   });
 });

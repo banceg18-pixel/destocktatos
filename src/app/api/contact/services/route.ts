@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { FR_PHONE_HINT, isFrPhone, normalizeFrPhone } from "@/lib/phone";
 import { prisma } from "@/lib/prisma";
 import { json, limitByIp, parseBody, route } from "@/lib/server/api";
 import { sendMail, STORE_EMAIL } from "@/lib/server/mailer";
@@ -14,7 +15,7 @@ const today = () => {
 const schema = z.object({
   name: z.string().trim().min(1, "Le nom est requis").max(120),
   email: emailSchema,
-  phone: z.string().trim().min(1, "Le téléphone est requis").max(30).regex(/^[+0-9 ().-]{6,30}$/, "Numéro de téléphone invalide"),
+  phone: z.string().trim().min(1, "Le téléphone est requis").max(30).refine(isFrPhone, FR_PHONE_HINT).transform(normalizeFrPhone),
   address: z.string().trim().min(1, "L'adresse est requise").max(250),
   product: z.string().trim().min(1, "Le produit à installer est requis").max(200),
   date: z

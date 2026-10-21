@@ -69,18 +69,23 @@ export function invoiceStore(s: SiteSettings): InvoiceStore {
     city: `${s.postalCode} ${s.city}, ${s.country}`,
     email: s.email,
     phone: s.phone,
-    seller: `${company(s).name} (${company(s).form.split(",")[0]})`,
+    seller: company(s).name === s.siteName ? undefined : company(s).name,
     legal: legalLines(s),
   };
 }
 
-/**
- * Facture disponible : commande payée, ou en attente de virement (elle porte alors les coordonnées
- * bancaires et la référence à indiquer, et sert de demande de règlement).
- */
+/** Facture : uniquement une fois la commande payée. */
 export function invoiceAvailable(o: Pick<Order, "status" | "paidAt">) {
-  return (PAID_STATUSES.includes(o.status) && !!o.paidAt) || o.status === "EN_ATTENTE_VIREMENT";
+  return PAID_STATUSES.includes(o.status) && !!o.paidAt;
 }
+
+/** Devis : dès la confirmation (paiement attendu), avec les informations de paiement ; puis toujours consultable. */
+export function quoteAvailable(o: Pick<Order, "status" | "paidAt">) {
+  return o.status === "EN_ATTENTE_VIREMENT" || invoiceAvailable(o);
+}
+
+/** Document d'une commande : la facture si elle est payée, sinon le devis. */
+export const documentKind = (o: Pick<Order, "status" | "paidAt">): "facture" | "devis" => (invoiceAvailable(o) ? "facture" : "devis");
 
 /**
  * Facture (ou devis) PDF d'une commande, TVA 20 % incluse dans les prix TTC. Tant que le virement est
@@ -167,7 +172,7 @@ export function buildInvoicePdf(
     const noteLines = wrap(note, 95);
     const h = 34 + lines.length * 15 + noteLines.length * 12;
     y -= 20;
-    if (y - h < 80) {
+    if (y - h < 100) {
       doc.addPage();
       y = doc.height - 60;
     }
@@ -183,6 +188,11 @@ export function buildInvoicePdf(
       doc.text(52, y - 2, line, 9);
       y -= 12;
     }
+  }
+  // Coordonnées bancaires sur chaque facture, payée ou non.
+  if (bank) {
+    doc.line(40, 86, W - 40, 86);
+    doc.text(40, 74, `Coordonnées bancaires : ${bank.bank ? `${bank.bank} — ` : ""}IBAN ${bank.iban}${bank.bic ? ` (BIC ${bank.bic})` : ""}${bank.holder ? ` — titulaire ${bank.holder}` : ""}`, 8, true);
   }
   if (store.legal) {
     doc.text(40, 44, store.legal[0], 7, false, GREY);

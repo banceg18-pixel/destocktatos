@@ -13,11 +13,11 @@ describe("adresse", () => {
     expect(r.isDefault).toBe(false);
   });
 
-  it.each(["0651644184", "06.51.64.41.84", "06-51-64-41-84", "01 23 45 67 89"])("téléphone valide %s", (phone) => {
+  it.each(["0651644184", "06.51.64.41.84", "06-51-64-41-84", "01 23 45 67 89", "+33651644184", "+33 6 51 64 41 84"])("téléphone valide %s", (phone) => {
     expect(addressSchema.safeParse({ ...address, phone }).success).toBe(true);
   });
 
-  it.each(["+33651644184", "6516441", "00 51 64 41 84", "abc"])("téléphone invalide %s", (phone) => {
+  it.each(["+44 20 7946 0958", "6516441", "00 51 64 41 84", "abc"])("téléphone invalide %s", (phone) => {
     expect(firstError(addressSchema.safeParse({ ...address, phone }))).toMatch(/téléphone/i);
   });
 

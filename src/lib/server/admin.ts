@@ -10,7 +10,7 @@ import { rateLimit } from "./rate-limit";
 import { sendMail, smtpConfigured } from "./mailer";
 import { ADMIN_ORDER_STATUSES, adminSetOrderStatus } from "./orders";
 import { bankDetailsOf } from "@/lib/bank";
-import { buildInvoicePdf, invoiceAvailable, invoiceNumber, invoiceStore } from "./invoice";
+import { buildInvoicePdf, documentKind, invoiceNumber, invoiceStore, quoteAvailable, quoteNumber } from "./invoice";
 import { getSiteSettings } from "@/lib/cms";
 import { newsletterMessage, notifyOrderStatus } from "./notifications";
 import { exportContent, exportProducts } from "./wp-export";
@@ -142,14 +142,16 @@ async function getOrder(id: string) {
   return json(o);
 }
 
-/** Facture PDF d'une commande payée ou en attente de virement, pour le magasin (téléchargée par l'administration). */
+/** Facture PDF (commande payée) ou devis (paiement attendu), pour le magasin (ouvert depuis l'administration). */
 async function orderInvoice(id: string) {
   const o = await prisma.order.findUnique({ where: { id }, include: { items: true, user: { select: { name: true, email: true } } } });
   if (!o) throw new ApiError(404, "Commande introuvable");
-  if (!invoiceAvailable(o)) throw new ApiError(409, "La facture est disponible une fois la commande confirmée");
+  if (!quoteAvailable(o)) throw new ApiError(409, "Le devis est disponible une fois la commande confirmée");
+  const kind = documentKind(o);
   const s = await getSiteSettings();
-  const pdf = buildInvoicePdf(o, o.user, invoiceStore(s), bankDetailsOf(s));
-  return new Response(new Uint8Array(pdf), { headers: { "Content-Type": "application/pdf", "Content-Disposition": `inline; filename="facture_${invoiceNumber(o)}.pdf"` } });
+  const pdf = buildInvoicePdf(o, o.user, invoiceStore(s), bankDetailsOf(s), kind);
+  const name = kind === "devis" ? `devis_${quoteNumber(o)}` : `facture_${invoiceNumber(o)}`;
+  return new Response(new Uint8Array(pdf), { headers: { "Content-Type": "application/pdf", "Content-Disposition": `inline; filename="${name}.pdf"` } });
 }
 
 const orderPatch = z.object({ status: z.enum(ADMIN_ORDER_STATUSES), notify: z.boolean().default(true) });

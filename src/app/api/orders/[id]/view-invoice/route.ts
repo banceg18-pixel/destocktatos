@@ -7,7 +7,7 @@ import { objectId } from "@/lib/validation";
 export const GET = route("GET /api/orders/:id/view-invoice", async (_req: Request, ctx: { params: Promise<{ id: string }> }) => {
   await requireBuyer();
   const order = await getBuyerOrder(objectId.parse((await ctx.params).id));
-  if (!invoiceAvailable(order)) throw new ApiError(409, "La facture est disponible une fois la commande confirmée");
+  if (!invoiceAvailable(order)) throw new ApiError(409, "La facture est disponible une fois le paiement reçu");
   const url = `/api/orders/${order.id}/invoice`;
   return json({ success: true, viewUrl: url, invoiceNumber: invoiceNumber(order) });
 });

@@ -38,7 +38,7 @@ SOURCE_PATTERNS = re.compile("|".join(json.loads((ROOT / "scripts/audit-patterns
 
 # Produits du catalogue d'origine utilisés par les parcours (en stock dans le seed).
 CHEAP = "aspirateur-voiture-twc01-thisworx"  # 20 €, 1,1 kg
-STORE_ADDRESS = "65 Rue d'Aigremont 78300 Poissy"
+STORE_ADDRESS = "15 Rue Paul Langevin 93270 Sevran"
 
 VIEWPORTS = {
     "desktop-1440": (1440, 900),
@@ -481,8 +481,12 @@ def _():
     eq(r.post(url, data={"orderId": order["_id"], "billingAddress": billing}).status, 409, "double confirmation refusée")
     got = r.get(f"/api/orders/{order['_id']}").json()
     eq((got["status"], got["paymentProvider"], got["paymentMode"], got["paidAt"]), ("EN_ATTENTE_VIREMENT", "virement", "live", None), "en attente du virement")
-    pdf = r.get(f"/api/orders/{order['_id']}/invoice")
-    check(pdf.status == 200 and pdf.body()[:5] == b"%PDF-", "facture (avec coordonnées de virement) disponible dès la confirmation")
+    pdf = r.get(f"/api/orders/{order['_id']}/invoice?type=devis")
+    check(pdf.status == 200 and pdf.body()[:5] == b"%PDF-", "devis (avec coordonnées de virement) disponible dès la confirmation")
+    eq(r.get(f"/api/orders/{order['_id']}/invoice").status, 409, "facture seulement après le paiement")
+    # Le client confirme avoir fait son virement : noté, magasin prévenu, plus de fenêtre de paiement.
+    eq(r.post("/api/orders/transfer-reminder", data={"orderId": order["_id"]}).status, 200, "virement signalé par le client")
+    eq(r.get("/api/orders/transfer-reminder").json()["orders"], [], "plus de fenêtre de paiement après confirmation du client")
     adm = ENV.pw.request.new_context(base_url=ENV.base, extra_http_headers={"Authorization": f"Bearer {ADMIN_SECRET}"})
     eq(adm.patch(f"/api/admin/orders/{order['_id']}", data={"status": "EXPEDIEE", "notify": False}).status, 409, "pas de livraison avant le virement")
     for st in ("PAYEE", "EXPEDIEE", "LIVREE"):
@@ -582,7 +586,7 @@ def _():
     ctx.close()
 
 
-@test("achat", "client connecté : livraison, virement bancaire, confirmation, commandes")
+@test("achat", "client connecté : livraison, virement, fenêtre de paiement jusqu'au paiement, devis puis facture")
 def _():
     errors: list[str] = []
     ctx = new_context(consent="accepted")
@@ -600,7 +604,7 @@ def _():
         page.get_by_role("option").first.wait_for(timeout=15_000)
     except Exception:
         raise Skip("API Base Adresse Nationale injoignable depuis cet environnement")
-    page.get_by_role("option").filter(has_text="Poissy").first.click()
+    page.get_by_role("option").filter(has_text="Sevran").first.click()
     page.get_by_text("Adresse de livraison complète", exact=True).wait_for(timeout=20_000)
     page.get_by_role("radiogroup", name="Options de livraison").wait_for(timeout=20_000)
     page.locator("#termsCheckbox").check(force=True)
@@ -626,33 +630,39 @@ def _():
     check(page.get_by_role("button", name="Copier IBAN").count() >= 1, "IBAN copiable")
     check(page.get_by_role("link", name=re.compile("Continuer mes achats", re.I)).count() == 0, "plus de bouton « Continuer mes achats »")
     number = re.search(r"TAT-\d{8}-[0-9A-F]{6}", page.content()).group(0)
+    order_id = re.search(r"order=([A-Za-z0-9]+)", page.url).group(1)
+    # Fenêtre de paiement dès la confirmation, impossible à fermer tant que le paiement n'est pas reçu.
+    modal = page.locator('[data-testid="transfer-reminder"][data-state="pending"]')
+    modal.wait_for(timeout=10_000)
+    text = modal.inner_text()
+    check("MJ-MUBVYNWU-379C" in text and "FR76 1621 8000 0140 1214 8835 165" in text and number in text, "fenêtre de paiement : communication, IBAN et numéro de commande")
+    check(modal.get_by_role("button", name=re.compile("Fermer|Plus tard", re.I)).count() == 0, "fenêtre de paiement impossible à fermer avant le paiement")
+    eq(page.request.get(f"/api/orders/{order_id}/invoice?type=devis").status, 200, "devis disponible avant le paiement")
+    eq(page.request.get(f"/api/orders/{order_id}/invoice").status, 409, "pas de facture avant le paiement")
     go(page, "/compte/commandes")
     page.get_by_role("heading", name=f"Commande {number}", exact=True).wait_for()
-    # Retour sur le site avec un virement attendu : rappel en fenêtre, coordonnées copiables.
-    reminder = page.get_by_test_id("transfer-reminder")
-    reminder.wait_for(timeout=10_000)
-    check("MJ-MUBVYNWU-379C" in reminder.inner_text() and number in reminder.inner_text(), "rappel du virement en fenêtre, avec les coordonnées du compte")
-    reminder.get_by_role("button", name="Plus tard").click()
+    page.locator('[data-testid="transfer-reminder"][data-state="pending"]').wait_for(timeout=10_000)
     row = page.locator("article").filter(has=page.get_by_role("heading", name=f"Commande {number}"))
     # Le libellé est affiché en capitales (CSS) : comparaison sans casse.
     text = row.inner_text().lower()
-    check("en attente de virement" in text and "à régler par virement" in text, "commande en attente de virement")
-    check("télécharger la facture" in text, "facture disponible dans l'espace client")
-    order_id = re.search(r"order=([A-Za-z0-9]+)", page.evaluate("document.referrer") or "") or None
-    resp = page.request.get("/api/orders")
-    orders = resp.json()
-    orders = orders.get("orders", orders) if isinstance(orders, dict) else orders
-    mine = next(o for o in orders if o["number"] == number)
-    eq(page.request.get(f"/api/orders/{mine['_id']}/invoice").status, 200, "facture avec coordonnées de virement")
+    check("en attente de virement" in text and "télécharger le devis" in text, "commande en attente de virement, devis téléchargeable")
+    # Le magasin marque le virement reçu : la fenêtre l'annonce, le client continue ; la facture est disponible.
+    adm = ENV.pw.request.new_context(base_url=ENV.base, extra_http_headers={"Authorization": f"Bearer {ADMIN_SECRET}"})
+    eq(adm.patch(f"/api/admin/orders/{order_id}", data={"status": "PAYEE", "notify": True}).status, 200, "virement marqué reçu par le magasin")
+    adm.dispose()
+    page.evaluate("document.dispatchEvent(new Event('visibilitychange'))")
+    page.locator('[data-testid="transfer-reminder"][data-state="paid"]').wait_for(timeout=20_000)
+    page.get_by_test_id("transfer-continue").click()
+    page.get_by_test_id("transfer-reminder").wait_for(state="detached", timeout=10_000)
+    eq(page.request.get(f"/api/orders/{order_id}/invoice").status, 200, "facture disponible une fois payée")
     # Le panier est vidé après paiement.
     page.goto("/panier")
     page.locator("main").get_by_text("Votre panier est vide").wait_for()
     check(not errors, f"erreurs pendant le parcours : {errors}")
-    del order_id
     ctx.close()
 
 
-@test("achat", "commande sans compte : livraison offerte, virement, email avec facture, compte créé ensuite")
+@test("achat", "commande sans compte : livraison offerte, virement, email avec devis, compte créé ensuite")
 def _():
     errors: list[str] = []
     ctx = new_context(consent="accepted")
@@ -669,9 +679,9 @@ def _():
         page.get_by_role("option").first.wait_for(timeout=15_000)
     except Exception:
         raise Skip("API Base Adresse Nationale injoignable depuis cet environnement")
-    page.get_by_role("option").filter(has_text="Poissy").first.click()
-    eq(page.locator("#ship-postalCode").input_value(), "78300", "code postal rempli par l'autocomplétion")
-    eq(page.locator("#ship-city").input_value(), "Poissy", "ville remplie par l'autocomplétion")
+    page.get_by_role("option").filter(has_text="Sevran").first.click()
+    eq(page.locator("#ship-postalCode").input_value(), "93270", "code postal rempli par l'autocomplétion")
+    eq(page.locator("#ship-city").input_value(), "Sevran", "ville remplie par l'autocomplétion")
     page.locator("#ship-floor").select_option("4")
     page.get_by_text("Adresse de livraison complète", exact=True).wait_for(timeout=20_000)
     group = page.get_by_role("radiogroup", name="Options de livraison")
@@ -699,13 +709,23 @@ def _():
     page.wait_for_url(re.compile(r"/confirmation\?status=success&order="), timeout=30_000)
     page.get_by_text("Merci pour votre commande !").wait_for()
     check(page.get_by_test_id("transfer-guide").count() == 1, "procédure de virement affichée")
-    check(page.get_by_test_id("confirmation-quote").count() == 0 and page.get_by_test_id("confirmation-invoice").count() == 1, "facture téléchargeable, plus de bouton devis")
+    check(page.get_by_test_id("confirmation-quote").count() == 0 and page.get_by_test_id("confirmation-invoice").count() == 0, "pas de document à télécharger avant le paiement")
+    page.locator('[data-testid="transfer-reminder"][data-state="pending"]').wait_for(timeout=10_000)
+    # 30 s plus tard : demande de confirmation du virement, RIB rappelé ; « Confirmer » permet de continuer.
+    confirm = page.locator('[data-testid="transfer-reminder"][data-state="confirm"]')
+    confirm.wait_for(timeout=45_000)
+    check("FR76 1621 8000 0140 1214 8835 165" in confirm.inner_text(), "RIB rappelé dans la fenêtre de confirmation")
+    page.get_by_test_id("transfer-declare").click()
+    declared = page.locator('[data-testid="transfer-reminder"][data-state="declared"]')
+    declared.wait_for(timeout=10_000)
+    check("B For Bank" in declared.inner_text(), "RIB rappelé après la confirmation")
+    page.get_by_test_id("transfer-continue").click()
+    page.get_by_test_id("transfer-reminder").wait_for(state="detached", timeout=10_000)
     check(page.get_by_test_id("account-invite").count() == 1, "invitation à créer son compte")
     order_id = re.search(r"order=([A-Za-z0-9]+)", page.url).group(1)
-    for kind in ("", "&type=devis"):
-        pdf = page.request.get(f"/api/orders/{order_id}/invoice?download=1{kind}")
-        check(pdf.status == 200 and pdf.body()[:5] == b"%PDF-", f"PDF {'devis' if kind else 'facture'} de l'invité")
-    # Email de confirmation : mis en forme, facture jointe, lien de création du compte.
+    pdf = page.request.get(f"/api/orders/{order_id}/invoice?download=1&type=devis")
+    check(pdf.status == 200 and pdf.body()[:5] == b"%PDF-", "devis PDF de l'invité")
+    # Email de confirmation : mis en forme, devis joint, lien de création du compte.
     box = OUT / "outbox"
     mail = None
     for _ in range(40):
@@ -717,7 +737,7 @@ def _():
             break
         time.sleep(0.25)
     check(mail is not None, "email de confirmation envoyé")
-    eq([a["filename"].split("_")[0] for a in mail["attachments"]], ["facture"], "facture seule jointe")
+    eq([a["filename"].split("_")[0] for a in mail["attachments"]], ["devis"], "devis joint (facture à réception du paiement)")
     check("Créer mon compte" in mail["html"] and "Virement bancaire à effectuer" in mail["html"], "email mis en forme : virement et création du compte")
     link = re.search(r"/connexion/reinitialiser\?token=[a-f0-9]{64}&creation=1", mail["text"]).group(0)
     # Création du compte depuis le lien, puis connexion : la commande et ses factures sont là.

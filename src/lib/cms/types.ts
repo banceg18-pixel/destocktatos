@@ -35,16 +35,12 @@ export interface SiteSettings {
   /** Informations légales de la société qui exploite le site (mentions légales, CGV, factures). */
   legalName?: string;
   legalForm?: string;
-  legalCapital?: string;
-  legalSiren?: string;
   legalSiret?: string;
-  legalRcs?: string;
-  legalVat?: string;
   legalHeadOffice?: string;
   legalDirector?: string;
-  /** Inscription au RCS (greffe et date) et établissement (adresse d'exploitation). */
-  legalRcsRegistration?: string;
-  legalEstablishment?: string;
+  /** Activité (NAF APE) et comptable, mentionnés dans les pages légales. */
+  legalNaf?: string;
+  legalAccountant?: string;
   /** Médiateur de la consommation dont relève la société (nom et site internet). */
   legalMediatorName?: string;
   legalMediatorUrl?: string;

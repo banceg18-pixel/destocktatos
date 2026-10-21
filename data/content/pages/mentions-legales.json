@@ -13,7 +13,7 @@
       "blocks": [
         {
           "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Le site Destocktatos est édité par la société REIMS GOLD, SARL, société à responsabilité limitée au capital de 1 000,00 €.</p><ul class=\"list-disc list-inside space-y-2 text-[color:var(--text-main)] opacity-90\"><li>Numéro SIREN : 823 456 777</li><li>Numéro SIRET (siège) : 823 456 777 00015</li><li>RCS : 823 456 777 R.C.S. Reims</li><li>N° TVA intracommunautaire : FR48823456777</li><li>Siège social : 3 Rue Émile Zola, 51100 Reims, France</li><li>Établissement : 65 Rue d’Aigremont, 78300 Poissy</li><li>Téléphone : +33 1 83 75 01 21</li><li>Email : contacts@destocktatos.com</li><li>Directeur de la publication : Jasmine Touvoli (gérant)</li></ul>"
+          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Le site Destocktatos est édité par la société Destocktatos, société par actions simplifiée.</p><ul class=\"list-disc list-inside space-y-2 text-[color:var(--text-main)] opacity-90\"><li>Numéro de SIRET : 94228991900014</li><li>Activité NAF APE : Commerce de gros non spécialisé</li><li>Siège social : 15 rue Paul Langevin, 93270 Sevran</li><li>Téléphone : +33 (6) 51 64 41 84</li><li>Email : contacts@destocktatos.com</li><li>Directeur de la publication : Franck NEBOT</li><li>Comptable : Madame Jasmine Touvoli</li></ul>"
         }
       ]
     },
@@ -58,7 +58,7 @@
       "blocks": [
         {
           "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Conformément aux articles L.611-1 et suivants du Code de la consommation, tout consommateur a le droit de recourir gratuitement à un médiateur de la consommation en vue de la résolution amiable d'un litige qui l'oppose à REIMS GOLD (Destocktatos).</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Avant de saisir le médiateur, le consommateur doit avoir tenté de résoudre le litige directement auprès du service client, par une réclamation écrite adressée à contacts@destocktatos.com ou par courrier au 65 Rue d’Aigremont, 78300 Poissy.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Les coordonnées du médiateur de la consommation compétent sont communiquées sur simple demande auprès du service client.</p>"
+          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Conformément aux dispositions du Code de la consommation concernant le règlement amiable des litiges, tout consommateur a le droit de recourir gratuitement à un médiateur de la consommation.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Après démarche préalable écrite des consommateurs vis-à-vis de Destocktatos (contacts@destocktatos.com), le service de médiation peut être saisi pour tout litige de consommation dont le règlement n'aurait pas abouti.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Les coordonnées du médiateur de la consommation compétent sont communiquées sur simple demande auprès du service client.</p>"
         }
       ]
     },

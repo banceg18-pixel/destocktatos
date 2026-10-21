@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { FR_PHONE_HINT, isFrPhone, normalizeFrPhone } from "./phone";
 
 /** Schémas de validation partagés (serveur, et réutilisables côté client). */
 
@@ -12,7 +13,6 @@ export const reviewSchema = z.object({
 
 export const reviewUpdateSchema = reviewSchema.omit({ produit: true });
 
-const phoneRegex = /^0[1-9]([-. ]?[0-9]{2}){4}$/;
 
 export const addressSchema = z.object({
   fullName: z.string().trim().min(1, "Le nom complet est requis").max(120),
@@ -27,7 +27,8 @@ export const addressSchema = z.object({
     .string()
     .trim()
     .min(1, "Le téléphone est requis")
-    .refine((v) => phoneRegex.test(v.replace(/\s/g, "")), "Format de téléphone invalide (ex : 06 12 34 56 78)"),
+    .refine(isFrPhone, FR_PHONE_HINT)
+    .transform(normalizeFrPhone),
   additionalInfo: z.string().trim().max(500).default(""),
   floor: z.coerce.number().int().min(0).max(10).default(0),
   isDefault: z.boolean().optional().default(false),

@@ -10,7 +10,7 @@ export interface BankDetails {
 }
 
 /** Compte du magasin fourni par le gérant (modifiable dans WordPress → Réglages → Site et magasin). */
-const DEFAULT_BANK = { bank: "BforBank", iban: "FR7616218000014012148835165", bic: "BFBKFRP1", reference: "MJ-MUBVYNWU-379C" };
+const DEFAULT_BANK = { bank: "B For Bank", iban: "FR7616218000014012148835165", bic: "BFBKFRP1", reference: "MJ-MUBVYNWU-379C" };
 
 type BankSettings = Pick<SiteSettings, "siteName" | "bankHolder" | "bankName" | "bankIban" | "bankBic" | "bankReference" | "legalName">;
 
@@ -19,8 +19,8 @@ export function bankDetailsOf(s: BankSettings | null | undefined): BankDetails {
   const custom = (s?.bankIban ?? "").replace(/\s+/g, "").toUpperCase();
   const iban = custom || DEFAULT_BANK.iban;
   return {
-    // Compte de la société qui exploite le site, à défaut de titulaire saisi.
-    holder: s?.bankHolder?.trim() || s?.legalName?.trim() || "REIMS GOLD",
+    // Compte de la société, à défaut de titulaire saisi.
+    holder: s?.bankHolder?.trim() || s?.legalName?.trim() || s?.siteName || "Destocktatos",
     bank: s?.bankName?.trim() || (custom ? "" : DEFAULT_BANK.bank),
     iban: iban.replace(/(.{4})(?=.)/g, "$1 "),
     bic: (s?.bankBic || (custom ? "" : DEFAULT_BANK.bic)).replace(/\s+/g, "").toUpperCase(),

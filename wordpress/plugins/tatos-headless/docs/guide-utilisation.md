@@ -341,17 +341,14 @@ L'extension se met à jour toute seule : chaque nouvelle version publiée avec l
   adresse pour la carte. Elles apparaissent dans l'en-tête, le pied de page, la page contact, les
   emails et les factures.
 - **Paiement par virement** : titulaire du compte, banque, IBAN, BIC et communication à indiquer
-  (déjà renseignés : BforBank, communication MJ-MUBVYNWU-379C). Ils sont imprimés sur la
+  (déjà renseignés : B For Bank, communication MJ-MUBVYNWU-379C). Ils sont imprimés sur la
   facture envoyée au client à chaque commande et affichés sur sa page de confirmation. Tant que
   l'IBAN est vide, le client est prévenu que vos coordonnées lui seront envoyées par email, et
   l'alerte « nouvelle commande » vous le rappelle.
-- **Informations légales** : dénomination (REIMS GOLD), forme juridique, capital, SIREN, SIRET, RCS,
-  TVA intracommunautaire, siège social, gérant, et le médiateur de la consommation (nom et site
-  internet, à renseigner une fois l'adhésion faite : il apparaît alors dans les mentions légales). Elles alimentent automatiquement les mentions
-  légales (« Éditeur du site »), la politique de confidentialité (« Responsable du traitement »), la
-  désignation du vendeur dans les CGV, et le bas des factures et des emails. L'adresse des
-  coordonnées ci-dessus est celle affichée sur le site ; elle peut être saisie en entier dans le champ
-  « Adresse » (le code postal et la ville en sont alors tirés).
+- **Informations légales** : dénomination, forme, SIRET, activité, siège, directeur de la publication
+  et comptable, imprimés au bas des factures et des emails ; et le médiateur de la consommation (nom et
+  site internet), affiché dans les mentions légales dès qu'il est renseigné. Les textes des mentions
+  légales, des CGV et de la politique de confidentialité se modifient dans **Pages**.
 - **Liaison avec le site (technique)** : adresse publique du site et clé d'administration (l'adresse
   et le secret du webhook sont facultatifs : par défaut, ces deux valeurs suffisent). Ces valeurs sont
   fournies lors de l'installation ; ne les modifiez pas sans votre prestataire.

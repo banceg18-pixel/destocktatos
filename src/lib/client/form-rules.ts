@@ -1,3 +1,4 @@
+import { FR_PHONE_HINT, isFrPhone } from "@/lib/phone";
 /**
  * Règles de saisie partagées par tous les formulaires. Chaque message dit précisément quoi corriger,
  * avec un exemple quand le format compte. Une règle renvoie `null` quand la valeur est correcte.
@@ -37,16 +38,16 @@ export const rules = {
   },
   recipient: (v: string) => (v.trim().length >= 2 ? null : "Indiquez le nom de la personne qui réceptionne la livraison."),
   phone: (v: string) => {
-    const s = v.replace(/[\s.-]/g, "");
-    if (!s) return "Indiquez un numéro de téléphone.";
-    if (!/^(?:0|\+33)[1-9]\d{8}$/.test(s)) return "Numéro invalide : 10 chiffres, par exemple 06 12 34 56 78.";
+    if (!v.trim()) return "Indiquez un numéro de téléphone.";
+    // Numéros français uniquement (+33 accepté s'il est collé, inutile de le saisir).
+    if (!isFrPhone(v)) return `Indiquez un ${FR_PHONE_HINT.charAt(0).toLowerCase()}${FR_PHONE_HINT.slice(1)}`;
     return null;
   },
-  street: (v: string) => (v.trim().length >= 5 ? null : "Indiquez le numéro et le nom de la rue, par exemple 65 rue d’Aigremont."),
+  street: (v: string) => (v.trim().length >= 5 ? null : "Indiquez le numéro et le nom de la rue, par exemple 15 rue Paul Langevin."),
   postalCode: (v: string) => {
     const s = v.trim();
     if (!s) return "Indiquez le code postal.";
-    return /^\d{5}$/.test(s) ? null : "Le code postal compte 5 chiffres, par exemple 78300.";
+    return /^\d{5}$/.test(s) ? null : "Le code postal compte 5 chiffres, par exemple 93270.";
   },
   city: (v: string) => (v.trim().length >= 2 ? null : "Indiquez la ville."),
   choice: (what: string) => (v: string) => (v ? null : `Choisissez ${what}.`),
