@@ -652,7 +652,7 @@ def _():
     ctx.close()
 
 
-@test("achat", "commande sans compte : livraison offerte, virement, email avec facture et devis, compte créé ensuite")
+@test("achat", "commande sans compte : livraison offerte, virement, email avec facture, compte créé ensuite")
 def _():
     errors: list[str] = []
     ctx = new_context(consent="accepted")
@@ -705,7 +705,7 @@ def _():
     for kind in ("", "&type=devis"):
         pdf = page.request.get(f"/api/orders/{order_id}/invoice?download=1{kind}")
         check(pdf.status == 200 and pdf.body()[:5] == b"%PDF-", f"PDF {'devis' if kind else 'facture'} de l'invité")
-    # Email de confirmation : mis en forme, facture + devis joints, lien de création du compte.
+    # Email de confirmation : mis en forme, facture jointe, lien de création du compte.
     box = OUT / "outbox"
     mail = None
     for _ in range(40):
@@ -717,7 +717,7 @@ def _():
             break
         time.sleep(0.25)
     check(mail is not None, "email de confirmation envoyé")
-    eq([a["filename"].split("_")[0] for a in mail["attachments"]], ["facture", "devis"], "facture et devis joints")
+    eq([a["filename"].split("_")[0] for a in mail["attachments"]], ["facture"], "facture seule jointe")
     check("Créer mon compte" in mail["html"] and "Virement bancaire à effectuer" in mail["html"], "email mis en forme : virement et création du compte")
     link = re.search(r"/connexion/reinitialiser\?token=[a-f0-9]{64}&creation=1", mail["text"]).group(0)
     # Création du compte depuis le lien, puis connexion : la commande et ses factures sont là.

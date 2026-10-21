@@ -42,6 +42,9 @@ export interface SiteSettings {
   legalVat?: string;
   legalHeadOffice?: string;
   legalDirector?: string;
+  /** Inscription au RCS (greffe et date) et établissement (adresse d'exploitation). */
+  legalRcsRegistration?: string;
+  legalEstablishment?: string;
   /** Médiateur de la consommation dont relève la société (nom et site internet). */
   legalMediatorName?: string;
   legalMediatorUrl?: string;

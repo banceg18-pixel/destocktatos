@@ -48,6 +48,16 @@ const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replac
 const P = 'class="text-[color:var(--text-main)] opacity-90 mb-3"';
 const UL = 'class="list-disc list-inside space-y-2 text-[color:var(--text-main)] opacity-90"';
 
+/**
+ * Adresse saisie en entier dans « Adresse » (ex. « 3 Rue Émile Zola, 51100 Reims, France ») : le code
+ * postal, la ville et le pays en sont tirés, pour ne jamais afficher deux adresses mélangées.
+ */
+export function normalizeAddress<T extends Pick<SiteSettings, "addressLine" | "postalCode" | "city" | "country">>(s: T): T {
+  const m = s.addressLine?.match(/^(.+?),\s*(\d{5})\s+([^,]+?)(?:,\s*([^,]+?))?\s*$/);
+  if (!m) return s;
+  return { ...s, addressLine: m[1].trim(), postalCode: m[2], city: m[3].trim(), country: m[4]?.trim() || s.country };
+}
+
 /** Informations légales : réglages, sinon valeurs fournies par le gérant (REIMS GOLD). */
 export function company(s: SiteSettings) {
   return {
@@ -57,16 +67,17 @@ export function company(s: SiteSettings) {
     siren: s.legalSiren || "823 456 777",
     siret: s.legalSiret || "823 456 777 00015",
     rcs: s.legalRcs || "823 456 777 R.C.S. Reims",
+    rcsRegistration: s.legalRcsRegistration || "inscrite au greffe de Reims le 02/11/2016",
     vat: s.legalVat || "FR48823456777",
     headOffice: s.legalHeadOffice || "3 Rue Émile Zola, 51100 Reims, France",
-    establishment: `${s.addressLine}, ${s.postalCode} ${s.city}`,
+    establishment: s.legalEstablishment || "65 Rue d’Aigremont, 78300 Poissy",
     director: s.legalDirector || "Jasmine Touvoli",
     phone: s.phone,
     email: s.email,
   };
 }
 
-/** Mentions légales courtes, sur deux lignes (factures, devis, emails). */
+/** Mentions légales courtes, sur deux lignes (factures, emails). */
 export function legalLines(s: SiteSettings): [string, string] {
   const c = company(s);
   return [`${s.siteName} est exploité par ${c.name}, ${c.form.split(",")[0]} au capital de ${c.capital} — Siège social : ${c.headOffice}`, `SIRET ${c.siret} — ${c.rcs} — TVA intracommunautaire ${c.vat}`];
@@ -74,7 +85,7 @@ export function legalLines(s: SiteSettings): [string, string] {
 
 function editorHtml(s: SiteSettings) {
   const c = company(s);
-  return `<p ${P}>Le site ${esc(s.siteName)} est édité par la société ${esc(c.name)}, ${esc(c.form)} au capital de ${esc(c.capital)}.</p><ul ${UL}><li>Numéro SIREN : ${esc(c.siren)}</li><li>Numéro SIRET (siège) : ${esc(c.siret)}</li><li>RCS : ${esc(c.rcs)}</li><li>N° TVA intracommunautaire : ${esc(c.vat)}</li><li>Siège social : ${esc(c.headOffice)}</li><li>Établissement : ${esc(c.establishment)}</li><li>Téléphone : ${esc(c.phone)}</li><li>Email : ${esc(c.email)}</li><li>Directeur de la publication : ${esc(c.director)} (gérant)</li></ul>`;
+  return `<p ${P}>Le site ${esc(s.siteName)} est édité par la société ${esc(c.name)}, ${esc(c.form)} au capital de ${esc(c.capital)}.</p><ul ${UL}><li>Numéro SIREN : ${esc(c.siren)}</li><li>Numéro SIRET (siège) : ${esc(c.siret)}</li><li>RCS : ${esc(c.rcs)} (${esc(c.rcsRegistration)})</li><li>N° TVA intracommunautaire : ${esc(c.vat)}</li><li>Siège social : ${esc(c.headOffice)}</li><li>Établissement : ${esc(c.establishment)}</li><li>Téléphone : ${esc(c.phone)}</li><li>Email : ${esc(c.email)}</li><li>Directeur de la publication : ${esc(c.director)} (gérant)</li></ul>`;
 }
 
 function controllerHtml(s: SiteSettings) {
@@ -96,7 +107,7 @@ function paymentHtml(s: SiteSettings) {
     : "";
   return [
     "Le prix de la commande est payable en totalité par virement bancaire, avant la livraison. Aucun paiement n'est effectué sur le site : aucune donnée bancaire de l'Acheteur n'y est saisie ni conservée.",
-    "Dès la validation de sa commande, l'Acheteur reçoit par email la facture et le devis correspondants, qui indiquent le montant à régler, les coordonnées bancaires du Vendeur et la communication à mentionner sur le virement. Ces informations figurent également sur la page de confirmation de la commande et dans l'espace client.",
+    "Dès la validation de sa commande, l'Acheteur reçoit par email la facture correspondante, qui indique le montant à régler, les coordonnées bancaires du Vendeur et la communication à mentionner sur le virement. Ces informations figurent également sur la page de confirmation de la commande et dans l'espace client.",
     account,
     "Les articles commandés sont réservés dans l'attente du virement. La commande est préparée puis livrée après réception du paiement sur le compte du Vendeur ; l'Acheteur en est informé par email. À défaut de paiement, le Vendeur peut annuler la commande, ce dont l'Acheteur est également informé par email.",
   ]

@@ -143,13 +143,14 @@ describe("API d'administration (espace WordPress)", () => {
 
     const [file] = await waitForMails("commande-confirmation", 1);
     const mail = JSON.parse(fs.readFileSync(`${outbox}/${file}`, "utf8"));
-    expect(mail.subject).toContain("facture, devis et informations de paiement");
+    expect(mail.subject).toContain("facture et informations de paiement");
     expect(mail.text).toContain("Communication à indiquer : MJ-MUBVYNWU-379C");
     expect(mail.text).toContain("Numéro de commande : TAT-TEST-VIR001");
     expect(mail.text).toContain("IBAN : FR76 1621 8000 0140 1214 8835 165");
     // Email mis en forme (gabarit du site) avec facture et devis joints.
     expect(mail.html).toContain("Virement bancaire à effectuer");
-    expect(mail.attachments.map((a: { filename: string }) => a.filename)).toEqual(["facture_FAC-TEST-VIR001.pdf", "devis_DEV-TEST-VIR001.pdf"]);
+    // Facture seule (pas de devis) : montant, communication et coordonnées bancaires.
+    expect(mail.attachments.map((a: { filename: string }) => a.filename)).toEqual(["facture_FAC-TEST-VIR001.pdf"]);
     for (const a of mail.attachments) expect(Buffer.from(a.base64, "base64").subarray(0, 5).toString("latin1")).toBe("%PDF-");
     const [storeFile] = await waitForMails("commande-magasin", 1);
     expect(JSON.parse(fs.readFileSync(`${outbox}/${storeFile}`, "utf8")).subject).toContain("virement attendu");

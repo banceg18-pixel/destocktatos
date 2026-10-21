@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Destocktatos — Administration du site
  * Description: Espace d'administration complet du site Destocktatos (Next.js) : produits, catégories, pages, articles, FAQ, menus, réglages, et gestion de la boutique (commandes, clients, codes promo, avis, messages, newsletter, stock).
- * Version: 2.6.0
+ * Version: 2.7.0
  * Requires PHP: 8.1
  * License: GPL-2.0-or-later
  * Text Domain: tatos-headless
@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('TATOS_HEADLESS_VERSION', '2.6.0');
+define('TATOS_HEADLESS_VERSION', '2.7.0');
 
 /* -------------------------------------------------------------------------
  * Types de contenu et taxonomies
@@ -132,8 +132,10 @@ const TATOS_SETTINGS_FIELDS = [
     'legalSiren' => 'Numéro SIREN',
     'legalSiret' => 'Numéro SIRET (siège)',
     'legalRcs' => 'Numéro RCS',
+    'legalRcsRegistration' => 'Inscription au RCS (greffe et date)',
     'legalVat' => 'N° TVA intracommunautaire',
     'legalHeadOffice' => 'Siège social',
+    'legalEstablishment' => 'Établissement (adresse d\'exploitation)',
     'legalDirector' => 'Dirigeant / gérant',
     'legalMediatorName' => 'Médiateur de la consommation (nom)',
     'legalMediatorUrl' => 'Médiateur de la consommation (site internet)',
@@ -153,7 +155,7 @@ const TATOS_BANK_FIELDS = ['bankHolder', 'bankName', 'bankIban', 'bankBic', 'ban
 /** Compte fourni par le gérant, enregistré à la mise à jour si aucun IBAN n'est saisi. */
 const TATOS_BANK_DEFAULTS = ['bankName' => 'BforBank', 'bankIban' => 'FR76 1621 8000 0140 1214 8835 165', 'bankBic' => 'BFBKFRP1', 'bankReference' => 'MJ-MUBVYNWU-379C'];
 /** Société qui exploite le site : mentions légales, CGV, confidentialité, factures (l'établissement = l'adresse ci-dessus). */
-const TATOS_LEGAL_FIELDS = ['legalName', 'legalForm', 'legalCapital', 'legalSiren', 'legalSiret', 'legalRcs', 'legalVat', 'legalHeadOffice', 'legalDirector', 'legalMediatorName', 'legalMediatorUrl'];
+const TATOS_LEGAL_FIELDS = ['legalName', 'legalForm', 'legalCapital', 'legalSiren', 'legalSiret', 'legalRcs', 'legalRcsRegistration', 'legalVat', 'legalHeadOffice', 'legalEstablishment', 'legalDirector', 'legalMediatorName', 'legalMediatorUrl'];
 const TATOS_LEGAL_DEFAULTS = [
     'legalName' => 'REIMS GOLD',
     'legalForm' => 'SARL, société à responsabilité limitée',
@@ -161,8 +163,10 @@ const TATOS_LEGAL_DEFAULTS = [
     'legalSiren' => '823 456 777',
     'legalSiret' => '823 456 777 00015',
     'legalRcs' => '823 456 777 R.C.S. Reims',
+    'legalRcsRegistration' => 'inscrite au greffe de Reims le 02/11/2016',
     'legalVat' => 'FR48823456777',
     'legalHeadOffice' => '3 Rue Émile Zola, 51100 Reims, France',
+    'legalEstablishment' => '65 Rue d’Aigremont, 78300 Poissy',
     'legalDirector' => 'Jasmine Touvoli',
 ];
 
@@ -510,7 +514,7 @@ function tatos_company(): array
     foreach (TATOS_LEGAL_DEFAULTS as $k => $default) {
         $c[$k] = trim((string) ($s[$k] ?? '')) ?: $default;
     }
-    $c['establishment'] = trim(($s['addressLine'] ?? '') . ', ' . ($s['postalCode'] ?? '') . ' ' . ($s['city'] ?? ''), ', ');
+    $c['establishment'] = $c['legalEstablishment'];
     $c['siteName'] = $s['siteName'] ?? 'Destocktatos';
     return $c;
 }
@@ -531,7 +535,7 @@ function tatos_payment_html(): string
     );
     $paragraphs = array_filter([
         "Le prix de la commande est payable en totalité par virement bancaire, avant la livraison. Aucun paiement n'est effectué sur le site : aucune donnée bancaire de l'Acheteur n'y est saisie ni conservée.",
-        "Dès la validation de sa commande, l'Acheteur reçoit par email la facture et le devis correspondants, qui indiquent le montant à régler, les coordonnées bancaires du Vendeur et la communication à mentionner sur le virement. Ces informations figurent également sur la page de confirmation de la commande et dans l'espace client.",
+        "Dès la validation de sa commande, l'Acheteur reçoit par email la facture correspondante, qui indique le montant à régler, les coordonnées bancaires du Vendeur et la communication à mentionner sur le virement. Ces informations figurent également sur la page de confirmation de la commande et dans l'espace client.",
         $account,
         "Les articles commandés sont réservés dans l'attente du virement. La commande est préparée puis livrée après réception du paiement sur le compte du Vendeur ; l'Acheteur en est informé par email. À défaut de paiement, le Vendeur peut annuler la commande, ce dont l'Acheteur est également informé par email.",
     ]);
@@ -589,6 +593,15 @@ function tatos_rebrand_contents(): int
     if (trim((string) ($fixed['bankIban'] ?? '')) === '') {
         $fixed = array_merge($fixed, TATOS_BANK_DEFAULTS);
     }
+    // Adresse saisie en entier dans « Adresse » : code postal, ville et pays en sont tirés.
+    if (preg_match('/^(.+?),\s*(\d{5})\s+([^,]+?)(?:,\s*([^,]+?))?\s*$/u', (string) ($fixed['addressLine'] ?? ''), $m)) {
+        $fixed['addressLine'] = trim($m[1]);
+        $fixed['postalCode'] = $m[2];
+        $fixed['city'] = trim($m[3]);
+        if (!empty($m[4])) {
+            $fixed['country'] = trim($m[4]);
+        }
+    }
     if ($fixed !== $settings) {
         update_option('tatos_settings', $fixed);
         $count++;
@@ -624,14 +637,14 @@ function tatos_rebrand_contents(): int
 }
 
 add_action('admin_init', function () {
-    if (get_option('tatos_rebrand_done') === '2.6.0' || !current_user_can('manage_options')) {
+    if (get_option('tatos_rebrand_done') === '2.7.0' || !current_user_can('manage_options')) {
         return;
     }
     // Un seul avis au site à la fin (pas un par contenu corrigé).
     $GLOBALS['tatos_suspend_webhooks'] = true;
     $count = tatos_rebrand_contents();
     $GLOBALS['tatos_suspend_webhooks'] = false;
-    update_option('tatos_rebrand_done', '2.6.0', false);
+    update_option('tatos_rebrand_done', '2.7.0', false);
     if ($count > 0) {
         tatos_notify_frontend('content.updated', ['type' => 'rebrand']);
         set_transient('tatos_rebrand_notice', $count, 300);
@@ -645,6 +658,57 @@ add_action('admin_notices', function () {
         printf('<div class="notice notice-success is-dismissible"><p>Contenus mis au nom de Destocktatos (société REIMS GOLD, établissement de Poissy) : %d élément(s) corrigé(s) — pages, CGV, mentions légales, produits, réglages. Vérifiez Réglages → Site et magasin → Informations légales.</p></div>', (int) $count);
     }
 });
+
+/* -------------------------------------------------------------------------
+ * Mises à jour automatiques de l'extension, publiées avec le site
+ * Le site expose /telechargements/tatos-headless.json (version) et l'archive de l'extension :
+ * WordPress propose la mise à jour et l'installe de lui-même (mises à jour automatiques activées).
+ * ---------------------------------------------------------------------- */
+function tatos_update_info(): ?array
+{
+    $cached = get_site_transient('tatos_update_info');
+    if (is_array($cached)) {
+        return $cached ?: null;
+    }
+    $base = tatos_site_url();
+    $info = [];
+    if ($base !== '') {
+        $res = wp_remote_get($base . '/telechargements/tatos-headless.json?t=' . time(), ['timeout' => 10, 'headers' => ['Cache-Control' => 'no-cache']]);
+        $data = !is_wp_error($res) && wp_remote_retrieve_response_code($res) === 200 ? json_decode(wp_remote_retrieve_body($res), true) : null;
+        if (is_array($data) && !empty($data['version']) && preg_match('/^\d+\.\d+\.\d+$/', (string) $data['version'])) {
+            $info = ['version' => (string) $data['version'], 'package' => $base . '/telechargements/tatos-headless.zip?v=' . rawurlencode((string) $data['version'])];
+        }
+    }
+    set_site_transient('tatos_update_info', $info, 3 * HOUR_IN_SECONDS);
+    return $info ?: null;
+}
+
+add_filter('pre_set_site_transient_update_plugins', function ($transient) {
+    if (!is_object($transient)) {
+        return $transient;
+    }
+    $file = plugin_basename(__FILE__);
+    $info = tatos_update_info();
+    $item = (object) ['id' => $file, 'slug' => 'tatos-headless', 'plugin' => $file, 'new_version' => TATOS_HEADLESS_VERSION, 'url' => tatos_site_url(), 'package' => ''];
+    if ($info && version_compare($info['version'], TATOS_HEADLESS_VERSION, '>')) {
+        $item->new_version = $info['version'];
+        $item->package = $info['package'];
+        $transient->response[$file] = $item;
+        unset($transient->no_update[$file]);
+    } else {
+        $transient->no_update[$file] = $item;
+        unset($transient->response[$file]);
+    }
+    return $transient;
+});
+
+// Installée automatiquement par WordPress, comme une extension officielle.
+add_filter('auto_update_plugin', function ($update, $item) {
+    return isset($item->plugin) && $item->plugin === plugin_basename(__FILE__) ? true : $update;
+}, 10, 2);
+
+// Après une mise à jour, la version publiée est relue tout de suite.
+add_action('upgrader_process_complete', fn() => delete_site_transient('tatos_update_info'));
 
 /* -------------------------------------------------------------------------
  * Webhook : prévient le frontend à chaque modification de contenu

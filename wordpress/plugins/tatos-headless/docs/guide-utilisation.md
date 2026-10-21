@@ -332,6 +332,9 @@ supprimer une image encore utilisée par un produit ou une page.
 
 ## Coordonnées du magasin et liaison avec le site
 
+L'extension se met à jour toute seule : chaque nouvelle version publiée avec le site est proposée dans
+**Extensions**, puis installée automatiquement par WordPress.
+
 **Réglages → Site et magasin** (administrateurs) :
 
 - **Coordonnées affichées sur le site** : nom, description, email, téléphone, adresse, horaires,
@@ -346,8 +349,9 @@ supprimer une image encore utilisée par un produit ou une page.
   TVA intracommunautaire, siège social, gérant, et le médiateur de la consommation (nom et site
   internet, à renseigner une fois l'adhésion faite : il apparaît alors dans les mentions légales). Elles alimentent automatiquement les mentions
   légales (« Éditeur du site »), la politique de confidentialité (« Responsable du traitement »), la
-  désignation du vendeur dans les CGV, et le bas des factures, devis et emails. L'établissement
-  affiché est l'adresse saisie dans les coordonnées ci-dessus.
+  désignation du vendeur dans les CGV, et le bas des factures et des emails. L'adresse des
+  coordonnées ci-dessus est celle affichée sur le site ; elle peut être saisie en entier dans le champ
+  « Adresse » (le code postal et la ville en sont alors tirés).
 - **Liaison avec le site (technique)** : adresse publique du site et clé d'administration (l'adresse
   et le secret du webhook sont facultatifs : par défaut, ces deux valeurs suffisent). Ces valeurs sont
   fournies lors de l'installation ; ne les modifiez pas sans votre prestataire.
@@ -373,7 +377,7 @@ Connaître le parcours client aide à répondre à leurs questions.
 4. **Règlement** : par virement bancaire avant livraison (ou par carte si Stripe est activé). Les
    articles sont réservés 30 minutes le temps de confirmer, puis jusqu'au virement.
 5. **Confirmation** : page de confirmation avec le montant, la référence et vos coordonnées
-   bancaires, et email mis en forme avec la **facture et le devis PDF** joints.
+   bancaires, et email mis en forme avec la **facture PDF** jointe.
 6. **Compte** : l'email et la page de confirmation invitent le client à créer son compte en choisissant
    son mot de passe (lien personnel valable 7 jours) ; il y retrouve ses commandes et ses factures.
 7. **Espace client** (« Mon compte ») : tableau de bord, **Mes commandes** (suivi, factures,

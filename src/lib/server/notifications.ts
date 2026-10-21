@@ -8,7 +8,7 @@ import { getSiteSettings } from "@/lib/cms";
 import type { SiteSettings } from "@/lib/cms/types";
 import { bankDetailsOf, transferLines, type BankDetails } from "@/lib/bank";
 import { legalLines } from "@/lib/brand";
-import { buildInvoicePdf, invoiceAvailable, invoiceNumber, invoiceStore, quoteNumber } from "./invoice";
+import { buildInvoicePdf, invoiceAvailable, invoiceNumber, invoiceStore } from "./invoice";
 import { button, emailLayout, heading, infoBox, orderTable, para, subheading, type EmailStore } from "./email-layout";
 import { ACCOUNT_LINK_TTL_MS, passwordLink } from "./password-link";
 import { sendMail, sendMailInBackground, STORE_EMAIL } from "./mailer";
@@ -58,15 +58,10 @@ const PAYMENT_LABELS: Record<string, string> = {
   test: "simulation (tests automatisés)",
 };
 
-/** Facture PDF en pièce jointe, et le devis tant que le virement est attendu. */
-function orderAttachments(o: FullOrder, s: SiteSettings | null, withQuote = false) {
+/** Facture PDF en pièce jointe (commande payée ou en attente de virement). */
+function orderAttachments(o: FullOrder, s: SiteSettings | null) {
   if (!s || !invoiceAvailable(o)) return [];
-  const store = invoiceStore(s);
-  const bank = bankDetailsOf(s);
-  return [
-    { filename: `facture_${invoiceNumber(o)}.pdf`, content: buildInvoicePdf(o, o.user, store, bank), contentType: "application/pdf" },
-    ...(withQuote ? [{ filename: `devis_${quoteNumber(o)}.pdf`, content: buildInvoicePdf(o, o.user, store, bank, "devis"), contentType: "application/pdf" }] : []),
-  ];
+  return [{ filename: `facture_${invoiceNumber(o)}.pdf`, content: buildInvoicePdf(o, o.user, invoiceStore(s), bankDetailsOf(s)), contentType: "application/pdf" }];
 }
 
 const emailStore = (s: SiteSettings | null): EmailStore | null =>
@@ -119,7 +114,7 @@ async function accountInvite(o: FullOrder) {
 
 /**
  * Commande payée, ou confirmée avec règlement par virement : email au client (récapitulatif, facture
- * et devis PDF joints avec les informations de paiement, invitation à créer son compte) et alerte au magasin.
+ * PDF jointe avec les informations de paiement, invitation à créer son compte) et alerte au magasin.
  */
 export async function notifyOrderPaid(orderId: string) {
   const o = await loadOrder(orderId);
@@ -127,13 +122,13 @@ export async function notifyOrderPaid(orderId: string) {
   const s = await getSiteSettings().catch(() => null);
   const bank = bankDetailsOf(s);
   const awaitingTransfer = o.status === "EN_ATTENTE_VIREMENT" && !o.paidAt;
-  const attachments = orderAttachments(o, s, awaitingTransfer);
+  const attachments = orderAttachments(o, s);
   const account = await accountInvite(o);
   const ship = o.shippingAddress as AddressJson;
   const where = o.isPickupInStore
     ? `Retrait en magasin : ${s ? `${s.addressLine}, ${s.postalCode} ${s.city} (${s.storeHours})` : "à l'adresse du magasin"}. Nous vous prévenons dès que votre commande est prête.`
     : `Adresse de livraison :\n${addressLines(ship)}\n\nNous vous appelons pour convenir du jour et du créneau de livraison.`;
-  const docs = attachments.length > 1 ? "Votre facture et votre devis sont joints à cet email (PDF)." : attachments.length ? "Votre facture est jointe à cet email (PDF)." : "";
+  const docs = attachments.length ? "Votre facture est jointe à cet email (PDF)." : "";
   const transferNote = transferLines(eur(o.totalCents), o.number, bank).note;
   const text = `Bonjour ${o.user.name},
 
@@ -178,7 +173,7 @@ ${await signature()}`;
   await sendMail({
     to: o.user.email,
     tag: "commande-confirmation",
-    subject: awaitingTransfer ? `Commande ${o.number} : facture, devis et informations de paiement` : `Commande ${o.number} confirmée`,
+    subject: awaitingTransfer ? `Commande ${o.number} : facture et informations de paiement` : `Commande ${o.number} confirmée`,
     text,
     html,
     attachments,

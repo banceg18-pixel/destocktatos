@@ -30,7 +30,7 @@ export function bankDetailsOf(s: BankSettings | null | undefined): BankDetails {
 
 /**
  * Lignes du virement attendu, identiques partout (page de confirmation, espace client, email,
- * facture, devis) : montant, communication à indiquer, numéro de commande, coordonnées bancaires.
+ * facture) : montant, communication à indiquer, numéro de commande, coordonnées bancaires.
  */
 export function transferLines(amount: string, orderNumber: string, bank: BankDetails | null): { rows: [string, string, boolean?][]; note: string } {
   const rows: [string, string, boolean?][] = [

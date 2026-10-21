@@ -12,7 +12,7 @@ const schema = z.object({ orderId: objectId, billingAddress: billingSchema });
 /**
  * POST /api/checkout/bank-transfer — confirme la commande en attente avec un règlement par virement
  * bancaire avant livraison. Aucun paiement en ligne : la commande attend le virement, ses articles
- * restent réservés et le client reçoit la facture et le devis avec les coordonnées bancaires.
+ * restent réservés et le client reçoit la facture avec les coordonnées bancaires.
  * Avec ou sans compte (invité : uniquement la commande qu'il vient de passer).
  */
 export const POST = route("POST /api/checkout/bank-transfer", async (req: Request) => {

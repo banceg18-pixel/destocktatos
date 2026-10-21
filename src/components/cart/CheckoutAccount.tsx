@@ -52,7 +52,7 @@ export function CheckoutAccount({ open, onClose, onDone, onGuest }: { open: bool
             {mode === "guest" ? (
               <form onSubmit={submit} noValidate className="flex flex-col gap-5">
                 <p className="text-sm text-graphite">
-                  Indiquez votre email : vous y recevrez la confirmation, la facture et le devis avec les informations de paiement. Vous pourrez ensuite créer votre
+                  Indiquez votre email : vous y recevrez la confirmation et la facture avec les informations de paiement. Vous pourrez ensuite créer votre
                   compte en un clic pour retrouver vos factures.
                 </p>
                 <Field label="Email" htmlFor="guest-email" error={f.errors.email}>

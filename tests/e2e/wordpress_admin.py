@@ -153,7 +153,8 @@ def main():
         page.click("#publish")
         notice(page)
         def promo_on_site():
-            items = admin_api.get(f"/api/admin/products?q={prod['modele']}&per=50").json()["items"]
+            # Recherche par référence, ou par titre quand le produit n'en a pas.
+            items = admin_api.get(f"/api/admin/products?q={quote(prod.get('modele') or prod['titre'])}&per=50").json()["items"]
             mine = next((i for i in items if i["id"] == prod["_id"]), None)
             return mine and abs((mine["promotionPrixCents"] or 0) / 100 - new_promo) < 0.01
 

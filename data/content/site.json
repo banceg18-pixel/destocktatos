@@ -25,5 +25,7 @@
   "bankName": "BforBank",
   "bankIban": "FR76 1621 8000 0140 1214 8835 165",
   "bankBic": "BFBKFRP1",
-  "bankReference": "MJ-MUBVYNWU-379C"
+  "bankReference": "MJ-MUBVYNWU-379C",
+  "legalRcsRegistration": "inscrite au greffe de Reims le 02/11/2016",
+  "legalEstablishment": "65 Rue d’Aigremont, 78300 Poissy"
 }

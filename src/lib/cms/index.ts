@@ -1,6 +1,6 @@
 import "server-only";
 import { cache } from "react";
-import { rebrand, withCompany } from "@/lib/brand";
+import { normalizeAddress, rebrand, withCompany } from "@/lib/brand";
 import { localProvider } from "./local";
 import { wordpressProvider } from "./wordpress";
 import type { ContentProvider } from "./types";
@@ -12,7 +12,7 @@ export function getContentProvider(): ContentProvider {
 
 // Mémoïsation par requête (plusieurs composants serveur lisent les mêmes réglages). Les contenus sont
 // présentés au nom de Destocktatos (voir lib/brand.ts), quelle que soit leur origine.
-export const getSiteSettings = cache(async () => rebrand(await getContentProvider().getSiteSettings()));
+export const getSiteSettings = cache(async () => normalizeAddress(rebrand(await getContentProvider().getSiteSettings())));
 export const getMenus = cache(async () => rebrand(await getContentProvider().getMenus()));
 export const getPage = cache(async <T,>(slug: string) => {
   const [page, settings] = await Promise.all([getContentProvider().getPage<T>(slug), getSiteSettings()]);

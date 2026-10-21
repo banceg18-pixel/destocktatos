@@ -3,6 +3,7 @@ import type { Order, OrderItem } from "@prisma/client";
 import { decode, htmlToSections } from "@/lib/cms/wordpress";
 import { computeDiscount } from "@/lib/server/coupons";
 import { bankDetailsOf } from "@/lib/bank";
+import { normalizeAddress, rebrandText } from "@/lib/brand";
 import { buildInvoicePdf, invoiceAvailable, invoiceNumber } from "@/lib/server/invoice";
 import { rateLimit, resetRateLimits } from "@/lib/server/rate-limit";
 
@@ -107,5 +108,24 @@ describe("limitation de débit", () => {
     expect(r.ok).toBe(false);
     expect(r.retryAfter).toBeGreaterThan(0);
     expect(rateLimit("autre", 2, 60_000).ok).toBe(true);
+  });
+});
+
+describe("identité de la société", () => {
+  it("adresse saisie en entier dans « Adresse » : code postal, ville et pays en sont tirés", () => {
+    expect(normalizeAddress({ addressLine: "3 Rue Émile Zola, 51100 Reims, France", postalCode: "78300", city: "Poissy", country: "France" })).toEqual({
+      addressLine: "3 Rue Émile Zola",
+      postalCode: "51100",
+      city: "Reims",
+      country: "France",
+    });
+    const separate = { addressLine: "65 Rue d’Aigremont", postalCode: "78300", city: "Poissy", country: "France" };
+    expect(normalizeAddress(separate)).toEqual(separate);
+  });
+
+  it("anciens textes TATOS : nom, email, adresse et téléphone de Destocktatos", () => {
+    expect(rebrandText("TATOS, Service Clients, 12 rue paul levangin, 93270 Sevran — 06.51.64.41.84 — tatos-electromenager@gmail.com")).toBe(
+      "Destocktatos, Service Clients, 65 Rue d’Aigremont, 78300 Poissy — 01 83 75 01 21 — contacts@destocktatos.com",
+    );
   });
 });
