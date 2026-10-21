@@ -24,7 +24,7 @@ export function para(text: string, opts: { muted?: boolean; size?: number } = {}
 }
 
 export function heading(text: string) {
-  return `<h1 style="margin:0 0 20px;font-family:${FONT};font-size:26px;line-height:1.2;font-weight:700;letter-spacing:-0.01em;color:${INK}">${esc(text)}</h1>`;
+  return `<h1 class="em-h1" style="margin:0 0 20px;font-family:${FONT};font-size:26px;line-height:1.2;font-weight:700;letter-spacing:-0.01em;color:${INK}">${esc(text)}</h1>`;
 }
 
 export function subheading(text: string) {
@@ -39,17 +39,24 @@ export function button(label: string, url: string, variant: "solid" | "outline" 
 </td></tr></table>`;
 }
 
-/** Encadré de lignes « libellé : valeur » (coordonnées bancaires, adresse…). */
+/**
+ * Encadré de lignes « libellé : valeur » (coordonnées bancaires, adresse…). Chaque valeur passe sous
+ * son libellé, sur toute la largeur : lisible sur un téléphone comme sur un ordinateur, sans colonne
+ * étroite qui couperait un IBAN ou un nom au milieu des mots.
+ */
 export function infoBox(title: string, rows: [string, string, boolean?][], note?: string) {
   const trs = rows
     .map(
-      ([label, value, mono]) =>
-        `<tr><td style="padding:6px 16px 6px 0;font-family:${FONT};font-size:13px;color:${GRAPHITE};white-space:nowrap;vertical-align:top">${esc(label)}</td><td style="padding:6px 0;font-family:${mono ? "'Courier New', Courier, monospace" : FONT};font-size:14px;font-weight:700;color:${INK};word-break:break-all">${esc(value)}</td></tr>`,
+      ([label, value, mono], i) =>
+        `<tr><td style="padding:10px 0;${i ? `border-top:1px solid ${LINE};` : ""}">
+<p style="margin:0 0 3px;font-family:${FONT};font-size:12px;line-height:1.4;color:${GRAPHITE}">${esc(label)}</p>
+<p style="margin:0;font-family:${mono ? "'Courier New', Courier, monospace" : FONT};font-size:${mono ? 15 : 16}px;line-height:1.45;font-weight:700;color:${INK};word-break:normal;overflow-wrap:break-word;word-wrap:break-word">${esc(value)}</p>
+</td></tr>`,
     )
     .join("");
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 20px;border:1px solid ${INK}"><tr><td style="padding:20px 22px">
-<p style="margin:0 0 10px;font-family:${FONT};font-size:15px;font-weight:700;color:${INK}">${esc(title)}</p>
-<table role="presentation" cellpadding="0" cellspacing="0" border="0">${trs}</table>
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 20px;border:1px solid ${INK}"><tr><td class="em-box" style="padding:18px 22px">
+<p style="margin:0 0 6px;font-family:${FONT};font-size:15px;font-weight:700;color:${INK}">${esc(title)}</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">${trs}</table>
 ${note ? `<p style="margin:12px 0 0;font-family:${FONT};font-size:13px;line-height:1.5;color:${GRAPHITE}">${esc(note)}</p>` : ""}
 </td></tr></table>`;
 }
@@ -85,15 +92,16 @@ export function emailLayout({ preheader, body, store }: { preheader?: string; bo
   const name = store?.name || "Destocktatos";
   const contact = store ? [store.address, [store.phone, store.email].filter(Boolean).join(" · ")].filter(Boolean).map(esc).join("<br>") : "";
   return `<!doctype html>
-<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light only"><title>${esc(name)}</title></head>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light only"><title>${esc(name)}</title>
+<style>@media only screen and (max-width:520px){.em-outer{padding:0!important}.em-pad{padding-left:18px!important;padding-right:18px!important}.em-box{padding:14px 16px!important}.em-h1{font-size:22px!important}}</style></head>
 <body style="margin:0;padding:0;background:${MIST}">
 ${preheader ? `<div style="display:none;max-height:0;overflow:hidden;opacity:0">${esc(preheader)}</div>` : ""}
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${MIST}"><tr><td align="center" style="padding:24px 12px">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${MIST}"><tr><td class="em-outer" align="center" style="padding:24px 12px">
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;background:#ffffff">
 <tr><td style="background:${PROMO};padding:9px 24px;font-family:${FONT};font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#ffffff;text-align:center">Déstockage · Livraison offerte partout en France</td></tr>
-<tr><td style="padding:28px 32px 22px;border-bottom:1px solid ${LINE}"><a href="${SITE_URL}" style="font-family:${FONT};font-size:22px;font-weight:800;letter-spacing:0.06em;color:${INK};text-decoration:none">${esc(name.toUpperCase())}</a></td></tr>
-<tr><td style="padding:32px 32px 16px">${body}</td></tr>
-<tr><td style="padding:24px 32px 30px;background:${INK}">
+<tr><td class="em-pad" style="padding:28px 32px 22px;border-bottom:1px solid ${LINE}"><a href="${SITE_URL}" style="font-family:${FONT};font-size:22px;font-weight:800;letter-spacing:0.06em;color:${INK};text-decoration:none">${esc(name.toUpperCase())}</a></td></tr>
+<tr><td class="em-pad" style="padding:32px 32px 16px">${body}</td></tr>
+<tr><td class="em-pad" style="padding:24px 32px 30px;background:${INK}">
 <p style="margin:0 0 6px;font-family:${FONT};font-size:14px;font-weight:700;color:#ffffff">${esc(name)}</p>
 ${contact ? `<p style="margin:0 0 12px;font-family:${FONT};font-size:12px;line-height:1.6;color:#bdbdb8">${contact}</p>` : ""}
 <p style="margin:0;font-family:${FONT};font-size:12px"><a href="${SITE_URL}" style="color:#ffffff;text-decoration:underline">${esc(SITE_URL.replace(/^https?:\/\//, ""))}</a></p>
