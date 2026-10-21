@@ -120,6 +120,9 @@ export default async function ConfirmationPage({ searchParams }: { searchParams:
                   La commande <strong className="t-spec text-ink">{order.number}</strong> est enregistrée. Un récapitulatif est disponible dans votre compte.
                 </p>
               )}
+              <p className="mt-4 max-w-xl text-sm text-graphite" data-testid="spam-hint">
+                Vous ne trouvez pas notre email ? Regardez dans vos courriers indésirables (spams) et cliquez sur « Non spam » : nos prochains emails arriveront directement.
+              </p>
               {/* Commande passée sans être connecté : création du compte (ou connexion) pour retrouver ses factures. */}
               {!session?.user?.id && customer && <AccountInvite email={customer.email} hasPassword={!!customer.passwordHash} />}
             </>
