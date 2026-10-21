@@ -4,11 +4,11 @@
     "items": [
       {
         "question": "Comment suivre ma commande ?",
-        "answer": "Vous pouvez suivre votre commande en vous connectant à votre compte client et en accédant à la section \"Mes commandes\". Un numéro de suivi vous sera également envoyé par email dès que votre colis sera expédié."
+        "answer": "Connectez-vous à votre compte client, rubrique « Mes commandes » : le statut de chaque commande y est à jour. Vous recevez aussi un email à chaque étape (virement reçu, préparation, livraison). Vous avez commandé sans compte ? Créez-le avec le lien reçu dans l'email de confirmation de commande."
       },
       {
         "question": "Quels sont les délais de livraison ?",
-        "answer": "Les délais de livraison varient selon le mode choisi : 3-5 jours ouvrables pour la livraison standard, 24-48h pour la livraison express. Ces délais sont indicatifs et peuvent varier selon votre localisation."
+        "answer": "La livraison est offerte partout en France. Dès réception de votre virement, nous vous appelons pour convenir ensemble du jour et du créneau de livraison. Le délai dépend de votre adresse ; celui indiqué lors de la commande est donné à titre indicatif."
       },
       {
         "question": "Puis-je modifier ma commande après l'avoir validée ?",
@@ -21,15 +21,15 @@
     "items": [
       {
         "question": "Quels moyens de paiement acceptez-vous ?",
-        "answer": "Nous acceptons les cartes bancaires (Visa, Mastercard), PayPal et les virements bancaires."
+        "answer": "Le paiement se fait uniquement par virement bancaire, avant la livraison. Après la confirmation de votre commande, les coordonnées bancaires s'affichent à l'écran et vous sont envoyées par email avec votre devis ; vos articles restent réservés en attendant le virement. La carte bancaire, PayPal et le paiement en plusieurs fois ne sont pas proposés."
       },
       {
         "question": "Comment obtenir ma facture ?",
-        "answer": "Votre facture est automatiquement envoyée par email après la validation de votre commande. Vous pouvez également la retrouver dans votre espace client, rubrique \"Mes commandes\"."
+        "answer": "Votre devis, avec les informations de paiement, vous est envoyé par email dès la commande. La facture vous est envoyée par email dès réception de votre virement ; vous la retrouvez aussi dans votre espace client, rubrique « Mes commandes »."
       },
       {
         "question": "Le paiement sur votre site est-il sécurisé ?",
-        "answer": "Oui, toutes les transactions effectuées sur notre site sont sécurisées. Nous utilisons le protocole SSL pour crypter vos données bancaires et collaborons avec des prestataires de paiement certifiés."
+        "answer": "Oui. Vous ne saisissez aucune donnée bancaire sur notre site : le règlement se fait par virement depuis votre propre banque, avec les coordonnées indiquées sur votre devis. Le site est protégé par une connexion chiffrée (HTTPS)."
       }
     ]
   },
@@ -38,15 +38,15 @@
     "items": [
       {
         "question": "Comment retourner un article ?",
-        "answer": "Pour retourner un article, connectez-vous à votre compte client et suivez la procédure de retour dans la section \"Mes commandes\". Vous recevrez ensuite une étiquette de retour à imprimer et à coller sur votre colis."
+        "answer": "Contactez-nous par email à contacts@destocktatos.com ou par téléphone au 07 80 96 12 16, en indiquant votre numéro de commande : nous vous indiquons la marche à suivre. Les frais de retour sont à votre charge ; pour un appareil volumineux, nous pouvons organiser sa récupération à domicile, à un coût indiqué à l'avance. Les conditions sont détaillées dans nos conditions générales de vente."
       },
       {
         "question": "Quel est le délai pour retourner un produit ?",
-        "answer": "Vous disposez de 30 jours à compter de la réception de votre commande pour nous retourner un article. Le produit doit être retourné dans son état d'origine, avec son emballage et ses accessoires."
+        "answer": "Vous disposez de 14 jours à compter de la réception de votre commande pour exercer votre droit de rétractation, sans avoir à vous justifier. Le produit doit être retourné dans son état d'origine, avec son emballage et ses accessoires."
       },
       {
         "question": "Sous quel délai serai-je remboursé ?",
-        "answer": "Le remboursement est effectué dans les 14 jours suivant la réception de votre retour en nos locaux. Le délai de crédit sur votre compte bancaire dépend ensuite de votre banque (généralement 3-5 jours ouvrés)."
+        "answer": "Nous vous remboursons la totalité des sommes versées, frais de livraison compris, au plus tard 14 jours après avoir été informés de votre décision de vous rétracter, par virement. Le délai de crédit sur votre compte dépend ensuite de votre banque."
       }
     ]
   },
@@ -55,7 +55,7 @@
     "items": [
       {
         "question": "Comment créer un compte client ?",
-        "answer": "Pour créer un compte, cliquez sur \"Mon compte\" en haut à droite de notre site, puis sur \"Créer un compte\". Remplissez le formulaire avec vos informations personnelles et validez."
+        "answer": "Ce n'est pas obligatoire pour commander : vous pouvez commander avec votre seul email, puis créer votre compte grâce au lien reçu après la commande. Vous pouvez aussi le créer à tout moment : « Mon compte » en haut à droite de notre site, puis « Créer un compte »."
       },
       {
         "question": "Comment contacter le service client ?",

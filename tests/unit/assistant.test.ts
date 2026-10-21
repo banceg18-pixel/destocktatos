@@ -74,3 +74,14 @@ describe("assistant du site", () => {
     expect(ask("mon frigo est en panne").contactForm).toBe(true);
   });
 });
+
+describe("FAQ d'origine", () => {
+  it("les anciennes réponses fausses sont remplacées, les réponses réécrites dans WordPress conservées", async () => {
+    const { refreshObsoleteFaq } = await import("@/lib/cms/faq");
+    const reference = [{ title: "Paiements", items: [{ question: "Quels moyens de paiement acceptez-vous ?", answer: "Uniquement par virement." }] }];
+    const old = [{ title: "Paiements", items: [{ question: "Quels moyens de paiement acceptez-vous ?", answer: "Cartes bancaires (Visa, Mastercard), PayPal et virements." }] }];
+    expect(refreshObsoleteFaq(old, reference)[0].items[0].answer).toBe("Uniquement par virement.");
+    const edited = [{ title: "Paiements", items: [{ question: "Quels moyens de paiement acceptez-vous ?", answer: "Virement, et bientôt d'autres moyens." }] }];
+    expect(refreshObsoleteFaq(edited, reference)[0].items[0].answer).toBe("Virement, et bientôt d'autres moyens.");
+  });
+});

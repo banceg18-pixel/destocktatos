@@ -2,6 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { hasObsoleteIdentity, legalPage, normalizeAddress, rebrand } from "@/lib/brand";
 import { localProvider } from "./local";
+import { refreshObsoleteFaq } from "./faq";
 import { wordpressProvider } from "./wordpress";
 import type { ContentProvider } from "./types";
 
@@ -20,7 +21,12 @@ export const getPage = cache(async <T,>(slug: string) => {
   const page = hasObsoleteIdentity(stored) ? await localProvider.getPage<T>(slug) : stored;
   return legalPage(rebrand(page), settings);
 });
-export const getFaq = cache(async () => rebrand(await getContentProvider().getFaq()));
+// FAQ de WordPress : une ancienne réponse devenue fausse est remplacée par la réponse à jour du site.
+export const getFaq = cache(async () => {
+  const provider = getContentProvider();
+  const faq = rebrand(await provider.getFaq());
+  return provider.name === "local" ? faq : refreshObsoleteFaq(faq, rebrand(await localProvider.getFaq()));
+});
 export const getPosts = cache(async () => rebrand(await getContentProvider().getPosts()));
 export const getPost = cache(async (slug: string) => rebrand(await getContentProvider().getPost(slug)));
 

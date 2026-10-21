@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Destocktatos — Administration du site
  * Description: Espace d'administration complet du site Destocktatos (Next.js) : produits, catégories, pages, articles, FAQ, menus, réglages, et gestion de la boutique (commandes, clients, codes promo, avis, messages, newsletter, stock).
- * Version: 2.13.0
+ * Version: 2.13.1
  * Requires PHP: 8.1
  * License: GPL-2.0-or-later
  * Text Domain: tatos-headless
@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('TATOS_HEADLESS_VERSION', '2.13.0');
+define('TATOS_HEADLESS_VERSION', '2.13.1');
 
 /* -------------------------------------------------------------------------
  * Types de contenu et taxonomies
@@ -628,6 +628,48 @@ add_action('admin_init', function () {
     if ($count > 0) {
         tatos_notify_frontend('content.updated', ['type' => 'rebrand']);
         set_transient('tatos_rebrand_notice', $count, 300);
+    }
+});
+
+/* -------------------------------------------------------------------------
+ * FAQ d'origine : réponses devenues fausses pour Destocktatos (carte bancaire, PayPal, livraison
+ * express, retours sous 30 jours, étiquette de retour…) remplacées une fois par celles du site. Une
+ * réponse déjà réécrite ici n'est pas touchée.
+ * ---------------------------------------------------------------------- */
+const TATOS_FAQ_OBSOLETE = '/PayPal|Visa|Mastercard|livraison express|24-48 ?h|30 jours|étiquette de retour|numéro de suivi|prestataires de paiement certifiés|automatiquement envoyée par email après la validation|réception de votre retour en nos locaux|Remplissez le formulaire avec vos informations personnelles/iu';
+
+add_action('admin_init', function () {
+    if (get_option('tatos_faq_fixed') === '2.13.1' || !current_user_can('manage_options')) {
+        return;
+    }
+    $res = tatos_site_request('GET', 'export?part=content', null, 30);
+    if (!$res['ok'] || empty($res['data']['faq'])) {
+        return; // site injoignable : nouvel essai au prochain passage dans l'administration
+    }
+    $count = 0;
+    $GLOBALS['tatos_suspend_webhooks'] = true;
+    foreach ((array) $res['data']['faq'] as $cat) {
+        foreach ((array) ($cat['items'] ?? []) as $item) {
+            $posts = get_posts(['post_type' => 'faq', 'title' => (string) ($item['question'] ?? ''), 'numberposts' => 1, 'post_status' => 'any']);
+            if ($posts && !empty($item['answer']) && preg_match(TATOS_FAQ_OBSOLETE, $posts[0]->post_content)) {
+                wp_update_post(['ID' => $posts[0]->ID, 'post_content' => $item['answer']]);
+                $count++;
+            }
+        }
+    }
+    $GLOBALS['tatos_suspend_webhooks'] = false;
+    update_option('tatos_faq_fixed', '2.13.1', false);
+    if ($count > 0) {
+        tatos_notify_frontend('content.updated', ['type' => 'faq']);
+        set_transient('tatos_faq_notice', $count, 300);
+    }
+});
+
+add_action('admin_notices', function () {
+    $count = get_transient('tatos_faq_notice');
+    if ($count) {
+        delete_transient('tatos_faq_notice');
+        printf('<div class="notice notice-success is-dismissible"><p>FAQ mise à jour : %d réponse(s) corrigée(s) (paiement uniquement par virement, livraison offerte, retours sous 14 jours…). Vérifiez-les dans FAQ.</p></div>', (int) $count);
     }
 });
 
