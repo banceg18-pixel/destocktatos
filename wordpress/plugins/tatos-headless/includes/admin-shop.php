@@ -573,8 +573,21 @@ function tatos_page_messages(): void
     foreach ($res['data']['items'] as $m) {
         $title = $kind === 'contact' ? ($m['subject'] ?: 'Message') : ($kind === 'services' ? ($m['service'] ?: 'Demande de rendez-vous') : '[' . $m['number'] . '] ' . $m['title']);
         $who = $kind === 'services' ? $m['fullName'] : ($m['name'] ?: $m['email']);
-        echo '<div class="tatos-card tatos-message">';
-        printf('<div class="tatos-message-head"><div><strong>%s</strong><br><span class="description">%s · <a href="mailto:%3$s">%3$s</a>%4$s · %5$s</span></div><div>%6$s</div></div>', esc_html($title), esc_html($who), esc_html($m['email']), !empty($m['phone']) ? ' · ' . esc_html($m['phone']) : '', esc_html(tatos_date($m['createdAt'])), tatos_badge(TATOS_MESSAGE_KINDS[$kind]['statuses'][$m['status']] ?? $m['status'], in_array($m['status'], ['NOUVEAU', 'OUVERT'], true) ? 'warn' : 'muted'));
+        // Demande de rappel laissée à l'assistant du site : parfois sans email (téléphone seul).
+        $callback = $kind === 'contact' && str_starts_with((string) $m['subject'], 'Demande de rappel');
+        $email = (string) ($m['email'] ?? '');
+        $phone = (string) ($m['phone'] ?? '');
+        echo '<div class="tatos-card tatos-message' . ($callback ? ' tatos-callback' : '') . '">';
+        printf(
+            '<div class="tatos-message-head"><div><strong>%s</strong>%s<br><span class="description">%s%s%s · %s</span></div><div>%s</div></div>',
+            esc_html($title),
+            $callback ? ' ' . tatos_badge('À rappeler', 'info') : '',
+            esc_html($who),
+            $email !== '' ? sprintf(' · <a href="mailto:%1$s">%1$s</a>', esc_html($email)) : '',
+            $phone !== '' ? sprintf(' · <a href="tel:%s">%s</a>', esc_attr(preg_replace('/\s+/', '', $phone)), esc_html($phone)) : '',
+            esc_html(tatos_date($m['createdAt'])),
+            tatos_badge(TATOS_MESSAGE_KINDS[$kind]['statuses'][$m['status']] ?? $m['status'], in_array($m['status'], ['NOUVEAU', 'OUVERT'], true) ? 'warn' : 'muted')
+        );
         $text = $kind === 'contact' ? $m['message'] : ($kind === 'services' ? $m['message'] : $m['description']);
         if ($text) {
             echo '<p class="tatos-message-text">' . nl2br(esc_html($text)) . '</p>';
@@ -604,6 +617,11 @@ function tatos_page_messages(): void
             printf('<option value="%s" %s>%s</option>', esc_attr($key), selected($m['status'], $key, false), esc_html($label));
         }
         echo '</select> <button class="button">Changer le statut</button></form>';
+        if ($email === '') {
+            // Pas d'email : le client attend un appel.
+            printf('<a class="button button-primary" href="tel:%s">Appeler %s</a></div></div>', esc_attr(preg_replace('/\s+/', '', $phone)), esc_html($phone));
+            continue;
+        }
         echo '<details><summary class="button">Répondre par email</summary>' . tatos_action_form_open('tatos_message_reply');
         printf('<input type="hidden" name="kind" value="%s"><input type="hidden" name="id" value="%s">', esc_attr($kind), esc_attr($m['id']));
         printf('<p><input type="text" name="subject" class="large-text" required value="%s"></p>', esc_attr('Re : ' . $title));

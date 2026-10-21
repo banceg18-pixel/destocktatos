@@ -45,6 +45,10 @@ export interface SiteSettings {
   /** Médiateur de la consommation dont relève la société (nom et site internet). */
   legalMediatorName?: string;
   legalMediatorUrl?: string;
+  /** Assistant du site (bulle de questions-réponses) : « 0 » le masque ; nom et message d'accueil. */
+  chatEnabled?: string;
+  chatBotName?: string;
+  chatWelcome?: string;
 }
 
 export interface MenuSet {

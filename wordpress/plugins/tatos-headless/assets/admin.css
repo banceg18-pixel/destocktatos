@@ -81,3 +81,4 @@ form.tatos-inline { display: inline; }
 .tatos-import-log p { margin: 4px 0; }
 .tatos-import-ok { color: #0f6b38; font-weight: 600; }
 .tatos-import-error { color: #a32020; font-weight: 600; }
+.tatos-callback { border-left: 3px solid #2271b1; }

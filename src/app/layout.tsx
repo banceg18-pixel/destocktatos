@@ -16,10 +16,12 @@ import { NavigationProgress } from "@/components/layout/NavigationProgress";
 import { NetworkStatus } from "@/components/layout/NetworkStatus";
 import { OfferPopup } from "@/components/layout/OfferPopup";
 import { TransferReminder } from "@/components/layout/TransferReminder";
+import { AssistantWidget } from "@/components/chat/AssistantWidget";
 import { getMenus, getSiteSettings } from "@/lib/cms";
 import { getCategories } from "@/lib/catalog/repository";
 import { bannerMessagesOf } from "@/lib/banner";
 import { jsonLd, organizationJsonLd, rootMetadata } from "@/lib/seo";
+import { assistantSettings } from "@/lib/server/assistant";
 
 export const metadata: Metadata = rootMetadata;
 
@@ -37,7 +39,7 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const [settings, menus, categories] = await Promise.all([getSiteSettings(), getMenus(), getCategories()]);
+  const [settings, menus, categories, assistant] = await Promise.all([getSiteSettings(), getMenus(), getCategories(), assistantSettings()]);
   return (
     <html lang="fr" className={bannerMessagesOf(settings).length > 0 ? `${fontVariables} has-banner` : fontVariables}>
       <body>
@@ -67,6 +69,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 <CookieConsentModal />
                 <OfferPopup />
                 <TransferReminder />
+                {assistant.enabled && <AssistantWidget botName={assistant.botName} welcome={assistant.welcome} />}
                 <Toasts />
               </UiProvider>
             </CartProvider>

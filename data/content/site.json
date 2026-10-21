@@ -25,5 +25,8 @@
   "legalDirector": "Franck NEBOT",
   "legalAccountant": "Madame Jasmine Touvoli",
   "bankHolder": "Jasmine Touvoli",
-  "bankService": "Service comptable"
+  "bankService": "Service comptable",
+  "chatEnabled": "1",
+  "chatBotName": "Assistant Destocktatos",
+  "chatWelcome": "Bonjour ! Je suis l'assistant de Destocktatos. Posez-moi vos questions : livraison, paiement, suivi de commande, retours, garantie…"
 }

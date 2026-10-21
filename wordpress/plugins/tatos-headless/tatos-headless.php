@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Destocktatos — Administration du site
  * Description: Espace d'administration complet du site Destocktatos (Next.js) : produits, catégories, pages, articles, FAQ, menus, réglages, et gestion de la boutique (commandes, clients, codes promo, avis, messages, newsletter, stock).
- * Version: 2.12.0
+ * Version: 2.13.0
  * Requires PHP: 8.1
  * License: GPL-2.0-or-later
  * Text Domain: tatos-headless
@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('TATOS_HEADLESS_VERSION', '2.12.0');
+define('TATOS_HEADLESS_VERSION', '2.13.0');
 
 /* -------------------------------------------------------------------------
  * Types de contenu et taxonomies
@@ -136,6 +136,9 @@ const TATOS_SETTINGS_FIELDS = [
     'legalAccountant' => 'Comptable',
     'legalMediatorName' => 'Médiateur de la consommation (nom)',
     'legalMediatorUrl' => 'Médiateur de la consommation (site internet)',
+    'chatEnabled' => 'Assistant affiché sur le site',
+    'chatBotName' => "Nom de l'assistant",
+    'chatWelcome' => "Message d'accueil",
     'siteUrl' => 'Adresse publique du site, commençant par https://',
     'adminApiSecret' => "Clé d'administration (ADMIN_API_SECRET du site)",
     'webhookUrl' => 'URL du webhook (facultatif : adresse du site + /api/webhooks/wordpress par défaut)',
@@ -153,6 +156,8 @@ const TATOS_BANK_FIELDS = ['bankService', 'bankHolder', 'bankName', 'bankIban', 
 const TATOS_BANK_DEFAULTS = ['bankService' => 'Service comptable', 'bankHolder' => 'Jasmine Touvoli', 'bankName' => 'B For Bank', 'bankIban' => 'FR76 1621 8000 0140 1214 8835 165', 'bankBic' => 'BFBKFRP1', 'bankReference' => 'MJ-MUBVYNWU-379C'];
 /** Informations légales imprimées au bas des factures et des emails (les pages légales sont des pages WordPress). */
 const TATOS_LEGAL_FIELDS = ['legalName', 'legalForm', 'legalSiret', 'legalNaf', 'legalHeadOffice', 'legalDirector', 'legalAccountant', 'legalMediatorName', 'legalMediatorUrl'];
+/** Assistant du site : bulle de questions-réponses en bas à droite (réponses tirées de la FAQ et des coordonnées). */
+const TATOS_CHAT_FIELDS = ['chatEnabled', 'chatBotName', 'chatWelcome'];
 const TATOS_LEGAL_DEFAULTS = [
     'legalName' => 'Destocktatos',
     'legalForm' => 'société par actions simplifiée',
@@ -169,6 +174,9 @@ function tatos_settings(): array
         'siteName' => 'Destocktatos',
         'description' => 'Électroménager de qualité au meilleur prix',
         'country' => 'France',
+        'chatEnabled' => '1',
+        'chatBotName' => 'Assistant Destocktatos',
+        'chatWelcome' => "Bonjour ! Je suis l'assistant de Destocktatos. Posez-moi vos questions : livraison, paiement, suivi de commande, retours, garantie…",
     ];
     return array_merge($defaults, (array) get_option('tatos_settings', []));
 }
@@ -194,15 +202,25 @@ add_action('admin_menu', function () {
         echo '<form method="post" action="options.php">';
         settings_fields('tatos_settings');
         $groups = [
-            'Coordonnées affichées sur le site' => array_diff(array_keys(TATOS_SETTINGS_FIELDS), TATOS_TECHNICAL_FIELDS, TATOS_BANNER_FIELDS, TATOS_BANK_FIELDS, TATOS_LEGAL_FIELDS),
+            'Coordonnées affichées sur le site' => array_diff(array_keys(TATOS_SETTINGS_FIELDS), TATOS_TECHNICAL_FIELDS, TATOS_BANNER_FIELDS, TATOS_BANK_FIELDS, TATOS_LEGAL_FIELDS, TATOS_CHAT_FIELDS),
             'Informations légales (bas des factures et des emails ; médiateur des mentions légales)' => TATOS_LEGAL_FIELDS,
             'Bandeau du haut de page (laisser vide pour le masquer)' => TATOS_BANNER_FIELDS,
             'Paiement par virement (coordonnées imprimées sur la facture envoyée au client)' => TATOS_BANK_FIELDS,
+            "Assistant du site (bulle « Une question ? » en bas à droite : il répond avec la FAQ et vos coordonnées ; sans réponse, il prend les coordonnées du client, à retrouver dans Boutique → Messages)" => TATOS_CHAT_FIELDS,
             'Liaison avec le site (technique)' => TATOS_TECHNICAL_FIELDS,
         ];
         foreach ($groups as $title => $keys) {
             echo '<h2>' . esc_html($title) . '</h2><table class="form-table">';
             foreach ($keys as $key) {
+                if ($key === 'chatEnabled') {
+                    printf(
+                        '<tr><th><label for="chatEnabled">%s</label></th><td><select id="chatEnabled" name="tatos_settings[chatEnabled]"><option value="1" %s>Oui</option><option value="0" %s>Non (bulle masquée)</option></select></td></tr>',
+                        esc_html(TATOS_SETTINGS_FIELDS[$key]),
+                        selected(($s[$key] ?? '1') !== '0', true, false),
+                        selected(($s[$key] ?? '1') === '0', true, false)
+                    );
+                    continue;
+                }
                 $type = in_array($key, TATOS_SECRET_FIELDS, true) ? 'password' : 'text';
                 printf(
                     '<tr><th><label for="%1$s">%2$s</label></th><td><input class="%5$s" type="%4$s" id="%1$s" name="tatos_settings[%1$s]" value="%3$s" autocomplete="off"></td></tr>',
@@ -210,7 +228,7 @@ add_action('admin_menu', function () {
                     esc_html(TATOS_SETTINGS_FIELDS[$key]),
                     esc_attr($s[$key] ?? ''),
                     $type,
-                    in_array($key, TATOS_BANNER_FIELDS, true) ? 'large-text' : 'regular-text'
+                    in_array($key, TATOS_BANNER_FIELDS, true) || $key === 'chatWelcome' ? 'large-text' : 'regular-text'
                 );
             }
             echo '</table>';

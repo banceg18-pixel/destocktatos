@@ -253,3 +253,14 @@ export async function getCatalogStats() {
   const available = (await snapshot()).products.filter((p) => p.stock > 0);
   return { available: available.length, brands: new Set(available.map((p) => p.marque.trim().toUpperCase())).size };
 }
+
+/** Marques en stock, des plus représentées aux moins représentées (assistant du site). */
+export async function getAvailableBrands(): Promise<string[]> {
+  const counts = new Map<string, number>();
+  for (const p of (await snapshot()).products) {
+    if (p.stock <= 0) continue;
+    const b = p.marque.replace(/\s+/g, " ").trim().toUpperCase();
+    if (b && b.length <= 20 && !/\d/.test(b)) counts.set(b, (counts.get(b) ?? 0) + 1);
+  }
+  return [...counts].filter(([, n]) => n >= 2).sort((a, b) => b[1] - a[1]).map(([b]) => b);
+}

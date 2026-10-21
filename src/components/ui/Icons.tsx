@@ -154,3 +154,15 @@ export const IconZap = ({ size, ...p }: P) => (
     <path d="M13 2.5 5 13.5h6l-1 8 8-11h-6z" />
   </svg>
 );
+export const IconChat = ({ size, ...p }: P) => (
+  <svg {...base(size)} {...p}>
+    <path d="M20.5 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.6A8 8 0 1 1 20.5 12z" />
+    <path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01" strokeWidth={2.2} />
+  </svg>
+);
+export const IconSend = ({ size, ...p }: P) => (
+  <svg {...base(size)} {...p}>
+    <path d="M4 12 20.5 4l-5.5 16.5-3.2-7.3z" />
+    <path d="m11.8 13.2 8.7-9.2" />
+  </svg>
+);

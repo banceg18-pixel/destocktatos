@@ -312,6 +312,32 @@ Pour chaque message : changez son **statut** (Nouveau, En cours, Traité…) et 
 au client : déroulez **Répondre**, écrivez votre réponse, puis envoyez. Le client la reçoit par email,
 et peut vous répondre par simple retour d'email.
 
+Les **demandes de rappel** laissées à l'assistant du site arrivent aussi dans l'onglet **Contact**,
+avec le badge **À rappeler** : nom, téléphone et/ou email, question du client et son échange avec
+l'assistant. Sans email, le bouton **Appeler** compose directement le numéro (sur téléphone). Chaque
+demande est aussi envoyée par email au magasin.
+
+## Assistant du site
+
+Une bulle **« Une question ? »** en bas à droite du site ouvre l'assistant automatique. Il répond tout
+de suite aux questions fréquentes :
+
+- livraison (offerte, délai, installation, reprise de l'ancien appareil), paiement par virement,
+  coordonnées bancaires, devis et facture, suivi, modification ou annulation de commande ;
+- retours (rétractation de 14 jours), garantie et pannes, compte client, promotions, marques ;
+- rayons du catalogue (« vous avez des frigos américains ? ») ;
+- toutes les questions de la **FAQ** : ajoutez ou corrigez une question dans **FAQ**, l'assistant la
+  connaît aussitôt.
+
+Quand il n'a pas de réponse sûre, il le dit et propose au client de laisser son nom et son téléphone
+ou son email : la demande arrive dans **Boutique → Messages → Contact** (badge **À rappeler**) et par
+email. Il ne propose pas de discussion en direct avec l'équipe.
+
+Ses réponses reprennent vos **coordonnées** (téléphone, email, adresse, horaires) : gardez-les à jour
+dans **Réglages → Site et magasin**. Dans cette même page, rubrique **Assistant du site** : affichez ou
+masquez la bulle, changez le nom de l'assistant et son message d'accueil. Les questions posées ne sont
+pas enregistrées ; seules les demandes de rappel le sont.
+
 ## Newsletter
 
 **Boutique → Newsletter** liste les abonnés (recherche, retrait d'un abonné, **export CSV**).
