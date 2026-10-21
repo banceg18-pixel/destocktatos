@@ -19,8 +19,8 @@ export function bankDetailsOf(s: BankSettings | null | undefined): BankDetails {
   const custom = (s?.bankIban ?? "").replace(/\s+/g, "").toUpperCase();
   const iban = custom || DEFAULT_BANK.iban;
   return {
-    // Compte de la société, à défaut de titulaire saisi.
-    holder: s?.bankHolder?.trim() || s?.legalName?.trim() || s?.siteName || "Destocktatos",
+    // Titulaire du compte du magasin, à défaut de titulaire saisi.
+    holder: s?.bankHolder?.trim() || "Jasmine Touvoli",
     bank: s?.bankName?.trim() || (custom ? "" : DEFAULT_BANK.bank),
     iban: iban.replace(/(.{4})(?=.)/g, "$1 "),
     bic: (s?.bankBic || (custom ? "" : DEFAULT_BANK.bic)).replace(/\s+/g, "").toUpperCase(),

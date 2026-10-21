@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Destocktatos — Administration du site
  * Description: Espace d'administration complet du site Destocktatos (Next.js) : produits, catégories, pages, articles, FAQ, menus, réglages, et gestion de la boutique (commandes, clients, codes promo, avis, messages, newsletter, stock).
- * Version: 2.8.0
+ * Version: 2.9.0
  * Requires PHP: 8.1
  * License: GPL-2.0-or-later
  * Text Domain: tatos-headless
@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('TATOS_HEADLESS_VERSION', '2.8.0');
+define('TATOS_HEADLESS_VERSION', '2.9.0');
 
 /* -------------------------------------------------------------------------
  * Types de contenu et taxonomies
@@ -149,7 +149,7 @@ const TATOS_BANNER_FIELDS = ['bannerMessage1', 'bannerMessage2'];
 /** Coordonnées bancaires du virement : imprimées sur la facture et envoyées au client à la commande. */
 const TATOS_BANK_FIELDS = ['bankHolder', 'bankName', 'bankIban', 'bankBic', 'bankReference'];
 /** Compte fourni par le gérant, enregistré à la mise à jour si aucun IBAN n'est saisi. */
-const TATOS_BANK_DEFAULTS = ['bankName' => 'B For Bank', 'bankIban' => 'FR76 1621 8000 0140 1214 8835 165', 'bankBic' => 'BFBKFRP1', 'bankReference' => 'MJ-MUBVYNWU-379C'];
+const TATOS_BANK_DEFAULTS = ['bankHolder' => 'Jasmine Touvoli', 'bankName' => 'B For Bank', 'bankIban' => 'FR76 1621 8000 0140 1214 8835 165', 'bankBic' => 'BFBKFRP1', 'bankReference' => 'MJ-MUBVYNWU-379C'];
 /** Informations légales imprimées au bas des factures et des emails (les pages légales sont des pages WordPress). */
 const TATOS_LEGAL_FIELDS = ['legalName', 'legalForm', 'legalSiret', 'legalNaf', 'legalHeadOffice', 'legalDirector', 'legalAccountant', 'legalMediatorName', 'legalMediatorUrl'];
 const TATOS_LEGAL_DEFAULTS = [
@@ -479,7 +479,13 @@ function tatos_rebrand_text(string $s): string
         'Hostinger International Ltd<br/>61 Lordou Vironos Street<br/>6023 Larnaca, Chypre<br/>Site : www.hostinger.fr',
         $s
     );
-    return str_replace('Example Hosting', 'Hostinger International Ltd', $s);
+    $s = str_replace('Example Hosting', 'Hostinger International Ltd', $s);
+    // Adresse du magasin (15 Rue Paul Langevin, 93270 Sevran) et numéro unique 07 80 96 12 16.
+    $s = preg_replace('/\b1[25] rue paul l(?:angevin|evangin)\b/iu', '15 Rue Paul Langevin', $s);
+    $s = preg_replace('/3 Rue Émile Zola,?\s*51100 Reims(?:,\s*France)?/iu', '15 Rue Paul Langevin, 93270 Sevran, France', $s);
+    $s = preg_replace('/\+33-[16]-(?:51-64-41-84|83-75-01-21)/', '+33-7-80-96-12-16', $s);
+    $s = preg_replace('/\+33(?:651644184|183750121)/', '+33780961216', $s);
+    return preg_replace('/(?:\+33[\s.-]*\(?0?[16]\)?|\b0[16])[\s.-]?(?:51[\s.-]?64[\s.-]?41[\s.-]?84|83[\s.-]?75[\s.-]?01[\s.-]?21)\b/', '07 80 96 12 16', $s);
 }
 
 function tatos_rebrand_value($v)
@@ -506,6 +512,17 @@ function tatos_rebrand_settings(): bool
     if (trim((string) ($fixed['bankIban'] ?? '')) === '') {
         $fixed = array_merge($fixed, TATOS_BANK_DEFAULTS);
     }
+    // Coordonnées du magasin : 15 Rue Paul Langevin, 93270 Sevran, France ; 07 80 96 12 16 ; titulaire du compte.
+    $fixed = array_merge($fixed, [
+        'phone' => '07 80 96 12 16',
+        'phoneIntl' => '+33-7-80-96-12-16',
+        'addressLine' => '15 Rue Paul Langevin',
+        'postalCode' => '93270',
+        'city' => 'Sevran',
+        'country' => 'France',
+        'mapQuery' => '15 Rue Paul Langevin, 93270 Sevran, France',
+        'bankHolder' => 'Jasmine Touvoli',
+    ]);
     if (($fixed['bankName'] ?? '') === 'BforBank') {
         $fixed['bankName'] = 'B For Bank';
     }
@@ -545,7 +562,7 @@ function tatos_rebrand_contents(): int
     global $wpdb;
     $count = 0;
     $types = "'page','post','faq','produit','nav_menu_item'";
-    $posts = $wpdb->get_results("SELECT ID, post_title, post_content, post_excerpt FROM {$wpdb->posts} WHERE post_type IN ($types) AND (post_title LIKE '%TATOS%' OR post_content LIKE '%TATOS%' OR post_excerpt LIKE '%TATOS%' OR post_content LIKE '%Example Hosting%' OR post_content LIKE '%tatos-electromenager@%' OR post_content LIKE '%exemple.fr%')");
+    $posts = $wpdb->get_results("SELECT ID, post_title, post_content, post_excerpt FROM {$wpdb->posts} WHERE post_type IN ($types) AND (post_title LIKE '%TATOS%' OR post_content LIKE '%TATOS%' OR post_excerpt LIKE '%TATOS%' OR post_content LIKE '%Example Hosting%' OR post_content LIKE '%tatos-electromenager@%' OR post_content LIKE '%exemple.fr%' OR post_content LIKE '%51 64 41 84%' OR post_content LIKE '%51.64.41.84%' OR post_content LIKE '%83 75 01 21%' OR post_content LIKE '%paul levangin%' OR post_content LIKE '%Zola%')");
     foreach ($posts as $p) {
         $data = ['post_title' => tatos_rebrand_text($p->post_title), 'post_content' => tatos_rebrand_text($p->post_content), 'post_excerpt' => tatos_rebrand_text($p->post_excerpt)];
         if ($data['post_title'] !== $p->post_title || $data['post_content'] !== $p->post_content || $data['post_excerpt'] !== $p->post_excerpt) {
@@ -554,7 +571,7 @@ function tatos_rebrand_contents(): int
             $count++;
         }
     }
-    $metas = $wpdb->get_results("SELECT meta_id, post_id, meta_value FROM {$wpdb->postmeta} WHERE meta_value LIKE '%TATOS%' OR meta_value LIKE '%Example Hosting%' OR meta_value LIKE '%tatos-electromenager@%' OR meta_value LIKE '%exemple.fr%'");
+    $metas = $wpdb->get_results("SELECT meta_id, post_id, meta_value FROM {$wpdb->postmeta} WHERE meta_value LIKE '%TATOS%' OR meta_value LIKE '%Example Hosting%' OR meta_value LIKE '%tatos-electromenager@%' OR meta_value LIKE '%exemple.fr%' OR meta_value LIKE '%51 64 41 84%' OR meta_value LIKE '%51644184%' OR meta_value LIKE '%83 75 01 21%' OR meta_value LIKE '%Zola%'");
     foreach ($metas as $m) {
         $value = maybe_unserialize($m->meta_value);
         $fixed = tatos_rebrand_value($value);
@@ -575,7 +592,7 @@ function tatos_rebrand_contents(): int
 }
 
 add_action('admin_init', function () {
-    if (get_option('tatos_rebrand_done') === '2.8.0' || !current_user_can('manage_options')) {
+    if (get_option('tatos_rebrand_done') === '2.9.0' || !current_user_can('manage_options')) {
         return;
     }
     // Un seul avis au site à la fin (pas un par contenu corrigé).
@@ -586,7 +603,7 @@ add_action('admin_init', function () {
     $GLOBALS['tatos_suspend_webhooks'] = false;
     // Site injoignable : pages légales reprises au prochain passage dans l'administration.
     if ($legal !== null) {
-        update_option('tatos_rebrand_done', '2.8.0', false);
+        update_option('tatos_rebrand_done', '2.9.0', false);
     }
     if ($count > 0) {
         tatos_notify_frontend('content.updated', ['type' => 'rebrand']);

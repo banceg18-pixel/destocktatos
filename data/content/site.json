@@ -2,8 +2,8 @@
   "siteName": "Destocktatos",
   "description": "Électroménager de qualité au meilleur prix",
   "email": "contacts@destocktatos.com",
-  "phone": "+33 6 51 64 41 84",
-  "phoneIntl": "+33-6-51-64-41-84",
+  "phone": "07 80 96 12 16",
+  "phoneIntl": "+33-7-80-96-12-16",
   "addressLine": "15 Rue Paul Langevin",
   "postalCode": "93270",
   "city": "Sevran",
@@ -21,7 +21,8 @@
   "legalForm": "société par actions simplifiée",
   "legalSiret": "94228991900014",
   "legalNaf": "Commerce de gros non spécialisé",
-  "legalHeadOffice": "15 rue Paul Langevin, 93270 Sevran",
+  "legalHeadOffice": "15 Rue Paul Langevin, 93270 Sevran",
   "legalDirector": "Franck NEBOT",
-  "legalAccountant": "Madame Jasmine Touvoli"
+  "legalAccountant": "Madame Jasmine Touvoli",
+  "bankHolder": "Jasmine Touvoli"
 }

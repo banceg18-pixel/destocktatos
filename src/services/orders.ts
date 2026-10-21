@@ -21,6 +21,7 @@ export interface OrderDTO {
   totalAmount: number;
   paymentProvider: string | null;
   paymentMode: "live" | "test" | null;
+  transferDeclaredAt?: string | null;
 }
 
 export function createOrder(payload: CreateOrderPayload) {

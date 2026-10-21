@@ -645,7 +645,7 @@ def _():
     row = page.locator("article").filter(has=page.get_by_role("heading", name=f"Commande {number}"))
     # Le libellé est affiché en capitales (CSS) : comparaison sans casse.
     text = row.inner_text().lower()
-    check("en attente de virement" in text and "télécharger le devis" in text, "commande en attente de virement, devis téléchargeable")
+    check("en attente de virement" in text and "facture vous sera envoyée" in text and "télécharger" not in text, "commande en attente de virement, sans bouton de téléchargement")
     # Le magasin marque le virement reçu : la fenêtre l'annonce, le client continue ; la facture est disponible.
     adm = ENV.pw.request.new_context(base_url=ENV.base, extra_http_headers={"Authorization": f"Bearer {ADMIN_SECRET}"})
     eq(adm.patch(f"/api/admin/orders/{order_id}", data={"status": "PAYEE", "notify": True}).status, 200, "virement marqué reçu par le magasin")
@@ -655,6 +655,11 @@ def _():
     page.get_by_test_id("transfer-continue").click()
     page.get_by_test_id("transfer-reminder").wait_for(state="detached", timeout=10_000)
     eq(page.request.get(f"/api/orders/{order_id}/invoice").status, 200, "facture disponible une fois payée")
+    # Page de confirmation une fois payée : remerciement simple, sans procédure ni RIB ni bouton de téléchargement.
+    go(page, f"/confirmation?status=success&order={order_id}")
+    page.get_by_test_id("confirmation-done").wait_for()
+    check(page.get_by_test_id("transfer-guide").count() == 0 and page.get_by_test_id("transfer-account").count() == 0, "plus d'informations de paiement une fois payée")
+    check(page.get_by_text(re.compile("Télécharger", re.I)).count() == 0, "aucun bouton de téléchargement")
     # Le panier est vidé après paiement.
     page.goto("/panier")
     page.locator("main").get_by_text("Votre panier est vide").wait_for()
@@ -721,6 +726,9 @@ def _():
     check("B For Bank" in declared.inner_text(), "RIB rappelé après la confirmation")
     page.get_by_test_id("transfer-continue").click()
     page.get_by_test_id("transfer-reminder").wait_for(state="detached", timeout=10_000)
+    # Virement confirmé par le client : la page redevient un simple remerciement.
+    page.get_by_test_id("confirmation-done").wait_for(timeout=15_000)
+    check(page.get_by_test_id("transfer-guide").count() == 0 and page.get_by_test_id("transfer-account").count() == 0, "page de remerciement sans informations de paiement répétées")
     check(page.get_by_test_id("account-invite").count() == 1, "invitation à créer son compte")
     order_id = re.search(r"order=([A-Za-z0-9]+)", page.url).group(1)
     pdf = page.request.get(f"/api/orders/{order_id}/invoice?download=1&type=devis")

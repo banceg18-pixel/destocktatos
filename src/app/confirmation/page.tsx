@@ -3,7 +3,7 @@ import { CheckoutSteps } from "@/components/cart/CheckoutSteps";
 import { TransferGuide } from "@/components/checkout/TransferGuide";
 import { CopyButton } from "@/components/checkout/CopyButton";
 import { AccountInvite } from "@/components/checkout/AccountInvite";
-import { buttonClasses, ButtonLink } from "@/components/ui/Button";
+import { ButtonLink } from "@/components/ui/Button";
 import { Arrow } from "@/components/ui/Primitives";
 import { IconAlert, IconCheck } from "@/components/ui/Icons";
 import { getSession } from "@/lib/auth";
@@ -39,6 +39,9 @@ export default async function ConfirmationPage({ searchParams }: { searchParams:
     }
   }
   const awaitingTransfer = order?.status === "EN_ATTENTE_VIREMENT";
+  // Virement signalé par le client (ou paiement reçu) : simple page de remerciement, sans les informations de paiement.
+  const declared = awaitingTransfer && !!order?.transferDeclaredAt;
+  const toPay = awaitingTransfer && !declared;
   // Commande confirmée : payée, ou enregistrée en attente du virement (paiement avant livraison).
   const paid = !!order && (awaitingTransfer || ["PAYEE", "EN_PREPARATION", "EXPEDIEE", "LIVREE"].includes(order.status));
   const count = order?.items.reduce((s, i) => s + i.quantity, 0) ?? 0;
@@ -51,7 +54,7 @@ export default async function ConfirmationPage({ searchParams }: { searchParams:
     : "";
   const bank = bankDetailsOf(settings);
   // Coordonnées du virement directement dans « Et maintenant ? » (copiables, comme dans la procédure).
-  const transfer = order && awaitingTransfer ? transferLines(formatEuros(order.totalAmount), order.number, bank) : null;
+  const transfer = order && toPay ? transferLines(formatEuros(order.totalAmount), order.number, bank) : null;
   const steps: { title: string; body: React.ReactNode }[] = order
     ? [
         ...(transfer
@@ -74,7 +77,8 @@ export default async function ConfirmationPage({ searchParams }: { searchParams:
               },
             ]
           : []),
-        { title: "Préparation", body: `${awaitingTransfer ? "Dès réception du virement, nous" : "Nous"} vérifions et préparons vos ${count} article${count > 1 ? "s" : ""}.` },
+        ...(declared ? [{ title: "Vérification du virement", body: "Nous vérifions la réception de votre virement ; la facture vous est envoyée par email dès qu'il est reçu." }] : []),
+        { title: "Préparation", body: `${awaitingTransfer ? "Dès réception du virement, nous" : "Nous"} préparons vos ${count} article${count > 1 ? "s" : ""}.` },
         { title: order.isPickupInStore ? "Retrait en magasin" : (DELIVERY_LABELS[order.deliveryMethod ?? ""] ?? "Livraison"), body: delivery },
         { title: "Une question ?", body: `${settings.phone} · ${settings.email}` },
       ]
@@ -93,19 +97,28 @@ export default async function ConfirmationPage({ searchParams }: { searchParams:
           {paid && order ? (
             <>
               <h1 className="t-display mt-8">Merci pour votre commande !</h1>
-              {!awaitingTransfer ? (
-                <p className="t-lead mt-6 max-w-xl text-graphite">
-                  La commande <strong className="t-spec text-ink">{order.number}</strong> est enregistrée{order.paidAt ? ` et payée (${formatEuros(order.totalAmount)})` : ""}. Un
-                  récapitulatif est disponible dans votre compte{order.paidAt ? ", avec la facture" : ""}.
+              {order.paidAt ? (
+                <p className="t-lead mt-6 max-w-xl text-graphite" data-testid="confirmation-done">
+                  La commande <strong className="t-spec text-ink">{order.number}</strong> est payée ({formatEuros(order.totalAmount)}). Votre facture vous a été envoyée par email et
+                  nous vous appelons pour fixer la livraison.
                 </p>
-              ) : (
+              ) : declared ? (
+                <p className="t-lead mt-6 max-w-xl text-graphite" data-testid="confirmation-done">
+                  La commande <strong className="t-spec text-ink">{order.number}</strong> est enregistrée et vos articles sont réservés. Merci d&apos;avoir effectué votre virement de{" "}
+                  {formatEuros(order.totalAmount)} : nous vérifions sa réception et vous envoyons la facture par email dès qu&apos;il est reçu.
+                </p>
+              ) : toPay ? (
                 <>
                   <p className="t-lead mt-6 max-w-xl text-graphite">
                     La commande <strong className="t-spec text-ink">{order.number}</strong> est enregistrée et vos articles sont réservés. Pour la valider, réglez{" "}
-                    {formatEuros(order.totalAmount)} par virement bancaire : la facture et nos coordonnées bancaires vous ont aussi été envoyées par email.
+                    {formatEuros(order.totalAmount)} par virement bancaire : le devis, avec les informations de paiement, vous a aussi été envoyé par email.
                   </p>
                   <TransferGuide amount={order.totalAmount} orderNumber={order.number} bank={bank} className="mt-8 max-w-xl" />
                 </>
+              ) : (
+                <p className="t-lead mt-6 max-w-xl text-graphite">
+                  La commande <strong className="t-spec text-ink">{order.number}</strong> est enregistrée. Un récapitulatif est disponible dans votre compte.
+                </p>
               )}
               {/* Commande passée sans être connecté : création du compte (ou connexion) pour retrouver ses factures. */}
               {!session?.user?.id && customer && <AccountInvite email={customer.email} hasPassword={!!customer.passwordHash} />}
@@ -119,12 +132,6 @@ export default async function ConfirmationPage({ searchParams }: { searchParams:
             </>
           )}
           <div className="mt-10 flex flex-wrap gap-3">
-            {order?.paidAt && (
-              // Lien direct vers le PDF (route API) : pas de navigation côté client.
-              <a href={`/api/orders/${order._id}/invoice?download=1`} download className={buttonClasses({ size: "lg" })} data-testid="confirmation-invoice">
-                Télécharger la facture
-              </a>
-            )}
             {session?.user?.id && (
               <ButtonLink href="/compte/commandes" size="lg" variant={paid ? "outline" : "solid"} icon={<Arrow />}>
                 Mes commandes

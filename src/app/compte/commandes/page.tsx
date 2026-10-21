@@ -108,7 +108,15 @@ export default async function CommandesPage() {
                   </dl>
                 </div>
               </div>
-              {o.status === "EN_ATTENTE_VIREMENT" && <TransferDetails amount={o.totalAmount} reference={o.number} bank={bank} className="mx-4 mb-5 sm:mx-5" />}
+              {o.status === "EN_ATTENTE_VIREMENT" &&
+                (o.transferDeclaredAt ? (
+                  <p className="mx-4 mb-5 border border-line p-4 text-sm text-graphite sm:mx-5">
+                    Virement signalé le {new Date(o.transferDeclaredAt).toLocaleDateString("fr-FR")} : nous vérifions sa réception. La facture vous sera envoyée par email dès
+                    qu&apos;il est reçu.
+                  </p>
+                ) : (
+                  <TransferDetails amount={o.totalAmount} reference={o.number} bank={bank} className="mx-4 mb-5 sm:mx-5" />
+                ))}
               <footer className="border-t border-line px-4 py-4 sm:px-5">
                 <OrderActions orderId={o._id} status={o.status} paid={!!o.paidAt} />
               </footer>

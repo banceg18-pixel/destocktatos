@@ -78,9 +78,9 @@ describe("facture PDF", () => {
     expect(invoiceAvailable(order)).toBe(true);
     expect(invoiceAvailable({ ...order, status: "EN_ATTENTE_PAIEMENT", paidAt: null })).toBe(false);
     const bank = bankDetailsOf({ siteName: "Destocktatos", bankIban: "fr76 3000 6000 0112 3456 7890 189", bankBic: "agrifrpp", bankName: "Banque Test" });
-    expect(bank).toEqual({ holder: "Destocktatos", bank: "Banque Test", iban: "FR76 3000 6000 0112 3456 7890 189", bic: "AGRIFRPP", reference: "" });
+    expect(bank).toEqual({ holder: "Jasmine Touvoli", bank: "Banque Test", iban: "FR76 3000 6000 0112 3456 7890 189", bic: "AGRIFRPP", reference: "" });
     // Sans IBAN saisi : compte fourni par le gérant (BforBank) et sa communication.
-    expect(bankDetailsOf({ siteName: "Destocktatos", bankIban: "  " })).toEqual({ holder: "Destocktatos", bank: "B For Bank", iban: "FR76 1621 8000 0140 1214 8835 165", bic: "BFBKFRP1", reference: "MJ-MUBVYNWU-379C" });
+    expect(bankDetailsOf({ siteName: "Destocktatos", bankIban: "  " })).toEqual({ holder: "Jasmine Touvoli", bank: "B For Bank", iban: "FR76 1621 8000 0140 1214 8835 165", bic: "BFBKFRP1", reference: "MJ-MUBVYNWU-379C" });
     const s = buildInvoicePdf({ ...pending, items }, { name: "Jean", email: "jean@tatos.test" }, { name: "Destocktatos", address: "1 rue", city: "93270 Sevran", email: "x@tatos.test", phone: "0600000000" }, bank).toString("latin1");
     expect(s).toContain("FR76 3000 6000 0112 3456 7890 189");
     expect(s).toContain("AGRIFRPP");
@@ -116,19 +116,27 @@ describe("limitation de débit", () => {
 
 describe("identité de la société", () => {
   it("adresse saisie en entier dans « Adresse » : code postal, ville et pays en sont tirés", () => {
-    expect(normalizeAddress({ addressLine: "3 Rue Émile Zola, 51100 Reims, France", postalCode: "78300", city: "Poissy", country: "France" })).toEqual({
-      addressLine: "3 Rue Émile Zola",
-      postalCode: "51100",
-      city: "Reims",
+    // Ancienne adresse (siège de Reims) : adresse du magasin.
+    expect(normalizeAddress({ addressLine: "3 Rue Émile Zola, 51100 Reims, France", postalCode: "93270", city: "Sevran", country: "France" })).toEqual({
+      addressLine: "15 Rue Paul Langevin",
+      postalCode: "93270",
+      city: "Sevran",
       country: "France",
     });
-    const separate = { addressLine: "65 Rue d’Aigremont", postalCode: "78300", city: "Poissy", country: "France" };
+    expect(normalizeAddress({ addressLine: "10 rue de la Paix, 75002 Paris, France", postalCode: "", city: "", country: "France" })).toEqual({
+      addressLine: "10 rue de la Paix",
+      postalCode: "75002",
+      city: "Paris",
+      country: "France",
+    });
+    const separate = { addressLine: "15 Rue Paul Langevin", postalCode: "93270", city: "Sevran", country: "France" };
     expect(normalizeAddress(separate)).toEqual(separate);
   });
 
-  it("textes d'origine : seuls le nom (Destocktatos) et l'email changent, adresse et téléphone gardés", () => {
+  it("textes d'origine : nom, email, adresse et numéro du magasin à jour", () => {
     expect(rebrandText("TATOS, Service Clients, 12 rue paul levangin, 93270 Sevran — 06.51.64.41.84 — tatos-electromenager@gmail.com")).toBe(
-      "Destocktatos, Service Clients, 12 rue paul levangin, 93270 Sevran — 06.51.64.41.84 — contacts@destocktatos.com",
+      "Destocktatos, Service Clients, 15 Rue Paul Langevin, 93270 Sevran — 07 80 96 12 16 — contacts@destocktatos.com",
     );
+    expect(rebrandText("+33 (6) 51 64 41 84 / +33 1 83 75 01 21 / +33651644184")).toBe("07 80 96 12 16 / 07 80 96 12 16 / +33780961216");
   });
 });

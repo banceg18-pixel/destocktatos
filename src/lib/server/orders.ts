@@ -234,7 +234,7 @@ export interface OrderAddress {
   floor?: number;
 }
 
-type OrderWithItems = Order & { items: (OrderItem & { product?: { prixCents: number; slug: string } | null })[] };
+type OrderWithItems = Order & { items: (OrderItem & { product?: { prixCents: number; slug: string } | null })[]; payments?: { details: Prisma.JsonValue }[] };
 
 /** Représentation renvoyée au frontend (format attendu par la page de paiement source). */
 export function toOrderDTO(o: OrderWithItems) {
@@ -268,10 +268,12 @@ export function toOrderDTO(o: OrderWithItems) {
     totalAmount: toEuros(o.totalCents),
     paymentProvider: o.paymentProvider,
     paymentMode: o.paymentMode,
+    // Virement signalé par le client (le magasin vérifie sa réception).
+    transferDeclaredAt: o.payments?.map((p) => (p.details as { declaredAt?: string } | null)?.declaredAt).find(Boolean) ?? null,
   };
 }
 
-const orderInclude = { items: { include: { product: { select: { prixCents: true, slug: true } } } } } satisfies Prisma.OrderInclude;
+const orderInclude = { items: { include: { product: { select: { prixCents: true, slug: true } } } }, payments: { select: { details: true } } } satisfies Prisma.OrderInclude;
 
 export async function getLatestPendingOrder(userId: string) {
   await expireStaleOrders(userId);

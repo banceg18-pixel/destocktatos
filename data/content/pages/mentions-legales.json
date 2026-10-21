@@ -13,7 +13,7 @@
       "blocks": [
         {
           "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Le site Destocktatos est édité par la société Destocktatos, société par actions simplifiée.</p><ul class=\"list-disc list-inside space-y-2 text-[color:var(--text-main)] opacity-90\"><li>Numéro de SIRET : 94228991900014</li><li>Activité NAF APE : Commerce de gros non spécialisé</li><li>Siège social : 15 rue Paul Langevin, 93270 Sevran</li><li>Téléphone : +33 (6) 51 64 41 84</li><li>Email : contacts@destocktatos.com</li><li>Directeur de la publication : Franck NEBOT</li><li>Comptable : Madame Jasmine Touvoli</li></ul>"
+          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Le site Destocktatos est édité par la société Destocktatos, société par actions simplifiée.</p><ul class=\"list-disc list-inside space-y-2 text-[color:var(--text-main)] opacity-90\"><li>Numéro de SIRET : 94228991900014</li><li>Activité NAF APE : Commerce de gros non spécialisé</li><li>Siège social : 15 Rue Paul Langevin, 93270 Sevran</li><li>Téléphone : 07 80 96 12 16</li><li>Email : contacts@destocktatos.com</li><li>Directeur de la publication : Franck NEBOT</li><li>Comptable : Madame Jasmine Touvoli</li></ul>"
         }
       ]
     },

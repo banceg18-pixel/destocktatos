@@ -16,6 +16,13 @@ const REPLACEMENTS: [RegExp, string][] = [
   [/\bTATOS\b/g, "Destocktatos"],
   [/Example Hosting<br\s*\/?>456 avenue du Web<br\s*\/?>69000 Lyon, France<br\s*\/?>Téléphone : \+33 \(0\)4 56 78 90 12/g, "Hostinger International Ltd<br/>61 Lordou Vironos Street<br/>6023 Larnaca, Chypre<br/>Site : www.hostinger.fr"],
   [/Example Hosting/g, "Hostinger International Ltd"],
+  // Adresse du magasin : 15 Rue Paul Langevin, 93270 Sevran (siège de Reims et variantes remplacés).
+  [/\b1[25] rue paul l(?:angevin|evangin)\b/gi, "15 Rue Paul Langevin"],
+  [/3 Rue Émile Zola,?\s*51100 Reims(?:,\s*France)?/gi, "15 Rue Paul Langevin, 93270 Sevran, France"],
+  // Numéro unique du magasin : 07 80 96 12 16 (anciens numéros remplacés, tous formats).
+  [/\+33-[16]-(?:51-64-41-84|83-75-01-21)/g, "+33-7-80-96-12-16"],
+  [/\+33(?:651644184|183750121)/g, "+33780961216"],
+  [/(?:\+33[\s.-]*\(?0?[16]\)?|\b0[16])[\s.-]?(?:51[\s.-]?64[\s.-]?41[\s.-]?84|83[\s.-]?75[\s.-]?01[\s.-]?21)\b/g, "07 80 96 12 16"],
 ];
 
 export function rebrandText(s: string) {
@@ -37,6 +44,8 @@ export function rebrand<T>(value: T): T {
  * postal, la ville et le pays en sont tirés, pour ne jamais afficher deux adresses mélangées.
  */
 export function normalizeAddress<T extends Pick<SiteSettings, "addressLine" | "postalCode" | "city" | "country">>(s: T): T {
+  // Adresse du magasin : 15 Rue Paul Langevin, 93270 Sevran (remplace celle du siège de Reims).
+  if (/Zola|51100/.test(`${s.addressLine} ${s.postalCode}`)) return { ...s, addressLine: "15 Rue Paul Langevin", postalCode: "93270", city: "Sevran", country: "France" };
   const m = s.addressLine?.match(/^(.+?),\s*(\d{5})\s+([^,]+?)(?:,\s*([^,]+?))?\s*$/);
   if (!m) return s;
   return { ...s, addressLine: m[1].trim(), postalCode: m[2], city: m[3].trim(), country: m[4]?.trim() || s.country };

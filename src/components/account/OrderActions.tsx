@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { cancelOrder, invoiceLink } from "@/services/orders";
-import { Button, ButtonLink, buttonClasses } from "@/components/ui/Button";
+import { Button, ButtonLink } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Primitives";
 
 /** Ouvre ou télécharge la facture PDF (lien généré par l'API, propre à la commande du client). */
@@ -95,13 +95,11 @@ export function OrderActions({ orderId, status, paid }: { orderId: string; statu
   const active = ["PAYEE", "EN_PREPARATION", "EXPEDIEE", "LIVREE"].includes(status);
   const awaitingTransfer = status === "EN_ATTENTE_VIREMENT";
 
-  // Paiement attendu : le devis (avec les informations de paiement) ; la facture arrive une fois payée.
+  // Paiement attendu : le devis a été envoyé par email ; la facture arrive une fois le paiement reçu.
   if (awaitingTransfer)
     return (
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-        <a href={`/api/orders/${orderId}/invoice?type=devis&download=1`} download className={buttonClasses({ size: "sm", variant: "outline" })} data-testid="quote-download">
-          Télécharger le devis
-        </a>
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+        <p className="text-graphite">La facture vous sera envoyée par email dès réception du paiement.</p>
         <CancelOrder orderId={orderId} />
       </div>
     );
