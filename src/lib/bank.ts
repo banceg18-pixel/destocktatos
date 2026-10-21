@@ -1,6 +1,8 @@
 import type { SiteSettings } from "@/lib/cms/types";
 
 export interface BankDetails {
+  /** Service responsable des paiements (affiché au-dessus du titulaire). */
+  service: string;
   holder: string;
   bank: string;
   iban: string;
@@ -12,13 +14,14 @@ export interface BankDetails {
 /** Compte du magasin fourni par le gérant (modifiable dans WordPress → Réglages → Site et magasin). */
 const DEFAULT_BANK = { bank: "B For Bank", iban: "FR7616218000014012148835165", bic: "BFBKFRP1", reference: "MJ-MUBVYNWU-379C" };
 
-type BankSettings = Pick<SiteSettings, "siteName" | "bankHolder" | "bankName" | "bankIban" | "bankBic" | "bankReference" | "legalName">;
+type BankSettings = Pick<SiteSettings, "siteName" | "bankService" | "bankHolder" | "bankName" | "bankIban" | "bankBic" | "bankReference" | "legalName">;
 
 /** Coordonnées bancaires du virement : réglages WordPress, sinon le compte fourni par le gérant. */
 export function bankDetailsOf(s: BankSettings | null | undefined): BankDetails {
   const custom = (s?.bankIban ?? "").replace(/\s+/g, "").toUpperCase();
   const iban = custom || DEFAULT_BANK.iban;
   return {
+    service: s?.bankService?.trim() || "Service comptable",
     // Titulaire du compte du magasin, à défaut de titulaire saisi.
     holder: s?.bankHolder?.trim() || "Jasmine Touvoli",
     bank: s?.bankName?.trim() || (custom ? "" : DEFAULT_BANK.bank),
@@ -37,7 +40,7 @@ export function transferLines(amount: string, orderNumber: string, bank: BankDet
     ["Montant", amount],
     ...(bank?.reference ? ([["Communication à indiquer", bank.reference, true]] as [string, string, boolean?][]) : []),
     [bank?.reference ? "Numéro de commande" : "Référence à indiquer", orderNumber, true],
-    ...(bank ? ([["Titulaire", bank.holder], ...(bank.bank ? [["Banque", bank.bank]] : []), ["IBAN", bank.iban, true], ...(bank.bic ? [["BIC", bank.bic, true]] : [])] as [string, string, boolean?][]) : []),
+    ...(bank ? ([["Service responsable", bank.service], ["Titulaire", bank.holder], ...(bank.bank ? [["Banque", bank.bank]] : []), ["IBAN", bank.iban, true], ...(bank.bic ? [["BIC", bank.bic, true]] : [])] as [string, string, boolean?][]) : []),
   ];
   const how = bank?.reference
     ? `Indiquez la communication ${bank.reference} dans le libellé du virement, suivie si possible de votre numéro de commande ${orderNumber}.`

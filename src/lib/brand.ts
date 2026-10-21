@@ -82,7 +82,7 @@ function paymentHtml(s: SiteSettings) {
   return [
     "Le paiement est exigible à la commande, y compris pour les produits en précommande ou en cours de réapprovisionnement. Il s'effectue uniquement par virement bancaire, avant la livraison : ni carte bancaire, ni PayPal.",
     `Dès la validation de sa commande, l'Acheteur reçoit par email le devis correspondant, qui indique le montant à régler, les coordonnées bancaires de ${esc(name)} et la communication à mentionner sur le virement. Ces informations s'affichent également à l'écran à la confirmation de la commande. La facture est adressée par email dès réception du paiement.`,
-    `Coordonnées bancaires : ${b.bank ? `${esc(b.bank)} — ` : ""}IBAN ${esc(b.iban)}${b.bic ? ` (BIC ${esc(b.bic)})` : ""}${b.reference ? ` — communication à indiquer : ${esc(b.reference)}, suivie si possible du numéro de commande` : ""}.`,
+    `Coordonnées bancaires : service responsable : ${esc(b.service)} — titulaire : ${esc(b.holder)} — ${b.bank ? `${esc(b.bank)} — ` : ""}IBAN ${esc(b.iban)}${b.bic ? ` (BIC ${esc(b.bic)})` : ""}${b.reference ? ` — communication à indiquer : ${esc(b.reference)}, suivie si possible du numéro de commande` : ""}.`,
     `Les articles commandés sont réservés dans l'attente du virement. La commande est préparée puis livrée après réception du paiement. Aucune donnée bancaire de l'Acheteur n'est saisie ni conservée sur le site.`,
   ]
     .map((t, i, all) => `<p ${P}${i < all.length - 1 ? " mb-3" : ""}">${t}</p>`)

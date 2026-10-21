@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Destocktatos — Administration du site
  * Description: Espace d'administration complet du site Destocktatos (Next.js) : produits, catégories, pages, articles, FAQ, menus, réglages, et gestion de la boutique (commandes, clients, codes promo, avis, messages, newsletter, stock).
- * Version: 2.9.0
+ * Version: 2.10.0
  * Requires PHP: 8.1
  * License: GPL-2.0-or-later
  * Text Domain: tatos-headless
@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('TATOS_HEADLESS_VERSION', '2.9.0');
+define('TATOS_HEADLESS_VERSION', '2.10.0');
 
 /* -------------------------------------------------------------------------
  * Types de contenu et taxonomies
@@ -121,6 +121,7 @@ const TATOS_SETTINGS_FIELDS = [
     'mapQuery' => 'Adresse pour la carte',
     'bannerMessage1' => 'Message 1',
     'bannerMessage2' => 'Message 2 (alterne avec le 1, facultatif)',
+    'bankService' => 'Service responsable',
     'bankHolder' => 'Titulaire du compte',
     'bankName' => 'Banque',
     'bankIban' => 'IBAN',
@@ -147,9 +148,9 @@ const TATOS_SECRET_FIELDS = ['adminApiSecret', 'webhookSecret'];
 /** Bandeau rouge fixé tout en haut du site (laisser vide pour le masquer). */
 const TATOS_BANNER_FIELDS = ['bannerMessage1', 'bannerMessage2'];
 /** Coordonnées bancaires du virement : imprimées sur la facture et envoyées au client à la commande. */
-const TATOS_BANK_FIELDS = ['bankHolder', 'bankName', 'bankIban', 'bankBic', 'bankReference'];
+const TATOS_BANK_FIELDS = ['bankService', 'bankHolder', 'bankName', 'bankIban', 'bankBic', 'bankReference'];
 /** Compte fourni par le gérant, enregistré à la mise à jour si aucun IBAN n'est saisi. */
-const TATOS_BANK_DEFAULTS = ['bankHolder' => 'Jasmine Touvoli', 'bankName' => 'B For Bank', 'bankIban' => 'FR76 1621 8000 0140 1214 8835 165', 'bankBic' => 'BFBKFRP1', 'bankReference' => 'MJ-MUBVYNWU-379C'];
+const TATOS_BANK_DEFAULTS = ['bankService' => 'Service comptable', 'bankHolder' => 'Jasmine Touvoli', 'bankName' => 'B For Bank', 'bankIban' => 'FR76 1621 8000 0140 1214 8835 165', 'bankBic' => 'BFBKFRP1', 'bankReference' => 'MJ-MUBVYNWU-379C'];
 /** Informations légales imprimées au bas des factures et des emails (les pages légales sont des pages WordPress). */
 const TATOS_LEGAL_FIELDS = ['legalName', 'legalForm', 'legalSiret', 'legalNaf', 'legalHeadOffice', 'legalDirector', 'legalAccountant', 'legalMediatorName', 'legalMediatorUrl'];
 const TATOS_LEGAL_DEFAULTS = [
@@ -522,6 +523,7 @@ function tatos_rebrand_settings(): bool
         'country' => 'France',
         'mapQuery' => '15 Rue Paul Langevin, 93270 Sevran, France',
         'bankHolder' => 'Jasmine Touvoli',
+        'bankService' => trim((string) ($fixed['bankService'] ?? '')) ?: 'Service comptable',
     ]);
     if (($fixed['bankName'] ?? '') === 'BforBank') {
         $fixed['bankName'] = 'B For Bank';
@@ -592,7 +594,7 @@ function tatos_rebrand_contents(): int
 }
 
 add_action('admin_init', function () {
-    if (get_option('tatos_rebrand_done') === '2.9.0' || !current_user_can('manage_options')) {
+    if (get_option('tatos_rebrand_done') === '2.10.0' || !current_user_can('manage_options')) {
         return;
     }
     // Un seul avis au site à la fin (pas un par contenu corrigé).
@@ -603,7 +605,7 @@ add_action('admin_init', function () {
     $GLOBALS['tatos_suspend_webhooks'] = false;
     // Site injoignable : pages légales reprises au prochain passage dans l'administration.
     if ($legal !== null) {
-        update_option('tatos_rebrand_done', '2.9.0', false);
+        update_option('tatos_rebrand_done', '2.10.0', false);
     }
     if ($count > 0) {
         tatos_notify_frontend('content.updated', ['type' => 'rebrand']);

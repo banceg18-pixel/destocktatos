@@ -6,6 +6,7 @@ import { confirmBankTransfer } from "@/lib/server/orders";
 import { billingSchema } from "@/lib/server/order-schemas";
 import { isBankTransferEnabled } from "@/lib/server/payments";
 import { objectId } from "@/lib/validation";
+import { sendMetaEvent } from "@/lib/server/meta-capi";
 
 const schema = z.object({ orderId: objectId, billingAddress: billingSchema });
 
@@ -24,5 +25,14 @@ export const POST = route("POST /api/checkout/bank-transfer", async (req: Reques
   if (order.status !== "EN_ATTENTE_PAIEMENT") throw new ApiError(409, "Cette commande est déjà confirmée.");
   await prisma.order.update({ where: { id: order.id }, data: { billingAddress } });
   const confirmed = await confirmBankTransfer(order.id);
+  void sendMetaEvent("Purchase", {
+    eventId: confirmed.number,
+    email: billingAddress.email,
+    phone: billingAddress.phone,
+    value: confirmed.totalCents / 100,
+    url: req.headers.get("referer") ?? undefined,
+    ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null,
+    userAgent: req.headers.get("user-agent"),
+  });
   return json({ status: "confirmed", orderId: confirmed.id, number: confirmed.number });
 });

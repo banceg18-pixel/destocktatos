@@ -45,6 +45,9 @@ avoir modifiées.
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | avec Stripe | Clé publique Stripe. |
 | `STRIPE_WEBHOOK_SECRET` | avec Stripe | Secret de signature du webhook Stripe. |
 | `BANK_TRANSFER` | non | Avec Stripe, `true` propose aussi le virement bancaire. Les coordonnées bancaires se saisissent dans WordPress → Réglages → Site et magasin. |
+| `META_PIXEL_ID` / `NEXT_PUBLIC_META_PIXEL_ID` | non | Identifiant du Pixel Meta (le même dans les deux). Chargé seulement après accord aux cookies. |
+| `META_CAPI_TOKEN` | non | Jeton de l'API Conversions Meta (achat envoyé aussi par le serveur, sans doublon). |
+| `META_GRAPH_VERSION` | non | Version de l'API Graph de Meta (`v21.0` par défaut). |
 | `TEST_PAYMENTS` | non | Réservé aux tests automatisés (simulation de paiement). Ne jamais définir en production. |
 
 ### Emails

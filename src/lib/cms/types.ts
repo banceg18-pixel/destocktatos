@@ -26,6 +26,7 @@ export interface SiteSettings {
   bannerMessage1?: string;
   bannerMessage2?: string;
   /** Coordonnées bancaires du virement (facture, email de commande) ; IBAN vide : pas encore renseignées. */
+  bankService?: string;
   bankHolder?: string;
   bankName?: string;
   bankIban?: string;

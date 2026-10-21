@@ -191,16 +191,17 @@ export function buildInvoicePdf(
   }
   // Coordonnées bancaires sur chaque facture, payée ou non.
   if (bank) {
-    doc.line(40, 86, W - 40, 86);
-    doc.text(40, 74, `Coordonnées bancaires : ${bank.bank ? `${bank.bank} — ` : ""}IBAN ${bank.iban}${bank.bic ? ` (BIC ${bank.bic})` : ""}${bank.holder ? ` — titulaire ${bank.holder}` : ""}`, 8, true);
+    doc.line(40, 88, W - 40, 88);
+    doc.text(40, 76, `Coordonnées bancaires — service responsable : ${bank.service} — titulaire : ${bank.holder}`, 8, true);
+    doc.text(40, 65, `${bank.bank ? `${bank.bank} — ` : ""}IBAN ${bank.iban}${bank.bic ? ` (BIC ${bank.bic})` : ""}${bank.reference ? ` — communication : ${bank.reference}` : ""}`, 8);
   }
   if (store.legal) {
-    doc.text(40, 44, store.legal[0], 7, false, GREY);
-    doc.text(40, 34, store.legal[1], 7, false, GREY);
+    doc.text(40, 40, store.legal[0], 7, false, GREY);
+    doc.text(40, 31, store.legal[1], 7, false, GREY);
   }
   doc.text(
     40,
-    60,
+    52,
     kind === "devis"
       ? `Devis établi pour la commande ${order.number}, selon nos conditions générales de vente.`
       : "Merci pour votre confiance. Garantie et conditions : voir nos conditions générales de vente.",

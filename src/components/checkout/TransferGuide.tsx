@@ -48,6 +48,7 @@ export function TransferGuide({ amount, orderNumber, bank, className }: { amount
         </Step>
         <Step n={2} title="Ajoutez le bénéficiaire">
           <div className="mt-1 bg-mist p-4">
+            <Value label="Service responsable" value={bank.service} mono={false} />
             <Value label="Titulaire" value={bank.holder} copy={bank.holder} mono={false} />
             <Value label="IBAN" value={bank.iban} copy={bank.iban.replace(/\s+/g, "")} />
             {bank.bic && <Value label="BIC" value={bank.bic} copy={bank.bic} />}
