@@ -173,7 +173,7 @@ export default async function ProductPage({ params }: { params: Params }) {
               <IconLock className="mt-0.5 shrink-0" />
               <span>
                 <span className="block font-medium">Paiement sécurisé</span>
-                <span className="text-graphite">carte bancaire</span>
+                <span className="text-graphite">par virement bancaire</span>
               </span>
             </li>
           </ul>

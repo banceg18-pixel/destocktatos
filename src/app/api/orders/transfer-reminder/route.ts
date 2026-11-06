@@ -53,6 +53,9 @@ export const POST = route("POST /api/orders/transfer-reminder", async (req: Requ
   if (!orderId || !/^[A-Za-z0-9_-]{1,64}$/.test(orderId)) return json({ ok: false }, 400);
   const o = await getBuyerOrder(orderId);
   if (o.status !== "EN_ATTENTE_VIREMENT") return json({ ok: true, status: o.status });
+  // Virement déjà signalé : ne renvoie pas d'email au magasin (évite les envois répétés sur reclics).
+  const already = o.payments?.find((p) => (p.details as { declaredAt?: string } | null)?.declaredAt)?.details as { declaredAt?: string } | null;
+  if (already?.declaredAt) return json({ ok: true, status: o.status, declaredAt: already.declaredAt });
   const declaredAt = new Date().toISOString();
   await prisma.payment.updateMany({ where: { orderId: o.id, provider: "virement", status: "EN_ATTENTE" }, data: { details: { declaredAt } } });
   const user = await prisma.user.findUnique({ where: { id: o.userId }, select: { name: true, email: true } });

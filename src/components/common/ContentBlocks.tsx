@@ -1,4 +1,5 @@
 import type { ContentBlock } from "@/lib/cms/types";
+import { sanitizeHtml } from "@/lib/cms/sanitize";
 
 export interface BlockClasses {
   h2?: string;
@@ -38,8 +39,9 @@ export function ContentBlocks({ blocks, classes = {} }: { blocks: ContentBlock[]
               </ul>
             );
           case "html":
-            // Le HTML provient du CMS de confiance ; les balises <script> sont retirées par précaution.
-            return <div key={i} dangerouslySetInnerHTML={{ __html: b.html.replace(/<script[\s\S]*?<\/script>/gi, "") }} />;
+            // HTML du CMS assaini par liste blanche (balises, attributs et URL) : pas de script,
+            // de gestionnaire d'événement ni de lien « javascript: », même si la source est de confiance.
+            return <div key={i} dangerouslySetInnerHTML={{ __html: sanitizeHtml(b.html) }} />;
           default:
             return null;
         }
