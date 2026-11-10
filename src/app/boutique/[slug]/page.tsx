@@ -13,7 +13,7 @@ import { IconLock, IconShield, IconTruck, IconWrench } from "@/components/ui/Ico
 import { getCategories, getProductBySlug, getSuggestions } from "@/lib/catalog/repository";
 import { DeliveryRates } from "@/components/common/DeliveryRates";
 import { discountPercent, formatEuros } from "@/lib/money";
-import { SITE_URL, jsonLd } from "@/lib/seo";
+import { OG_IMAGES, SITE_URL, TWITTER_CARD, jsonLd } from "@/lib/seo";
 import { displayTitle } from "@/lib/text";
 import { BIG_TICKET_OFFER, offerApplies, offerUnitEuros } from "@/lib/offers";
 
@@ -25,13 +25,13 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   if (!p) return { title: "Produit introuvable", robots: { index: false } };
   const title = `${displayTitle(p.titre, p.marque)} ${p.marque} ${p.modele}`.replace(/\s+/g, " ").trim();
   const description = (p.metaDescription || p.description).slice(0, 300);
-  const images = p.imagePrincipale ? [p.imagePrincipale.url] : undefined;
+  const images = p.imagePrincipale ? [p.imagePrincipale.url] : [OG_IMAGES[0].url];
   return {
     title,
     description,
     alternates: { canonical: `/boutique/${p.slug}` },
     openGraph: { title, description, url: `/boutique/${p.slug}`, images },
-    twitter: { title, description, images },
+    twitter: { card: TWITTER_CARD, title, description, images },
   };
 }
 

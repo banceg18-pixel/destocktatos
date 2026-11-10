@@ -6,7 +6,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import { Arrow } from "@/components/ui/Primitives";
 import { getPost, getPosts } from "@/lib/cms";
 import { readingMinutes, sanitizeHtml } from "@/lib/cms/sanitize";
-import { SITE_URL, jsonLd } from "@/lib/seo";
+import { OG_IMAGES, SITE_URL, TWITTER_CARD, jsonLd } from "@/lib/seo";
 
 type Params = Promise<{ slug: string }>;
 
@@ -17,7 +17,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     title: post.title,
     description: post.excerpt.slice(0, 300),
     alternates: { canonical: `/conseils/${post.slug}` },
-    openGraph: { type: "article", title: post.title, description: post.excerpt, url: `/conseils/${post.slug}`, images: post.image ? [post.image] : undefined, publishedTime: post.date },
+    openGraph: { type: "article", title: post.title, description: post.excerpt, url: `/conseils/${post.slug}`, images: post.image ? [post.image] : OG_IMAGES, publishedTime: post.date },
+    twitter: { card: TWITTER_CARD, title: post.title, description: post.excerpt, images: [post.image || OG_IMAGES[0].url] },
   };
 }
 

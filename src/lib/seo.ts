@@ -8,6 +8,12 @@ export const DEFAULT_DESCRIPTION = "Produit électroménager de qualité au meil
 /** Visuel de partage (1200 × 630) et icône carrée (onglet, écran d'accueil, logo des moteurs de recherche). */
 export const LOGO_PATH = "/assets/images/branding/logo-destocktatos.png";
 export const ICON_PATH = "/assets/images/branding/icon-destocktatos.png";
+/**
+ * Visuel de partage par défaut. Une page qui déclare son propre `openGraph` remplace entièrement celui
+ * de la racine : elle doit donc reprendre ce visuel (et la carte « grande image ») quand elle n'en a pas.
+ */
+export const OG_IMAGES = [{ url: LOGO_PATH, width: 1200, height: 630, alt: "Destocktatos" }];
+export const TWITTER_CARD = "summary_large_image" as const;
 
 /** Métadonnées racine (reprises du site source, domaine remplacé par SITE_URL). */
 export const rootMetadata: Metadata = {
@@ -33,11 +39,11 @@ export const rootMetadata: Metadata = {
     url: "/",
     siteName: "Destocktatos",
     locale: "fr_FR",
-    images: [{ url: LOGO_PATH, width: 1200, height: 630, alt: "Destocktatos" }],
+    images: OG_IMAGES,
     type: "website",
   },
   twitter: {
-    card: "summary_large_image",
+    card: TWITTER_CARD,
     title: DEFAULT_TITLE,
     description: DEFAULT_DESCRIPTION,
     images: [LOGO_PATH],

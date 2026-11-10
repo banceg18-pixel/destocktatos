@@ -13,6 +13,7 @@ import { IconRecycle, IconShield, IconStore, IconTruck, IconWrench } from "@/com
 import { getCatalogStats, getCategories, getFeaturedProducts, getPromotionProducts } from "@/lib/catalog/repository";
 import { getPage, getSiteSettings } from "@/lib/cms";
 import { discountPercent, formatEuros } from "@/lib/money";
+import { OG_IMAGES, TWITTER_CARD } from "@/lib/seo";
 import type { HomeContent, ServiceIcon } from "@/types/home";
 
 
@@ -23,8 +24,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: { absolute: title },
     description,
-    openGraph: { title, description },
-    twitter: { title, description },
+    openGraph: { title, description, url: "/", siteName: "Destocktatos", locale: "fr_FR", type: "website", images: OG_IMAGES },
+    twitter: { card: TWITTER_CARD, title, description, images: [OG_IMAGES[0].url] },
   };
 }
 

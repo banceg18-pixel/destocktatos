@@ -9,6 +9,7 @@ import { getCategories, getSousCategories, listProducts } from "@/lib/catalog/re
 import { parseCatalogQuery } from "@/lib/catalog/query";
 import { formatEuros } from "@/lib/money";
 import { getPage } from "@/lib/cms";
+import { OG_IMAGES, TWITTER_CARD } from "@/lib/seo";
 import type { ContentBlock, FaqItem } from "@/lib/cms/types";
 
 type Params = Promise<{ slug: string }>;
@@ -39,7 +40,8 @@ export async function generateMetadata({ params, searchParams }: { params: Param
     title: name,
     description,
     alternates: { canonical: `/categorie/${slug}` },
-    openGraph: { title: name, description, url: `/categorie/${slug}` },
+    openGraph: { title: name, description, url: `/categorie/${slug}`, images: OG_IMAGES },
+    twitter: { card: TWITTER_CARD, title: name, description, images: [OG_IMAGES[0].url] },
     robots: filtered ? { index: false, follow: true } : undefined,
   };
 }
