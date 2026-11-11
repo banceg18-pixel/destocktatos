@@ -11,7 +11,7 @@ import { ImageComponent } from "@/components/ui/ImageComponent";
 import { Arrow, Price, Spinner } from "@/components/ui/Primitives";
 import { IconSearch } from "@/components/ui/Icons";
 
-const SUGGESTIONS = ["Lave-linge", "Réfrigérateur", "Plaque induction", "Micro-ondes", "Aspirateur", "Lave-vaisselle"];
+const SUGGESTIONS = ["Waschmaschine", "Kühlschrank", "Induktionskochfeld", "Mikrowelle", "Staubsauger", "Geschirrspüler"];
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 /** Recherche instantanée : résultats dès 2 caractères, Entrée ouvre la liste complète en boutique. */
@@ -57,12 +57,12 @@ export function SearchPanel({ open, onClose, categories }: { open: boolean; onCl
   };
 
   return (
-    <Drawer open={open} onClose={onClose} side="top" title="Rechercher" closeLabel="Fermer la recherche">
+    <Drawer open={open} onClose={onClose} side="top" title="Suchen" closeLabel="Suche schließen">
       <div className="shell py-8 lg:py-12">
         <form role="search" onSubmit={submit} className="flex items-center gap-4 border-b border-ink pb-4">
           <IconSearch size={26} className="shrink-0" />
           <label htmlFor="site-search" className="sr-only">
-            Rechercher un produit
+            Produkt suchen
           </label>
           <input
             id="site-search"
@@ -70,7 +70,7 @@ export function SearchPanel({ open, onClose, categories }: { open: boolean; onCl
             type="search"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Rechercher un appareil, une marque, une référence…"
+            placeholder="Gerät, Marke oder Modell suchen…"
             autoComplete="off"
             enterKeyHint="search"
             className="min-w-0 flex-1 bg-transparent font-display text-[clamp(1.4rem,3.2vw,2.6rem)] tracking-tight [font-stretch:110%] placeholder:text-graphite-light focus:outline-none"
@@ -82,7 +82,7 @@ export function SearchPanel({ open, onClose, categories }: { open: boolean; onCl
           {state === "idle" && (
             <div className="grid gap-10 md:grid-cols-2">
               <div>
-                <p className="t-eyebrow mb-4 text-graphite">Recherches fréquentes</p>
+                <p className="t-eyebrow mb-4 text-graphite">Häufige Suchbegriffe</p>
                 <ul className="flex flex-wrap gap-2">
                   {SUGGESTIONS.map((s) => (
                     <li key={s}>
@@ -94,7 +94,7 @@ export function SearchPanel({ open, onClose, categories }: { open: boolean; onCl
                 </ul>
               </div>
               <div>
-                <p className="t-eyebrow mb-4 text-graphite">Catégories</p>
+                <p className="t-eyebrow mb-4 text-graphite">Kategorien</p>
                 <ul className="grid grid-cols-2 gap-x-6 gap-y-1 sm:grid-cols-3">
                   {categories.slice(0, 12).map((c) => (
                     <li key={c.slug}>
@@ -108,11 +108,11 @@ export function SearchPanel({ open, onClose, categories }: { open: boolean; onCl
             </div>
           )}
 
-          {state === "error" && <p className="text-danger">La recherche est momentanément indisponible. Réessayez dans un instant.</p>}
+          {state === "error" && <p className="text-danger">Die Suche ist vorübergehend nicht verfügbar. Bitte versuchen Sie es gleich erneut.</p>}
 
           {state === "done" && results.length === 0 && (
             <p className="text-lg">
-              Aucun produit ne correspond à « {q.trim()} ». Essayez une marque, un type d&apos;appareil ou une référence.
+              Keine Produkte gefunden für « {q.trim()} ». Bitte überprüfen Sie die Schreibweise oder versuchen Sie einen anderen Begriff.
             </p>
           )}
 
@@ -141,7 +141,7 @@ export function SearchPanel({ open, onClose, categories }: { open: boolean; onCl
                 ))}
               </ul>
               <Link href={`/boutique?recherche=${encodeURIComponent(q.trim())}`} onClick={onClose} className="t-eyebrow link-underline mt-10 inline-flex items-center gap-2">
-                Voir tous les résultats pour « {q.trim()} » <Arrow />
+                Alle Ergebnisse für « {q.trim()} » anzeigen <Arrow />
               </Link>
             </>
           )}

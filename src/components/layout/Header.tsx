@@ -103,7 +103,7 @@ export function Header({ menu, categories, settings }: { menu: MenuItem[]; categ
                         type="button"
                         aria-expanded={mega}
                         aria-controls="menu-categories"
-                        aria-label="Afficher les catégories"
+                        aria-label="Kategorien anzeigen"
                         onClick={() => setMega((m) => !m)}
                         className="-mr-1 rounded-full p-1 opacity-70 transition-opacity hover:opacity-100"
                       >
@@ -117,13 +117,13 @@ export function Header({ menu, categories, settings }: { menu: MenuItem[]; categ
           </nav>
 
           <div className="ml-auto flex items-center gap-2 lg:ml-0">
-            <HeaderIcon tone={tone} label="Rechercher" onClick={() => openPanel("search")}>
+            <HeaderIcon tone={tone} label="Suchen" onClick={() => openPanel("search")}>
               <IconSearch />
             </HeaderIcon>
             <Link
               href={status === "authenticated" ? "/compte" : "/connexion"}
-              aria-label={status === "authenticated" ? "Mon compte" : "Se connecter"}
-              title={status === "authenticated" ? "Mon compte" : "Se connecter"}
+              aria-label={status === "authenticated" ? "Mein Konto" : "Anmelden"}
+              title={status === "authenticated" ? "Mein Konto" : "Anmelden"}
               className={headerIconClasses(tone, "max-sm:hidden")}
             >
               <IconUser />
@@ -133,8 +133,8 @@ export function Header({ menu, categories, settings }: { menu: MenuItem[]; categ
               type="button"
               data-cy="nav-panier"
               onClick={() => openPanel("cart")}
-              aria-label={totalItems ? `Panier, ${totalItems} article${totalItems > 1 ? "s" : ""}` : "Panier vide"}
-              title="Panier"
+              aria-label={totalItems ? `Warenkorb, ${totalItems} Artikel` : "Leerer Warenkorb"}
+              title="Warenkorb"
               className={headerIconClasses(tone)}
             >
               <IconBag />
@@ -149,7 +149,7 @@ export function Header({ menu, categories, settings }: { menu: MenuItem[]; categ
                 </span>
               )}
             </button>
-            <HeaderIcon tone={tone} label="Ouvrir le menu" onClick={() => openPanel("menu")} className="lg:hidden" aria-expanded={panel === "menu"} aria-controls="menu-mobile">
+            <HeaderIcon tone={tone} label="Menü öffnen" onClick={() => openPanel("menu")} className="lg:hidden" aria-expanded={panel === "menu"} aria-controls="menu-mobile">
               <IconMenu />
             </HeaderIcon>
           </div>
@@ -166,7 +166,7 @@ export function Header({ menu, categories, settings }: { menu: MenuItem[]; categ
         >
           <div className="shell grid grid-cols-[1fr_340px] gap-12 py-10">
             <div>
-              <p className="t-eyebrow mb-6 text-graphite">Catégories</p>
+              <p className="t-eyebrow mb-6 text-graphite">Kategorien</p>
               <ul className="grid grid-cols-3 gap-x-10 gap-y-1">
                 {shopCategories.map((c) => (
                   <li key={c.slug}>
@@ -181,15 +181,15 @@ export function Header({ menu, categories, settings }: { menu: MenuItem[]; categ
             <div className="flex flex-col gap-3">
               <Link href="/boutique" className="group flex items-center justify-between bg-ink px-6 py-6 text-paper">
                 <span>
-                  <span className="t-h3 block">Tout le catalogue</span>
-                  <span className="t-spec mt-2 block text-white/60">{shopCategories.reduce((s, c) => s + (c.count ?? 0), 0)} produits disponibles</span>
+                  <span className="t-h3 block">Gesamtes Sortiment</span>
+                  <span className="t-spec mt-2 block text-white/60">{shopCategories.reduce((s, c) => s + (c.count ?? 0), 0)} Produkte verfügbar</span>
                 </span>
                 <Arrow className="transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
               <Link href="/promotions" className="group flex items-center justify-between bg-mist px-6 py-6">
                 <span>
-                  <span className="t-h3 block">Promotions</span>
-                  <span className="t-spec mt-2 block text-graphite">Prix réduits du moment</span>
+                  <span className="t-h3 block">Angebote</span>
+                  <span className="t-spec mt-2 block text-graphite">Aktuelle Sonderpreise</span>
                 </span>
                 <Arrow className="transition-transform duration-300 group-hover:translate-x-1" />
               </Link>

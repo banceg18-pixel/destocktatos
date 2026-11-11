@@ -27,23 +27,20 @@ export function FormError({ text }: { text: string | null }) {
   );
 }
 
-/** Erreurs renvoyées par NextAuth sur /connexion?error=… (connexion Google interrompue, refusée…). */
+/** Erreurs renvoyées par NextAuth sur /connexion?error=… */
 const AUTH_ERRORS: Record<string, string> = {
-  GoogleEmail: "Ce compte Google n'a pas d'adresse email vérifiée : il ne peut pas être utilisé ici. Choisissez un autre compte ou créez un compte avec votre email.",
-  AccessDenied: "La connexion avec Google a été annulée. Vous pouvez réessayer, ou utiliser votre email et votre mot de passe.",
-  OAuthSignin: "La connexion avec Google n'a pas pu démarrer. Réessayez dans un instant.",
-  OAuthCallback: "La connexion avec Google n'a pas abouti. Réessayez, ou utilisez votre email et votre mot de passe.",
-  Callback: "La connexion avec Google n'a pas abouti. Réessayez, ou utilisez votre email et votre mot de passe.",
-  OAuthAccountNotLinked: "Cette adresse est déjà associée à un autre mode de connexion. Connectez-vous avec votre email et votre mot de passe.",
-  SessionRequired: "Connectez-vous pour accéder à cette page.",
+  GoogleEmail: "Dieses Google-Konto hat keine verifizierte E-Mail-Adresse. Bitte wählen Sie ein anderes Konto.",
+  AccessDenied: "Die Anmeldung mit Google wurde abgebrochen.",
+  OAuthSignin: "Die Google-Anmeldung konnte nicht gestartet werden. Bitte versuchen Sie es gleich erneut.",
+  OAuthCallback: "Die Anmeldung über Google ist fehlgeschlagen. Bitte nutzen Sie E-Mail und Passwort.",
+  Callback: "Die Anmeldung ist fehlgeschlagen.",
+  OAuthAccountNotLinked: "Diese E-Mail-Adresse ist bereits mit einer anderen Anmeldemethode verknüpft.",
+  SessionRequired: "Bitte melden Sie sich an, um auf diese Seite zuzugreifen.",
 };
-export const authErrorMessage = (code: string | null) => (code ? (AUTH_ERRORS[code] ?? "La connexion n'a pas abouti. Réessayez.") : null);
+export const authErrorMessage = (code: string | null) => (code ? (AUTH_ERRORS[code] ?? "Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.") : null);
 
 /**
- * Bouton « Continuer avec Google », toujours affiché en tête des formulaires de connexion et
- * d'inscription. Le compte client est retrouvé par son email, ou créé à la première connexion.
- * Tant que la connexion Google n'est pas activée sur le serveur (identifiants Google absents),
- * le bouton l'indique au lieu d'ouvrir une page d'erreur.
+ * Bouton « Continuer avec Google »
  */
 export function GoogleButton({ label, callbackUrl, enabled, disabled, onError }: { label: string; callbackUrl: string; enabled: boolean; disabled?: boolean; onError: (message: string) => void }) {
   const [pending, setPending] = useState(false);
@@ -55,7 +52,7 @@ export function GoogleButton({ label, callbackUrl, enabled, disabled, onError }:
   }, []);
   const start = async () => {
     if (!enabled) {
-      onError("La connexion avec Google n'est pas encore disponible sur ce site. Utilisez votre adresse email ci-dessous.");
+      onError("Google-Login ist auf dieser Website derzeit nicht verfügbar. Bitte nutzen Sie Ihre E-Mail-Adresse.");
       return;
     }
     setPending(true);
@@ -63,17 +60,17 @@ export function GoogleButton({ label, callbackUrl, enabled, disabled, onError }:
       await signIn("google", { callbackUrl });
     } catch {
       setPending(false);
-      onError("Impossible de joindre Google pour le moment. Vérifiez votre connexion puis réessayez.");
+      onError("Google konnte nicht erreicht werden. Bitte prüfen Sie Ihre Internetverbindung.");
     }
   };
   return (
     <>
       <Button variant="outline" size="lg" block plain disabled={disabled || pending} onClick={start} data-cy="google-signin">
         {pending ? <Spinner /> : <FcGoogle size={20} aria-hidden="true" />}
-        {pending ? "Redirection vers Google…" : label}
+        {pending ? "Weiterleitung zu Google…" : label}
       </Button>
       <div className="my-7 flex items-center gap-4 text-xs text-graphite">
-        <span className="h-px flex-1 bg-line" /> ou avec votre email <span className="h-px flex-1 bg-line" />
+        <span className="h-px flex-1 bg-line" /> oder mit Ihrer E-Mail-Adresse <span className="h-px flex-1 bg-line" />
       </div>
     </>
   );
@@ -113,27 +110,27 @@ export function ConnexionForm({ googleEnabled, onSuccess }: { googleEnabled: boo
       setError(
         res?.error && res.error !== "CredentialsSignin"
           ? res.error
-          : "Email ou mot de passe incorrect. Vérifiez l'adresse et le mot de passe, ou utilisez « Mot de passe oublié ? ». Compte créé avec Google ? Utilisez le bouton Google.",
+          : "E-Mail-Adresse oder Passwort ungültig. Bitte überprüfen Sie Ihre Eingaben.",
       );
     } catch {
       setLoading(false);
-      setError("La connexion n'a pas abouti. Vérifiez votre réseau puis réessayez.");
+      setError("Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre Netzwerkverbindung.");
     }
   };
 
   return (
     <div>
-      {!onSuccess && <GoogleButton label="Continuer avec Google" callbackUrl={callbackUrl} enabled={googleEnabled} disabled={loading} onError={setError} />}
+      {!onSuccess && <GoogleButton label="Mit Google fortfahren" callbackUrl={callbackUrl} enabled={googleEnabled} disabled={loading} onError={setError} />}
       {/* method="post" : si l'on clique avant que la page soit prête, le mot de passe ne part jamais dans l'adresse. */}
       <form method="post" onSubmit={submit} noValidate className="flex flex-col gap-5">
-        <Field label="Email" htmlFor="email" error={f.errors.email}>
+        <Field label="E-Mail-Adresse" htmlFor="email" error={f.errors.email}>
           <Input
             type="email"
             name="email"
             id="email"
             data-cy="email-input"
             autoComplete="email"
-            placeholder="nom@exemple.fr"
+            placeholder="ihre.email@beispiel.de"
             value={email}
             invalid={!!f.errors.email}
             onChange={(e) => {
@@ -143,13 +140,13 @@ export function ConnexionForm({ googleEnabled, onSuccess }: { googleEnabled: boo
             onBlur={(e) => f.onBlur("email", e.target.value, rules.email)}
           />
         </Field>
-        <Field label="Mot de passe" htmlFor="mdp" error={f.errors.mdp}>
+        <Field label="Passwort" htmlFor="mdp" error={f.errors.mdp}>
           <InputPassword
             name="mdp"
             id="mdp"
             data-cy="password-input"
             autoComplete="current-password"
-            placeholder="Votre mot de passe"
+            placeholder="Ihr Passwort"
             className={authInputClass}
             invalid={!!f.errors.mdp}
             onChange={(e) => {
@@ -161,17 +158,17 @@ export function ConnexionForm({ googleEnabled, onSuccess }: { googleEnabled: boo
         </Field>
         <div className="-mt-1 text-right">
           <Link href="/connexion/mot-de-passe-oublie" className="text-sm underline-offset-4 hover:underline">
-            Mot de passe oublié ?
+            Passwort vergessen?
           </Link>
         </div>
         <FormError text={error} />
         <Button type="submit" size="lg" block disabled={loading} plain={loading} data-cy="login-submit">
           {loading ? (
             <>
-              <Spinner /> Connexion…
+              <Spinner /> Anmeldung…
             </>
           ) : (
-            "Se connecter"
+            "Anmelden"
           )}
         </Button>
       </form>

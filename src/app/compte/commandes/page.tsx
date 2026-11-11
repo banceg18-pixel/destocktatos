@@ -15,7 +15,7 @@ import { listUserOrders, toOrderDTO } from "@/lib/server/orders";
 import { DELIVERY_LABELS, ORDER_STATUS_LABELS, orderStatusLabel } from "@/services/orders";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Mes commandes", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "Meine Bestellungen", robots: { index: false, follow: false } };
 
 export default async function CommandesPage() {
   const session = await getSession();
@@ -24,13 +24,13 @@ export default async function CommandesPage() {
 
   return (
     <div>
-      <h1 className="t-h2">Mes commandes</h1>
+      <h1 className="t-h2">Meine Bestellungen</h1>
 
       {orders.length === 0 ? (
         <div className="mt-12 flex flex-col items-start gap-5 border border-dashed border-line p-8">
-          <p className="text-graphite">Vous n&apos;avez pas encore passé de commande.</p>
+          <p className="text-graphite">Sie haben noch keine Bestellung aufgegeben.</p>
           <ButtonLink href="/boutique" variant="outline" icon={<Arrow />}>
-            Découvrir la boutique
+            Sortiment entdecken
           </ButtonLink>
         </div>
       ) : (
@@ -39,15 +39,15 @@ export default async function CommandesPage() {
             <article key={o._id} className="border border-line">
               <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-mist/60 px-4 py-4 sm:px-5">
                 <div>
-                  <h2 className="t-spec !text-sm text-ink">Commande {o.number}</h2>
+                  <h2 className="t-spec !text-sm text-ink">Bestellung {o.number}</h2>
                   <p className="mt-1 text-sm text-graphite">
-                    Passée le {new Date(o.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
+                    Bestellt am {new Date(o.createdAt).toLocaleDateString("de-DE", { day: "numeric", month: "long", year: "numeric" })}
                     {o.paidAt
-                      ? ` · payée le ${new Date(o.paidAt).toLocaleDateString("fr-FR")}`
+                      ? ` · bezahlt am ${new Date(o.paidAt).toLocaleDateString("de-DE")}`
                       : o.status === "EN_ATTENTE_VIREMENT"
-                        ? " · à régler par virement"
+                        ? " · Zahlung per Banküberweisung"
                         : o.paymentProvider === "sur_place" && o.status !== "ANNULEE" && o.status !== "EN_ATTENTE_PAIEMENT"
-                        ? ` · à régler ${o.isPickupInStore ? "au retrait" : "à la livraison"}`
+                        ? ` · zu zahlen ${o.isPickupInStore ? "bei Abholung" : "bei Lieferung"}`
                         : ""}
                   </p>
                 </div>
@@ -80,7 +80,7 @@ export default async function CommandesPage() {
                   })}
                 </ul>
                 <div className="text-sm">
-                  <p className="font-medium">{o.isPickupInStore ? "Retrait en magasin" : (DELIVERY_LABELS[o.deliveryMethod ?? ""] ?? "Livraison")}</p>
+                  <p className="font-medium">{o.isPickupInStore ? "Selbstabholung" : (DELIVERY_LABELS[o.deliveryMethod ?? ""] ?? "Lieferung")}</p>
                   {o.shippingAddress && (
                     <p className="mt-1 text-graphite">
                       {o.shippingAddress.fullName}, {o.shippingAddress.address}, {o.shippingAddress.postalCode} {o.shippingAddress.city}
@@ -88,21 +88,21 @@ export default async function CommandesPage() {
                   )}
                   <dl className="t-price mt-4 flex flex-col gap-1.5 border-t border-line pt-4">
                     <div className="flex justify-between">
-                      <dt className="text-graphite">Articles</dt>
+                      <dt className="text-graphite">Artikel</dt>
                       <dd>{formatEuros(o.subtotal)}</dd>
                     </div>
                     {o.appliedCoupon && (
                       <div className="flex justify-between text-success">
-                        <dt>Réduction {o.appliedCoupon.code}</dt>
+                        <dt>Gutschein {o.appliedCoupon.code}</dt>
                         <dd>−{formatEuros(o.appliedCoupon.discount)}</dd>
                       </div>
                     )}
                     <div className="flex justify-between">
-                      <dt className="text-graphite">{o.isPickupInStore ? "Retrait" : "Livraison"}</dt>
-                      <dd>{o.isPickupInStore ? "Gratuit" : formatEuros(o.deliveryFee)}</dd>
+                      <dt className="text-graphite">{o.isPickupInStore ? "Abholung" : "Lieferung"}</dt>
+                      <dd>{o.isPickupInStore ? "Kostenlos" : formatEuros(o.deliveryFee)}</dd>
                     </div>
                     <div className="flex justify-between border-t border-line pt-2 font-medium">
-                      <dt>Total TTC</dt>
+                      <dt>Gesamtbetrag (inkl. MwSt.)</dt>
                       <dd>{formatEuros(o.totalAmount)}</dd>
                     </div>
                   </dl>
@@ -111,8 +111,7 @@ export default async function CommandesPage() {
               {o.status === "EN_ATTENTE_VIREMENT" &&
                 (o.transferDeclaredAt ? (
                   <p className="mx-4 mb-5 border border-line p-4 text-sm text-graphite sm:mx-5">
-                    Virement signalé le {new Date(o.transferDeclaredAt).toLocaleDateString("fr-FR")} : nous vérifions sa réception. La facture vous sera envoyée par email dès
-                    qu&apos;il est reçu.
+                    Überweisung gemeldet am {new Date(o.transferDeclaredAt).toLocaleDateString("de-DE")}: Wir prüfen den Zahlungseingang. Die Rechnung erhalten Sie unmittelbar per E-Mail.
                   </p>
                 ) : (
                   <TransferDetails amount={o.totalAmount} reference={o.number} bank={bank} className="mx-4 mb-5 sm:mx-5" />

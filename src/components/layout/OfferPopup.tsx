@@ -68,7 +68,7 @@ export function OfferPopup() {
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-[320] flex items-center justify-center p-4">
-      <button type="button" aria-label="Fermer l'offre" className="absolute inset-0 bg-ink/55 backdrop-blur-[2px]" onClick={() => setOpen(false)} tabIndex={-1} />
+      <button type="button" aria-label="Angebot schließen" className="absolute inset-0 bg-ink/55 backdrop-blur-[2px]" onClick={() => setOpen(false)} tabIndex={-1} />
       <div
         ref={panel}
         role="dialog"
@@ -79,26 +79,26 @@ export function OfferPopup() {
         <button
           type="button"
           onClick={() => setOpen(false)}
-          aria-label="Fermer"
+          aria-label="Schließen"
           className="absolute right-3 top-3 inline-flex size-9 items-center justify-center rounded-full text-graphite hover:bg-mist hover:text-ink"
         >
           <IconClose size={18} />
         </button>
-        <p className="t-eyebrow text-graphite">Offre spéciale déstockage</p>
+        <p className="t-eyebrow text-graphite">Sonderaktion Outlet</p>
         <p className="mt-4 font-display text-[clamp(3.5rem,14vw,5rem)] font-semibold leading-none tracking-[-0.04em] text-promo [font-stretch:120%]">
           -{BIG_TICKET_OFFER.percent} %
         </p>
         <h2 id={titleId} className="t-h3 mt-4">
-          sur tous les produits de plus de 1 000 €
+          auf alle Geräte ab 1.000 €
         </h2>
         <p className="mt-3 text-sm text-graphite">
-          En plus des prix de déstockage. La réduction s&apos;applique automatiquement dans votre panier, sans code à saisir.
+          Zusätzlich zu unseren Outlet-Preisen. Der Rabatt wird im Warenkorb automatisch abgezogen – kein Code erforderlich.
         </p>
         <ButtonLink href="/boutique?prixMin=1000&tri=prix-asc" size="lg" block className="mt-7" icon={<Arrow />} onClick={() => setOpen(false)}>
-          Voir les produits concernés
+          Aktionsgeräte ansehen
         </ButtonLink>
         <button type="button" onClick={() => setOpen(false)} className="mt-4 text-sm text-graphite underline-offset-4 hover:text-ink hover:underline">
-          Continuer ma visite
+          Weiter stöbern
         </button>
       </div>
     </div>

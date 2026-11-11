@@ -36,19 +36,19 @@ export function ResetPasswordForm({ token }: { token: string }) {
       const byField = serverFieldErrors(res.details);
       return Object.keys(byField).length ? f.setServerErrors(byField) : setError(res.error);
     }
-    setMessage("Votre mot de passe a été modifié. Vous pouvez vous connecter.");
+    setMessage("Ihr Passwort wurde erfolgreich geändert. Sie können sich nun anmelden.");
     // Connexion, puis directement les commandes et factures.
     router.push(`/connexion?callbackUrl=${encodeURIComponent("/compte/commandes")}`);
   };
 
   return (
     <form method="post" onSubmit={submit} noValidate className="flex flex-col gap-5">
-      <Field label="Nouveau mot de passe" htmlFor="mdp" error={f.errors.mdp}>
+      <Field label="Neues Passwort" htmlFor="mdp" error={f.errors.mdp}>
         <InputPassword
           name="mdp"
           id="mdp"
           autoComplete="new-password"
-          placeholder="Nouveau mot de passe"
+          placeholder="Neues Passwort"
           className={authInputClass}
           invalid={!!f.errors.mdp}
           onChange={(e) => {
@@ -58,12 +58,12 @@ export function ResetPasswordForm({ token }: { token: string }) {
           onBlur={(e) => f.onBlur("mdp", e.target.value, rules.newPassword)}
         />
       </Field>
-      <Field label="Confirmez le mot de passe" htmlFor="mdpv" error={f.errors.mdpv}>
+      <Field label="Passwort bestätigen" htmlFor="mdpv" error={f.errors.mdpv}>
         <InputPassword
           name="mdpv"
           id="mdpv"
           autoComplete="new-password"
-          placeholder="Le même mot de passe"
+          placeholder="Passwort wiederholen"
           className={authInputClass}
           invalid={!!f.errors.mdpv}
           onChange={(e) => {
@@ -77,10 +77,10 @@ export function ResetPasswordForm({ token }: { token: string }) {
       <Button type="submit" size="lg" block disabled={loading} plain={loading}>
         {loading ? (
           <>
-            <Spinner /> Enregistrement…
+            <Spinner /> Wird gespeichert…
           </>
         ) : (
-          "Enregistrer le mot de passe"
+          "Passwort speichern"
         )}
       </Button>
     </form>

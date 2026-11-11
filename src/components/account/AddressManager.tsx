@@ -41,12 +41,12 @@ export function AddressManager() {
     if (!editId) return;
     fetchAddresses().then((res) => {
       if (!res.ok) {
-        errRef.current("L'adresse à modifier n'a pas pu être chargée.");
+        errRef.current("Die zu bearbeitende Adresse konnte nicht geladen werden.");
         return setLoading(false);
       }
       const a = (res.data.addresses || []).find((x) => x._id === editId);
       if (a) setForm({ id: a._id, fullName: a.fullName || "", address: a.address || "", postalCode: a.postalCode || "", city: a.city || "", phone: a.phone || "", additionalInfo: a.additionalInfo || "", isDefault: !!a.isDefault, floor: a.floor || 0 });
-      else setFormError("Cette adresse n'existe plus. Vous pouvez en créer une nouvelle.");
+      else setFormError("Diese Adresse existiert nicht mehr. Sie können eine neue Adresse anlegen.");
       setLoading(false);
     });
   }, [editId]);
@@ -71,7 +71,7 @@ export function AddressManager() {
     });
     if (!check.ok || !check.data.valid) {
       setSaving(false);
-      return setFormError((check.ok ? check.data.error : check.error) || "Cette adresse n'a pas été reconnue. Choisissez une suggestion dans la liste.");
+      return setFormError((check.ok ? check.data.error : check.error) || "Diese Adresse wurde nicht erkannt. Wählen Sie einen Vorschlag aus der Liste.");
     }
     const n = check.data.normalizedAddress;
     const payload = {
@@ -88,9 +88,9 @@ export function AddressManager() {
     setSaving(false);
     if (!res.ok) {
       const byField = serverFieldErrors(res.details);
-      return Object.keys(byField).length ? f.setServerErrors(byField) : setFormError(res.error || "L'adresse n'a pas pu être enregistrée.");
+      return Object.keys(byField).length ? f.setServerErrors(byField) : setFormError(res.error || "Die Adresse konnte nicht gespeichert werden.");
     }
-    setMessage(form.id ? "Adresse modifiée." : "Adresse ajoutée.");
+    setMessage(form.id ? "Adresse geändert." : "Adresse hinzugefügt.");
     router.push("/compte#adresses");
     router.refresh();
   };
@@ -98,20 +98,20 @@ export function AddressManager() {
   if (loading) {
     return (
       <p className="flex items-center gap-3 text-graphite" role="status">
-        <Spinner /> Chargement de l&apos;adresse…
+        <Spinner /> Adresse wird geladen…
       </p>
     );
   }
 
   return (
     <form onSubmit={submit} noValidate className="grid max-w-2xl gap-5 md:grid-cols-2">
-      <Field label="Nom complet" htmlFor="adr-fullName" required error={f.errors.fullName}>
-        <Input id="adr-fullName" value={form.fullName} onChange={set("fullName")} onBlur={blur("fullName")} invalid={!!f.errors.fullName} autoComplete="name" placeholder="Prénom et nom" />
+      <Field label="Vollständiger Name" htmlFor="adr-fullName" required error={f.errors.fullName}>
+        <Input id="adr-fullName" value={form.fullName} onChange={set("fullName")} onBlur={blur("fullName")} invalid={!!f.errors.fullName} autoComplete="name" placeholder="Vor- und Nachname" />
       </Field>
-      <Field label="Téléphone" htmlFor="adr-phone" required error={f.errors.phone}>
-        <Input id="adr-phone" type="tel" value={form.phone} onChange={set("phone")} onBlur={blur("phone")} invalid={!!f.errors.phone} autoComplete="tel" placeholder="06 12 34 56 78" />
+      <Field label="Telefonnummer" htmlFor="adr-phone" required error={f.errors.phone}>
+        <Input id="adr-phone" type="tel" value={form.phone} onChange={set("phone")} onBlur={blur("phone")} invalid={!!f.errors.phone} autoComplete="tel" placeholder="+49 30 1234567" />
       </Field>
-      <Field label="Adresse" htmlFor="adr-address" required className="md:col-span-2" error={f.errors.address}>
+      <Field label="Adresse / Straße und Hausnummer" htmlFor="adr-address" required className="md:col-span-2" error={f.errors.address}>
         <AddressAutocomplete
           id="adr-address"
           value={form.address}
@@ -125,16 +125,16 @@ export function AddressManager() {
             setForm((s) => ({ ...s, ...sel }));
             f.setServerErrors({ address: undefined, postalCode: undefined, city: undefined });
           }}
-          placeholder="Commencez à taper, puis choisissez dans la liste"
+          placeholder="Straße und Hausnummer eingeben"
         />
       </Field>
-      <Field label="Code postal" htmlFor="adr-postalCode" required error={f.errors.postalCode}>
-        <Input id="adr-postalCode" value={form.postalCode} onChange={set("postalCode")} onBlur={blur("postalCode")} invalid={!!f.errors.postalCode} autoComplete="postal-code" inputMode="numeric" maxLength={5} placeholder="93270" />
+      <Field label="Postleitzahl" htmlFor="adr-postalCode" required error={f.errors.postalCode}>
+        <Input id="adr-postalCode" value={form.postalCode} onChange={set("postalCode")} onBlur={blur("postalCode")} invalid={!!f.errors.postalCode} autoComplete="postal-code" inputMode="numeric" maxLength={5} placeholder="10117" />
       </Field>
-      <Field label="Ville" htmlFor="adr-city" required error={f.errors.city}>
-        <Input id="adr-city" value={form.city} onChange={set("city")} onBlur={blur("city")} invalid={!!f.errors.city} autoComplete="address-level2" placeholder="Sevran" />
+      <Field label="Stadt" htmlFor="adr-city" required error={f.errors.city}>
+        <Input id="adr-city" value={form.city} onChange={set("city")} onBlur={blur("city")} invalid={!!f.errors.city} autoComplete="address-level2" placeholder="Berlin" />
       </Field>
-      <Field label="Étage" htmlFor="adr-floor">
+      <Field label="Etage" htmlFor="adr-floor">
         <NativeSelect id="adr-floor" value={form.floor} onChange={set("floor")}>
           {FLOOR_OPTIONS.map((o) => (
             <option key={o.value} value={o.value}>
@@ -143,10 +143,10 @@ export function AddressManager() {
           ))}
         </NativeSelect>
       </Field>
-      <Field label="Informations pour le livreur" htmlFor="adr-info">
-        <Input id="adr-info" value={form.additionalInfo} onChange={set("additionalInfo")} placeholder="Code d'entrée, interphone…" />
+      <Field label="Hinweise für den Lieferdienst" htmlFor="adr-info">
+        <Input id="adr-info" value={form.additionalInfo} onChange={set("additionalInfo")} placeholder="Türcode, Klingel, Hinterhaus…" />
       </Field>
-      <Checkbox className="md:col-span-2" checked={form.isDefault} onChange={set("isDefault")} label="Utiliser comme adresse par défaut" />
+      <Checkbox className="md:col-span-2" checked={form.isDefault} onChange={set("isDefault")} label="Als Standardadresse verwenden" />
       <div className="md:col-span-2">
         <FormError text={formError} />
       </div>
@@ -154,16 +154,16 @@ export function AddressManager() {
         <Button type="submit" size="lg" disabled={saving} plain={saving}>
           {saving ? (
             <>
-              <Spinner /> Vérification…
+              <Spinner /> Überprüfung…
             </>
           ) : form.id ? (
-            "Enregistrer les modifications"
+            "Änderungen speichern"
           ) : (
-            "Ajouter l'adresse"
+            "Adresse hinzufügen"
           )}
         </Button>
         <Link href="/compte#adresses" className="text-sm underline-offset-4 hover:underline">
-          Annuler
+          Abbrechen
         </Link>
       </div>
     </form>

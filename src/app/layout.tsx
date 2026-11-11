@@ -44,7 +44,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="de" className={bannerMessagesOf(settings).length > 0 ? `${fontVariables} has-banner` : fontVariables}>
       <body>
         <a href="#contenu" className="sr-only z-[400] rounded-sm bg-ink px-4 py-3 text-paper focus:not-sr-only focus:fixed focus:left-4 focus:top-4">
-          Aller au contenu
+          Direkt zum Inhalt springen
         </a>
         <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(organizationJsonLd(settings.phoneIntl))} />
         {/*

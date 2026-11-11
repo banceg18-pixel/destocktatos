@@ -57,9 +57,9 @@ function FilterPanel({ basePath, query: q, categories, lockedCategory, sousCateg
   return (
     <div>
       {!lockedCategory && (
-        <FilterGroup title="Catégorie">
+        <FilterGroup title="Kategorie">
           <FilterLink href={catalogHref(basePath, q, { categorie: "", sousCategorie: "" })} active={!q.categorie}>
-            Toutes les catégories
+            Alle Kategorien
           </FilterLink>
           {categories
             .filter((c) => (c.count ?? 0) > 0)
@@ -72,9 +72,9 @@ function FilterPanel({ basePath, query: q, categories, lockedCategory, sousCateg
       )}
 
       {types.length > 0 && (
-        <FilterGroup title="Type">
+        <FilterGroup title="Typ">
           <FilterLink href={catalogHref(basePath, q, { sousCategorie: "" })} active={!q.sousCategorie}>
-            Tous les types
+            Alle Typen
           </FilterLink>
           {types.map((t) => (
             <FilterLink key={t} href={catalogHref(basePath, q, { sousCategorie: t })} active={q.sousCategorie === t.toLowerCase()}>
@@ -84,7 +84,7 @@ function FilterPanel({ basePath, query: q, categories, lockedCategory, sousCateg
         </FilterGroup>
       )}
 
-      <FilterGroup title="Prix">
+      <FilterGroup title="Preis">
         {PRICE_RANGES.map((r) => (
           <FilterLink key={r.label} href={catalogHref(basePath, q, { prixMin: r.min, prixMax: r.max })} active={q.prixMin === r.min && q.prixMax === r.max}>
             {r.label}
@@ -112,15 +112,15 @@ function FilterPanel({ basePath, query: q, categories, lockedCategory, sousCateg
               className="mt-1 h-10 w-full rounded-sm border border-line px-3 text-sm text-ink focus:border-ink focus:outline-none"
             />
           </label>
-          <button type="submit" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-ink text-paper hover:bg-ink-soft" aria-label="Appliquer la fourchette de prix">
+          <button type="submit" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-ink text-paper hover:bg-ink-soft" aria-label="Preisspanne anwenden">
             <Arrow />
           </button>
         </form>
       </FilterGroup>
 
-      <FilterGroup title="Offres">
+      <FilterGroup title="Angebote">
         <FilterLink href={catalogHref(basePath, q, { promotions: !q.promotions })} active={q.promotions}>
-          Promotions uniquement
+          Nur Sonderangebote
         </FilterLink>
       </FilterGroup>
     </div>
@@ -134,9 +134,9 @@ function Pagination({ basePath, query, totalPages }: { basePath: string; query: 
   const list = [...pages].sort((a, b) => a - b);
   const cell = "flex h-11 min-w-11 items-center justify-center rounded-sm border px-3 text-sm transition-colors";
   return (
-    <nav aria-label="Pagination" className="mt-14 flex flex-wrap items-center justify-center gap-2">
+    <nav aria-label="Seitennavigation" className="mt-14 flex flex-wrap items-center justify-center gap-2">
       {cur > 1 ? (
-        <Link href={catalogHref(basePath, query, { page: cur - 1 })} className={cn(cell, "border-line hover:border-ink")} aria-label="Page précédente">
+        <Link href={catalogHref(basePath, query, { page: cur - 1 })} className={cn(cell, "border-line hover:border-ink")} aria-label="Vorherige Seite">
           <Arrow direction="left" />
         </Link>
       ) : (
@@ -157,7 +157,7 @@ function Pagination({ basePath, query, totalPages }: { basePath: string; query: 
         </span>
       ))}
       {cur < totalPages ? (
-        <Link href={catalogHref(basePath, query, { page: cur + 1 })} className={cn(cell, "border-line hover:border-ink")} aria-label="Page suivante">
+        <Link href={catalogHref(basePath, query, { page: cur + 1 })} className={cn(cell, "border-line hover:border-ink")} aria-label="Nächste Seite">
           <Arrow />
         </Link>
       ) : (
@@ -178,24 +178,24 @@ export function CatalogView(props: Props) {
   if (q.sousCategorie) chips.push({ label: capitalize(q.sousCategorie), href: catalogHref(basePath, q, { sousCategorie: "" }) });
   if (q.prixMin > 0 || q.prixMax < PRICE_MAX_DEFAULT)
     chips.push({
-      label: q.prixMax < PRICE_MAX_DEFAULT ? `${formatEuros(q.prixMin)} – ${formatEuros(q.prixMax)}` : `Dès ${formatEuros(q.prixMin)}`,
+      label: q.prixMax < PRICE_MAX_DEFAULT ? `${formatEuros(q.prixMin)} – ${formatEuros(q.prixMax)}` : `Ab ${formatEuros(q.prixMin)}`,
       href: catalogHref(basePath, q, { prixMin: 0, prixMax: PRICE_MAX_DEFAULT }),
     });
-  if (q.promotions) chips.push({ label: "Promotions", href: catalogHref(basePath, q, { promotions: false }) });
+  if (q.promotions) chips.push({ label: "Angebote", href: catalogHref(basePath, q, { promotions: false }) });
   const reset = lockedCategory ? basePath : "/boutique";
   const panel = <FilterPanel {...props} />;
 
   return (
     <div className="shell grid gap-10 pb-24 lg:grid-cols-[250px_1fr] lg:gap-14">
-      <aside className="hidden lg:block" aria-label="Filtres">
+      <aside className="hidden lg:block" aria-label="Filter">
         <div className="pb-6">{panel}</div>
       </aside>
 
       <div className="min-w-0">
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line pb-5">
           <p className="t-spec text-graphite" aria-live="polite">
-            {total} produit{total > 1 ? "s" : ""}
-            {totalPages > 1 && ` · page ${q.page} sur ${totalPages}`}
+            {total} {total === 1 ? "Produkt" : "Produkte"}
+            {totalPages > 1 && ` · Seite ${q.page} von ${totalPages}`}
           </p>
           <div className="flex items-center gap-3">
             <MobileFilters activeCount={chips.length} total={total}>
@@ -206,17 +206,17 @@ export function CatalogView(props: Props) {
         </div>
 
         {chips.length > 0 && (
-          <ul className="flex flex-wrap items-center gap-2 pt-5" aria-label="Filtres actifs">
+          <ul className="flex flex-wrap items-center gap-2 pt-5" aria-label="Aktive Filter">
             {chips.map((c) => (
               <li key={c.label}>
-                <Link href={c.href} scroll={false} className="inline-flex h-8 items-center gap-2 rounded-full bg-mist pl-3.5 pr-2.5 text-sm transition-colors hover:bg-mist-deep" aria-label={`Retirer le filtre ${c.label}`}>
+                <Link href={c.href} scroll={false} className="inline-flex h-8 items-center gap-2 rounded-full bg-mist pl-3.5 pr-2.5 text-sm transition-colors hover:bg-mist-deep" aria-label={`Filter entfernen: ${c.label}`}>
                   {c.label} <IconClose size={13} />
                 </Link>
               </li>
             ))}
             <li>
               <Link href={reset} scroll={false} className="link-underline ml-2 text-sm text-graphite hover:text-ink">
-                Tout effacer
+                Alle zurücksetzen
               </Link>
             </li>
           </ul>
@@ -224,10 +224,10 @@ export function CatalogView(props: Props) {
 
         {products.length === 0 ? (
           <div className="flex flex-col items-start gap-6 py-24">
-            <p className="t-h3 max-w-lg">Aucun appareil ne correspond à ces critères.</p>
-            <p className="max-w-lg text-graphite">Élargissez la fourchette de prix, retirez un filtre ou cherchez par marque ou par référence.</p>
+            <p className="t-h3 max-w-lg">Keine Produkte entsprechen diesen Kriterien.</p>
+            <p className="max-w-lg text-graphite">Erweitern Sie die Preisspanne oder setzen Sie die Filter zurück.</p>
             <ButtonLink href={reset} variant="outline">
-              Effacer les filtres
+              Filter zurücksetzen
             </ButtonLink>
           </div>
         ) : (

@@ -7,7 +7,7 @@ import { IconClock, IconMail, IconPhone, IconPin } from "@/components/ui/Icons";
  * Coordonnées du magasin (réglages du site) et carte intégrée. La carte Google Maps est la seule
  * ressource tierce de ces pages ; elle n'est chargée qu'à l'approche de la section (lazy).
  */
-export function StoreLocation({ settings, title = "Nous trouver" }: { settings: SiteSettings; title?: string }) {
+export function StoreLocation({ settings, title = "Standort & Anfahrt" }: { settings: SiteSettings; title?: string }) {
   const tel = settings.phone.replace(/\s/g, "");
   const mapUrl = `https://www.google.com/maps?q=${encodeURIComponent(settings.mapQuery)}&output=embed`;
   return (
@@ -49,7 +49,7 @@ export function StoreLocation({ settings, title = "Nous trouver" }: { settings: 
             rel="noopener noreferrer"
             className="t-eyebrow link-underline mt-10 inline-block"
           >
-            Itinéraire dans Google Maps ↗
+            Route in Google Maps planen ↗
           </a>
         </Reveal>
         <div className="relative aspect-[4/3] overflow-hidden bg-mist lg:aspect-auto lg:min-h-[420px]">
@@ -57,7 +57,7 @@ export function StoreLocation({ settings, title = "Nous trouver" }: { settings: 
           <Image src="/assets/images/libres/cuisine-equipee.jpg" alt="" fill sizes="(min-width: 1024px) 60vw, 100vw" className="object-cover" />
           <iframe
             src={mapUrl}
-            title={`Plan d'accès — ${settings.addressLine}, ${settings.city}`}
+            title={`Anfahrtsplan — ${settings.addressLine}, ${settings.city}`}
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
             className="absolute inset-0 size-full border-0 grayscale-[0.85]"

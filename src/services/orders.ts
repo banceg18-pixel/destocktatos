@@ -73,25 +73,25 @@ export function invoiceLink(id: string, kind: "download" | "view") {
 }
 
 export const ORDER_STATUS_LABELS: Record<OrderDTO["status"], { label: string; className: string }> = {
-  EN_ATTENTE_PAIEMENT: { label: "En attente de paiement", className: "border border-warning/50 text-warning" },
-  EN_ATTENTE_VIREMENT: { label: "En attente de virement", className: "border border-warning/50 text-warning" },
-  PAYEE: { label: "Payée", className: "bg-ink text-paper" },
-  EN_PREPARATION: { label: "En préparation", className: "bg-ink text-paper" },
-  EXPEDIEE: { label: "En livraison", className: "bg-ink text-paper" },
-  LIVREE: { label: "Livrée", className: "bg-success text-paper" },
-  ANNULEE: { label: "Annulée", className: "bg-mist text-graphite" },
-  PAIEMENT_ECHOUE: { label: "Paiement refusé", className: "border border-danger/50 text-danger" },
+  EN_ATTENTE_PAIEMENT: { label: "Zahlung ausstehend", className: "border border-warning/50 text-warning" },
+  EN_ATTENTE_VIREMENT: { label: "Warten auf Überweisung", className: "border border-warning/50 text-warning" },
+  PAYEE: { label: "Bezahlt", className: "bg-ink text-paper" },
+  EN_PREPARATION: { label: "In Vorbereitung", className: "bg-ink text-paper" },
+  EXPEDIEE: { label: "In Zustellung", className: "bg-ink text-paper" },
+  LIVREE: { label: "Zugestellt", className: "bg-success text-paper" },
+  ANNULEE: { label: "Storniert", className: "bg-mist text-graphite" },
+  PAIEMENT_ECHOUE: { label: "Zahlung fehlgeschlagen", className: "border border-danger/50 text-danger" },
 };
 
-/** Libellé du statut, adapté au retrait en magasin (« Prête à retirer », « Retirée »). */
+/** Libellé du statut, adapté au retrait en magasin (« Abholbereit », « Abgeholt »). */
 export function orderStatusLabel(status: OrderDTO["status"], pickup: boolean) {
-  if (pickup && status === "EXPEDIEE") return "Prête à retirer";
-  if (pickup && status === "LIVREE") return "Retirée";
+  if (pickup && status === "EXPEDIEE") return "Abholbereit";
+  if (pickup && status === "LIVREE") return "Abgeholt";
   return ORDER_STATUS_LABELS[status].label;
 }
 
 export const DELIVERY_LABELS: Record<string, string> = {
-  piedDuCamion: "Livraison au pied du camion",
-  livraisonPiece: "Livraison pièce au choix",
-  installation: "Installation",
+  piedDuCamion: "Lieferung bis Bordsteinkante",
+  livraisonPiece: "Lieferung in den Raum Ihrer Wahl",
+  installation: "Lieferung mit Installation",
 };

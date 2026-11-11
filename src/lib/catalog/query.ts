@@ -52,15 +52,15 @@ export function catalogHref(basePath: string, q: CatalogQuery, change: Partial<C
 }
 
 export const SORT_LABELS: Record<SortKey, string> = {
-  recent: "Nouveautés",
-  "prix-asc": "Prix croissant",
-  "prix-desc": "Prix décroissant",
-  remise: "Meilleures remises",
+  recent: "Neuheiten",
+  "prix-asc": "Preis: aufsteigend",
+  "prix-desc": "Preis: absteigend",
+  remise: "Höchster Rabatt",
 };
 
 export const PRICE_RANGES: { label: string; min: number; max: number }[] = [
-  { label: "Moins de 300 €", min: 0, max: 300 },
-  { label: "300 à 600 €", min: 300, max: 600 },
-  { label: "600 à 1 000 €", min: 600, max: 1000 },
-  { label: "Plus de 1 000 €", min: 1000, max: PRICE_MAX_DEFAULT },
+  { label: "Unter 300 €", min: 0, max: 300 },
+  { label: "300 bis 600 €", min: 300, max: 600 },
+  { label: "600 bis 1.000 €", min: 600, max: 1000 },
+  { label: "Über 1.000 €", min: 1000, max: PRICE_MAX_DEFAULT },
 ];

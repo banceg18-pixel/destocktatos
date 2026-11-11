@@ -6,10 +6,10 @@ import { cn } from "@/lib/client/cn";
 import { LogoutButton } from "./LogoutButton";
 
 const ITEMS = [
-  { href: "/compte", label: "Tableau de bord" },
-  { href: "/compte/commandes", label: "Mes commandes" },
-  { href: "/compte/ajouter-adresse", label: "Ajouter une adresse" },
-  { href: "/compte/profil", label: "Mon profil" },
+  { href: "/compte", label: "Übersicht" },
+  { href: "/compte/commandes", label: "Meine Bestellungen" },
+  { href: "/compte/ajouter-adresse", label: "Adresse hinzufügen" },
+  { href: "/compte/profil", label: "Mein Profil" },
 ];
 
 /**

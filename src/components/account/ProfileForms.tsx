@@ -55,7 +55,7 @@ export function ProfileForms({ name: initialName, email, hasPassword: initialHas
       const byField = serverFieldErrors(res.details);
       return Object.keys(byField).length ? nf.setServerErrors(byField) : setNameState({ busy: false, error: res.error, ok: null });
     }
-    setNameState({ busy: false, error: null, ok: "Nom enregistré." });
+    setNameState({ busy: false, error: null, ok: "Name gespeichert." });
     router.refresh();
   };
 
@@ -66,7 +66,7 @@ export function ProfileForms({ name: initialName, email, hasPassword: initialHas
     const res = await changePassword({ current: hasPassword ? pwd.current : undefined, mdp: pwd.mdp, mdpv: pwd.mdpv });
     if (!res.ok) {
       setPwdState({ busy: false, error: null, ok: null });
-      if (/actuel/i.test(res.error)) return pf.setServerErrors({ current: res.error });
+      if (/actuel|aktuell/i.test(res.error)) return pf.setServerErrors({ current: res.error });
       const byField = serverFieldErrors(res.details);
       return Object.keys(byField).length ? pf.setServerErrors(byField) : setPwdState({ busy: false, error: res.error, ok: null });
     }
@@ -86,9 +86,9 @@ export function ProfileForms({ name: initialName, email, hasPassword: initialHas
 
   return (
     <div className="mt-8">
-      <Section title="Identité" intro="Votre nom apparaît sur vos factures et dans les emails de suivi.">
+      <Section title="Persönliche Daten" intro="Ihr Name erscheint auf Ihren Rechnungen und in Benachrichtigungs-E-Mails.">
         <form onSubmit={saveName} noValidate className="flex flex-col gap-5">
-          <Field label="Nom complet" htmlFor="profile-name" error={nf.errors.name}>
+          <Field label="Vollständiger Name" htmlFor="profile-name" error={nf.errors.name}>
             <Input
               id="profile-name"
               autoComplete="name"
@@ -101,24 +101,24 @@ export function ProfileForms({ name: initialName, email, hasPassword: initialHas
               onBlur={(e) => nf.onBlur("name", e.target.value, rules.name)}
             />
           </Field>
-          <Field label="Email" htmlFor="profile-email" hint="L'adresse email ne peut pas être modifiée : contactez le magasin si besoin.">
+          <Field label="E-Mail" htmlFor="profile-email" hint="Die E-Mail-Adresse kann nicht geändert werden: Bitte kontaktieren Sie bei Bedarf unseren Kundenservice.">
             <Input id="profile-email" value={email} readOnly disabled />
           </Field>
           <FormError text={nameState.error} />
           <Saved text={nameState.ok} />
           <Button type="submit" disabled={nameState.busy || name.trim() === initialName} plain={nameState.busy} className="self-start">
-            {nameState.busy ? <Spinner /> : "Enregistrer le nom"}
+            {nameState.busy ? <Spinner /> : "Namen speichern"}
           </Button>
         </form>
       </Section>
 
       <Section
-        title={hasPassword ? "Mot de passe" : "Créer un mot de passe"}
-        intro={hasPassword ? undefined : `Votre compte a été créé avec Google${googleEnabled ? "" : " (connexion Google actuellement indisponible)"}. Définissez un mot de passe pour pouvoir aussi vous connecter avec votre email.`}
+        title={hasPassword ? "Passwort" : "Passwort erstellen"}
+        intro={hasPassword ? undefined : `Ihr Konto wurde mit Google erstellt${googleEnabled ? "" : " (Google-Login derzeit nicht verfügbar)"}. Legen Sie ein Passwort fest, um sich auch per E-Mail anmelden zu können.`}
       >
         <form method="post" onSubmit={savePassword} noValidate className="flex flex-col gap-5">
           {hasPassword && (
-            <Field label="Mot de passe actuel" htmlFor="pwd-current" error={pf.errors.current}>
+            <Field label="Aktuelles Passwort" htmlFor="pwd-current" error={pf.errors.current}>
               <InputPassword
                 id="pwd-current"
                 name="current"
@@ -134,7 +134,7 @@ export function ProfileForms({ name: initialName, email, hasPassword: initialHas
               />
             </Field>
           )}
-          <Field label="Nouveau mot de passe" htmlFor="pwd-new" error={pf.errors.mdp}>
+          <Field label="Neues Passwort" htmlFor="pwd-new" error={pf.errors.mdp}>
             <InputPassword
               id="pwd-new"
               name="mdp"
@@ -149,7 +149,7 @@ export function ProfileForms({ name: initialName, email, hasPassword: initialHas
               onBlur={(e) => pf.onBlur("mdp", e.target.value, rules.newPassword)}
             />
           </Field>
-          <Field label="Confirmez le nouveau mot de passe" htmlFor="pwd-confirm" error={pf.errors.mdpv}>
+          <Field label="Neues Passwort bestätigen" htmlFor="pwd-confirm" error={pf.errors.mdpv}>
             <InputPassword
               id="pwd-confirm"
               name="mdpv"
@@ -167,19 +167,19 @@ export function ProfileForms({ name: initialName, email, hasPassword: initialHas
           <FormError text={pwdState.error} />
           <Saved text={pwdState.ok} />
           <Button type="submit" disabled={pwdState.busy || !pwd.mdp} plain={pwdState.busy} className="self-start">
-            {pwdState.busy ? <Spinner /> : hasPassword ? "Changer le mot de passe" : "Créer le mot de passe"}
+            {pwdState.busy ? <Spinner /> : hasPassword ? "Passwort ändern" : "Passwort erstellen"}
           </Button>
         </form>
       </Section>
 
-      <Section title="Supprimer mon compte" intro="Vos adresses, vos avis et vos accès sont effacés. Les commandes passées restent archivées de façon anonyme pour la comptabilité. Cette action est définitive.">
+      <Section title="Konto löschen" intro="Ihre Adressen, Bewertungen und Zugangsdaten werden gelöscht. Abgeschlossene Bestellungen bleiben für steuerliche Zwecke anonymisiert archiviert. Dieser Vorgang ist endgültig.">
         <form onSubmit={remove} noValidate className="flex flex-col gap-5">
-          <Field label="Tapez SUPPRIMER pour confirmer" htmlFor="delete-confirm">
+          <Field label="Tippen Sie LÖSCHEN zur Bestätigung" htmlFor="delete-confirm">
             <Input id="delete-confirm" autoComplete="off" value={confirm} onChange={(e) => setConfirm(e.target.value)} />
           </Field>
           <FormError text={delState.error} />
-          <Button type="submit" variant="outline" disabled={delState.busy || confirm.trim() !== "SUPPRIMER"} plain={delState.busy} className="self-start border-danger text-danger hover:bg-danger hover:text-paper">
-            {delState.busy ? <Spinner /> : "Supprimer définitivement"}
+          <Button type="submit" variant="outline" disabled={delState.busy || (confirm.trim() !== "LÖSCHEN" && confirm.trim() !== "SUPPRIMER")} plain={delState.busy} className="self-start border-danger text-danger hover:bg-danger hover:text-paper">
+            {delState.busy ? <Spinner /> : "Endgültig löschen"}
           </Button>
         </form>
       </Section>

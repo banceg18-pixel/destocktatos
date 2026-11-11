@@ -44,10 +44,10 @@ export function PurchasePanel({ product }: { product: Product }) {
   if (product.stock <= 0) {
     return (
       <div className="flex flex-col gap-4 border border-line p-5">
-        <p className="font-medium">Ce modèle est épuisé pour le moment.</p>
-        <p className="text-sm text-graphite">Un conseiller peut vous proposer un équivalent disponible ou vous prévenir de son retour.</p>
+        <p className="font-medium">Dieses Modell ist derzeit ausverkauft.</p>
+        <p className="text-sm text-graphite">Ein Berater kann Ihnen ein verfügbares Äquivalent vorschlagen oder Sie bei Wiederverfügbarkeit benachrichtigen.</p>
         <ButtonLink href="/contact" variant="outline">
-          Demander conseil
+          Beratung anfordern
         </ButtonLink>
       </div>
     );
@@ -57,7 +57,7 @@ export function PurchasePanel({ product }: { product: Product }) {
     <>
       <div ref={anchor} className="flex flex-col gap-3">
         <div className="flex gap-3">
-          <QuantityStepper value={quantity} onChange={setQuantity} max={max} label="Quantité" />
+          <QuantityStepper value={quantity} onChange={setQuantity} max={max} label="Menge" />
           <Button
             size="lg"
             className="min-w-0 flex-1 px-4 !text-[0.72rem] sm:px-8 sm:!text-[0.8rem]"
@@ -67,7 +67,7 @@ export function PurchasePanel({ product }: { product: Product }) {
               notifyAdded(product._id);
             }}
           >
-            Ajouter au panier
+            In den Warenkorb
           </Button>
         </div>
         <Button
@@ -79,7 +79,7 @@ export function PurchasePanel({ product }: { product: Product }) {
             router.push("/panier");
           }}
         >
-          Commander maintenant
+          Jetzt bestellen
         </Button>
       </div>
 
@@ -103,7 +103,7 @@ export function PurchasePanel({ product }: { product: Product }) {
             }}
             icon={<IconBag size={16} />}
           >
-            Ajouter
+            Hinzufügen
           </Button>
         </div>
       </div>

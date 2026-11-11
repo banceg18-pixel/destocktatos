@@ -37,15 +37,15 @@ export function ForgotPasswordForm() {
           <IconMail size={22} />
         </span>
         <p>
-          Un email de réinitialisation a été envoyé à <strong>{sentTo}</strong> si un compte y est associé. Le lien est valable une heure.
+          Eine E-Mail zum Zurücksetzen Ihres Passworts wurde an <strong>{sentTo}</strong> gesendet, sofern ein Konto existiert. Der Link ist eine Stunde gültig.
         </p>
-        <p className="text-sm text-graphite">Pensez à vérifier vos courriers indésirables.</p>
+        <p className="text-sm text-graphite">Bitte überprüfen Sie auch Ihren Spam-Ordner.</p>
         <div className="flex flex-wrap gap-4 text-sm">
           <Link href="/connexion" className="font-medium underline underline-offset-4">
-            Retour à la connexion
+            Zurück zur Anmeldung
           </Link>
           <button type="button" onClick={() => setSentTo(null)} className="underline-offset-4 hover:underline">
-            Utiliser une autre adresse
+            Andere E-Mail-Adresse verwenden
           </button>
         </div>
       </div>
@@ -54,14 +54,14 @@ export function ForgotPasswordForm() {
 
   return (
     <form method="post" onSubmit={submit} noValidate className="flex flex-col gap-5">
-      <Field label="Adresse email" htmlFor="email" error={f.errors.email}>
+      <Field label="E-Mail-Adresse" htmlFor="email" error={f.errors.email}>
         <Input
           id="email"
           name="email"
           type="email"
           autoComplete="email"
           value={email}
-          placeholder="nom@exemple.fr"
+          placeholder="name@beispiel.de"
           invalid={!!f.errors.email}
           onChange={(e) => {
             setEmail(e.target.value);
@@ -74,10 +74,10 @@ export function ForgotPasswordForm() {
       <Button type="submit" size="lg" block disabled={loading} plain={loading}>
         {loading ? (
           <>
-            <Spinner /> Envoi…
+            <Spinner /> Wird gesendet…
           </>
         ) : (
-          "Recevoir le lien"
+          "Link anfordern"
         )}
       </Button>
     </form>

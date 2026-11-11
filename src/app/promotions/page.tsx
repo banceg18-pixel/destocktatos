@@ -11,8 +11,8 @@ import { getCategories, getPromotionProducts } from "@/lib/catalog/repository";
 import { discountPercent } from "@/lib/money";
 
 export const metadata: Metadata = {
-  title: "Promotions",
-  description: "Tous les appareils électroménagers à prix réduit, livrés gratuitement partout en France, avec installation sur demande.",
+  title: "Angebote & Rabatte",
+  description: "Alle Haushaltsgeräte zum Sonderpreis, kostenlose Lieferung in ganz Deutschland, Montage auf Wunsch verfügbar.",
   alternates: { canonical: "/promotions" },
 };
 
@@ -33,11 +33,11 @@ export default async function PromotionsPage() {
   return (
     <>
       <PageHeader
-        title={maxPct ? `Jusqu'à −${maxPct} %` : "Promotions"}
+        title={maxPct ? `Bis zu −${maxPct} %` : "Angebote & Rabatte"}
         intro={
           promos.length
-            ? `${promos.length} appareils à prix réduit en ce moment, dans la limite des stocks. Livraison offerte partout en France et installation sur demande, comme pour tout le catalogue.`
-            : "Aucune promotion en cours. Inscrivez-vous à la newsletter pour être prévenu des prochaines offres."
+            ? `${promos.length} reduzierte Markengeräte aktuell im Angebot, solange der Vorrat reicht. Kostenlose Lieferung deutschlandweit und Montage auf Wunsch.`
+            : "Derzeit keine Sonderaktionen aktiv. Melden Sie sich zum Newsletter an, um keine Angebote zu verpassen."
         }
       />
 
@@ -45,7 +45,7 @@ export default async function PromotionsPage() {
         <section className="pb-20" aria-labelledby="promo-rayons">
           <div className="shell">
             <h2 id="promo-rayons" className="t-h3 mb-6">
-              Par rayon
+              Nach Kategorie
             </h2>
             <ul className="grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
               {byCategory.map(({ c, count, best, max }, i) => (
@@ -57,7 +57,7 @@ export default async function PromotionsPage() {
                     <div className="min-w-0">
                       <p className="t-h3 !text-lg [overflow-wrap:anywhere]">{capitalize(c.nom)}</p>
                       <p className="t-spec mt-1 text-graphite">
-                        {count} offre{count > 1 ? "s" : ""} · jusqu&apos;à −{max} %
+                        {count} Angebot{count > 1 ? "e" : ""} · bis zu −{max} %
                       </p>
                     </div>
                   </Link>
@@ -74,11 +74,11 @@ export default async function PromotionsPage() {
             <Reveal className="mb-12 flex flex-wrap items-end justify-between gap-6">
               <div>
                 <h2 id="promo-meilleures" className="t-h2">
-                  À saisir maintenant
+                  Jetzt zugreifen
                 </h2>
               </div>
               <ButtonLink href="/boutique?promotions=1&tri=remise" variant="outline" icon={<Arrow />}>
-                Toutes les promotions
+                Alle Angebote
               </ButtonLink>
             </Reveal>
             <div className="hairline-grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
@@ -93,8 +93,8 @@ export default async function PromotionsPage() {
       <section className="on-dark bg-ink py-20 text-paper lg:py-28">
         <div className="shell grid gap-12 lg:grid-cols-2 lg:gap-20">
           <div className="min-w-0">
-            <h2 className="t-h2 max-w-md">Soyez prévenu des prochaines offres.</h2>
-            <p className="mt-6 max-w-md text-white/65">Une lettre par mois, pas davantage. Désinscription en un clic.</p>
+            <h2 className="t-h2 max-w-md">Keine Angebote mehr verpassen.</h2>
+            <p className="mt-6 max-w-md text-white/65">Ein Newsletter pro Monat, nicht mehr. Abmeldung jederzeit mit einem Klick.</p>
           </div>
           <NewsletterForm tone="ink" />
         </div>

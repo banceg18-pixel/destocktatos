@@ -29,8 +29,8 @@ export function MobileMenu({
   const { status } = useSession();
   const tel = settings.phone.replace(/\s/g, "");
   return (
-    <Drawer open={open} onClose={onClose} title="Menu" id="menu-mobile" closeLabel="Fermer le menu" tone="ink" side="right" className="max-w-none sm:max-w-[520px]">
-      <nav aria-label="Menu mobile" className="px-6 pb-10 pt-4">
+    <Drawer open={open} onClose={onClose} title="Menü" id="menu-mobile" closeLabel="Menü schließen" tone="ink" side="right" className="max-w-none sm:max-w-[520px]">
+      <nav aria-label="Mobiles Menü" className="px-6 pb-10 pt-4">
         <ul>
           {menu.map((item, i) => (
             <li key={item.href} className="border-b border-white/10">
@@ -47,7 +47,7 @@ export function MobileMenu({
           ))}
         </ul>
 
-        <Accordion title={<span className="t-eyebrow">Toutes les catégories</span>} className="mt-4 border-white/10 [&_.text-ink-soft]:text-white/80">
+        <Accordion title={<span className="t-eyebrow">Alle Kategorien</span>} className="mt-4 border-white/10 [&_.text-ink-soft]:text-white/80">
           <ul className="grid grid-cols-2 gap-x-4 gap-y-2.5">
             {categories.map((c) => (
               <li key={c.slug}>
@@ -62,7 +62,7 @@ export function MobileMenu({
 
         <div className="mt-10 flex flex-col gap-4 text-sm text-white/80">
           <Link href={status === "authenticated" ? "/compte" : "/connexion"} onClick={onClose} className="inline-flex items-center gap-3 hover:text-paper">
-            <IconUser /> {status === "authenticated" ? "Mon compte" : "Se connecter ou créer un compte"}
+            <IconUser /> {status === "authenticated" ? "Mein Konto" : "Anmelden oder registrieren"}
           </Link>
           <a href={`tel:${tel}`} className="inline-flex items-center gap-3 hover:text-paper">
             <IconPhone /> {settings.phone}

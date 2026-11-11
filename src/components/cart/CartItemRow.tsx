@@ -27,11 +27,11 @@ export function CartItemRow({ item }: { item: CartItem }) {
           {title}
         </Link>
         <Price prix={item.prix} promotionPrix={unit < item.prix ? unit : null} size="sm" className="mt-1" />
-        {offerApplies(sale) && <p className="text-xs font-semibold text-promo">Offre -{BIG_TICKET_OFFER.percent} % produits de plus de 1 000 € incluse</p>}
+        {offerApplies(sale) && <p className="text-xs font-semibold text-promo">Inklusive -{BIG_TICKET_OFFER.percent} % Rabatt auf Geräte ab 1.000 €</p>}
         <div className="mt-3 flex items-center gap-5">
-          <QuantityStepper size="sm" value={item.quantity} max={10} onChange={(q) => updateQuantity(item._id, q)} label={`Quantité de ${title}`} />
+          <QuantityStepper size="sm" value={item.quantity} max={10} onChange={(q) => updateQuantity(item._id, q)} label={`Menge für ${title}`} />
           <button type="button" onClick={() => removeFromCart(item._id)} className="text-sm text-graphite underline-offset-4 hover:text-ink hover:underline">
-            Retirer
+            Entfernen
           </button>
         </div>
       </div>

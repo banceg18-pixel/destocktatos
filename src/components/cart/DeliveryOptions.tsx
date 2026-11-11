@@ -8,13 +8,13 @@ import { Checkbox } from "@/components/ui/Primitives";
 import { ChoiceCard } from "./ShippingAddressForm";
 
 const METHODS: { m: DeliveryMethod; title: string; text: string }[] = [
-  { m: "piedDuCamion", title: "Pied du camion", text: "Remise à l'entrée de l'immeuble ou de la maison" },
-  { m: "livraisonPiece", title: "Livraison dans la pièce", text: "Monté et déposé dans la pièce de votre choix" },
-  { m: "installation", title: "Installation", text: "Livraison, raccordement et mise en service" },
+  { m: "piedDuCamion", title: "Bordsteinkante", text: "Übergabe vor dem Gebäude bzw. vor der Haustür" },
+  { m: "livraisonPiece", title: "Lieferung in den Raum", text: "Transport bis in den gewünschten Raum Ihrer Wahl" },
+  { m: "installation", title: "Lieferung mit Installation", text: "Transport, Anschluss und betriebsbereite Inbetriebnahme" },
 ];
 
-/** Prix affiché : « Offert » quand c'est gratuit (cas actuel, partout en France). */
-const fee = (euros: number) => (euros > 0 ? formatEuros(euros) : "Offert");
+/** Prix affiché : « Kostenlos » quand c'est gratuit. */
+const fee = (euros: number) => (euros > 0 ? formatEuros(euros) : "Kostenlos");
 
 /** Choix du mode de livraison (tous offerts, partout en France) et reprise de l'ancien appareil. */
 export function DeliveryOptions() {
@@ -27,11 +27,11 @@ export function DeliveryOptions() {
     if (options && !deliveryMethod) setDeliveryMethod("installation");
   }, [options, deliveryMethod, setDeliveryMethod]);
 
-  if (!options) return <p className="text-sm text-graphite">Les options de livraison s&apos;affichent dès que l&apos;adresse de livraison est complète.</p>;
+  if (!options) return <p className="text-sm text-graphite">Die Versandoptionen werden angezeigt, sobald die Lieferadresse vollständig ist.</p>;
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="grid gap-3" role="radiogroup" aria-label="Options de livraison">
+      <div className="grid gap-3" role="radiogroup" aria-label="Versandoptionen">
         {METHODS.map(({ m, title, text }) => (
           <ChoiceCard
             key={m}
@@ -52,7 +52,7 @@ export function DeliveryOptions() {
           onChange={(e) => setIncludeOldItemPickup(e.target.checked)}
           label={
             <>
-              Reprendre mon ancien appareil ({fee(options.installation.additionalFee ?? 0).toLowerCase()}) — collecté et recyclé le jour de l&apos;installation
+              Kostenlose Altgeräterücknahme ({fee(options.installation.additionalFee ?? 0).toLowerCase()}) — Abholung und Recycling am Tag der Montage
             </>
           }
         />
@@ -66,12 +66,12 @@ export function DeliveryOptions() {
           </div>
           {deliveryMethod === "installation" && includeOldItemPickup && (
             <div className="flex justify-between">
-              <dt className="text-graphite">Reprise de l&apos;ancien appareil</dt>
+              <dt className="text-graphite">Altgeräterücknahme</dt>
               <dd>{fee(options.installation.additionalFee ?? 0)}</dd>
             </div>
           )}
           <div className="flex justify-between font-medium">
-            <dt>Total livraison</dt>
+            <dt>Versand gesamt</dt>
             <dd>{fee(deliveryFee)}</dd>
           </div>
         </dl>

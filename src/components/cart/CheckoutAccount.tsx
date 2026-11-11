@@ -26,14 +26,14 @@ export function CheckoutAccount({ open, onClose, onDone, onGuest }: { open: bool
   };
 
   return (
-    <Drawer open={open} onClose={onClose} title="Dernière étape : vos coordonnées" closeLabel="Revenir au panier" className="sm:max-w-[480px]">
+    <Drawer open={open} onClose={onClose} title="Letzter Schritt: Ihre Angaben" closeLabel="Zurück zum Warenkorb" className="sm:max-w-[480px]">
       {open && (
         <div className="flex flex-col gap-6 px-6 pb-10 pt-2">
-          <div role="tablist" aria-label="Commander" className="grid grid-cols-2 border border-line p-1 text-sm">
+          <div role="tablist" aria-label="Bestellen" className="grid grid-cols-2 border border-line p-1 text-sm">
             {(
               [
-                ["guest", "Commander sans compte"],
-                ["login", "J'ai déjà un compte"],
+                ["guest", "Als Gast bestellen"],
+                ["login", "Bereits registriert"],
               ] as const
             ).map(([m, label]) => (
               <button
@@ -52,10 +52,9 @@ export function CheckoutAccount({ open, onClose, onDone, onGuest }: { open: bool
             {mode === "guest" ? (
               <form onSubmit={submit} noValidate className="flex flex-col gap-5">
                 <p className="text-sm text-graphite">
-                  Indiquez votre email : vous y recevrez la confirmation et la facture avec les informations de paiement. Vous pourrez ensuite créer votre
-                  compte en un clic pour retrouver vos factures.
+                  Geben Sie Ihre E-Mail-Adresse ein: Sie erhalten dorthin die Bestellbestätigung und Proforma-Rechnung mit den Bankdaten für Ihre Überweisung.
                 </p>
-                <Field label="Email" htmlFor="guest-email" error={f.errors.email}>
+                <Field label="E-Mail-Adresse" htmlFor="guest-email" error={f.errors.email}>
                   <Input
                     id="guest-email"
                     type="email"
@@ -67,12 +66,12 @@ export function CheckoutAccount({ open, onClose, onDone, onGuest }: { open: bool
                     }}
                     onBlur={(e) => f.onBlur("email", e.target.value, rules.email)}
                     autoComplete="email"
-                    placeholder="nom@exemple.fr"
+                    placeholder="ihre.email@beispiel.de"
                     data-testid="guest-email"
                   />
                 </Field>
                 <Button type="submit" size="lg" block icon={<Arrow />} data-testid="guest-continue">
-                  Continuer vers le paiement
+                  Weiter zur Bezahlung
                 </Button>
               </form>
             ) : (

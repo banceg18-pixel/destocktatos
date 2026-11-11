@@ -7,18 +7,18 @@ import { FooterNewsletter, CookiePreferencesButton } from "./FooterClient";
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 const HELP: MenuItem[] = [
-  { label: "Livraison et installation", href: "/services" },
-  { label: "Conseils", href: "/conseils" },
-  { label: "Questions fréquentes", href: "/faq" },
-  { label: "Suivre une commande", href: "/compte/commandes" },
-  { label: "Signaler un problème", href: "/signaler-bug" },
-  { label: "Nous contacter", href: "/contact" },
+  { label: "Lieferung und Montage", href: "/services" },
+  { label: "Ratgeber & Tipps", href: "/conseils" },
+  { label: "Häufige Fragen (FAQ)", href: "/faq" },
+  { label: "Bestellung verfolgen", href: "/compte/commandes" },
+  { label: "Problem melden", href: "/signaler-bug" },
+  { label: "Kontakt", href: "/contact" },
 ];
 const STORE: MenuItem[] = [
-  { label: "Le magasin", href: "/a-propos" },
-  { label: "Promotions", href: "/promotions" },
-  { label: "Tout le catalogue", href: "/boutique" },
-  { label: "Mon compte", href: "/compte" },
+  { label: "Über uns", href: "/a-propos" },
+  { label: "Angebote", href: "/promotions" },
+  { label: "Gesamtes Sortiment", href: "/boutique" },
+  { label: "Mein Konto", href: "/compte" },
 ];
 
 const linkClass = "link-underline text-[0.95rem] text-white/85 hover:text-paper";
@@ -72,18 +72,18 @@ export function Footer({ settings, legal, categories }: { settings: SiteSettings
     <footer className="on-dark flex min-h-[calc(100svh-var(--header-h))] flex-col overflow-hidden bg-ink text-paper">
       <div className="shell grid gap-4 border-b border-white/10 py-6 md:gap-5 md:py-8 lg:grid-cols-[1.1fr_1fr] lg:items-end lg:gap-14 lg:py-12">
         <div className="max-w-md">
-          <p className="font-display text-[clamp(1.45rem,2.6vw,2.4rem)] font-medium leading-[1.05] tracking-[-0.025em] [font-stretch:115%]">Les bonnes affaires, avant tout le monde.</p>
-          <p className="mt-3 hidden text-white/65 sm:block">Une lettre par mois : arrivages, prix réduits et conseils d&apos;entretien. Désinscription en un clic.</p>
+          <p className="font-display text-[clamp(1.45rem,2.6vw,2.4rem)] font-medium leading-[1.05] tracking-[-0.025em] [font-stretch:115%]">Top-Angebote vor allen anderen entdecken.</p>
+          <p className="mt-3 hidden text-white/65 sm:block">Ein Newsletter pro Monat: Neuheiten, reduzierte Preise und Pflegetipps. Jederzeit mit einem Klick abmeldbar.</p>
         </div>
         <FooterNewsletter />
       </div>
 
       <div className="shell flex flex-1 flex-col justify-center py-4 md:grid md:grid-cols-4 md:content-center md:gap-x-6 md:gap-y-8 md:py-8 lg:gap-x-8 lg:py-10">
-        <Group title="Catégories" items={topCategories} />
-        <Group title="Aide" items={HELP} />
-        <Group title="Magasin" items={STORE} />
+        <Group title="Kategorien" items={topCategories} />
+        <Group title="Hilfe & Service" items={HELP} />
+        <Group title="Unternehmen" items={STORE} />
         <div className="min-w-0 pt-5 md:pt-0">
-          <h2 className="t-eyebrow mb-3 text-white/50 md:mb-4 lg:mb-5">Nous trouver</h2>
+          <h2 className="t-eyebrow mb-3 text-white/50 md:mb-4 lg:mb-5">Standort</h2>
           <ul className="flex flex-col gap-2.5 text-[0.9rem] text-white/85 lg:gap-3.5 lg:text-[0.95rem]">
             <li className="flex gap-3">
               <IconPin className="mt-0.5 shrink-0 text-white/50" />
@@ -126,7 +126,7 @@ export function Footer({ settings, legal, categories }: { settings: SiteSettings
           </li>
         </ul>
         <p className="md:order-1">
-          © {new Date().getFullYear()} {settings.siteName}. Tous droits réservés.
+          © {new Date().getFullYear()} {settings.siteName}. Alle Rechte vorbehalten.
         </p>
       </div>
     </footer>

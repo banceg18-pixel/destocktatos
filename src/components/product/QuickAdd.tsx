@@ -33,8 +33,8 @@ export function QuickAdd({ product, className }: { product: Product; className?:
         addToCart(toCartItem(product));
         notifyAdded(product._id);
       }}
-      aria-label={available ? `Ajouter ${product.titre} au panier` : `${product.titre} : rupture de stock`}
-      title={available ? "Ajouter au panier" : "Rupture de stock"}
+      aria-label={available ? `${product.titre} in den Warenkorb legen` : `${product.titre}: nicht vorrätig`}
+      title={available ? "In den Warenkorb" : "Nicht vorrätig"}
       className={cn(
         "flex size-10 items-center justify-center rounded-full bg-paper text-ink shadow-[0_1px_0_rgba(0,0,0,0.04)] transition-[background-color,color,transform,opacity] duration-300 hover:bg-ink hover:text-paper disabled:opacity-40",
         className,

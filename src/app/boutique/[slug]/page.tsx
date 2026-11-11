@@ -55,18 +55,18 @@ export default async function ProductPage({ params }: { params: Params }) {
   const images = [p.imagePrincipale, ...p.images].filter((i, idx, arr): i is NonNullable<typeof i> => !!i?.url && arr.findIndex((x) => x?.url === i.url) === idx);
 
   const specs: { label: string; value: string }[] = [
-    { label: "Marque", value: p.marque },
-    { label: "Référence", value: p.modele },
-    { label: "Catégorie", value: capitalize(p.categorie) },
-    ...(p.sousCategorie.length ? [{ label: "Type", value: p.sousCategorie.map(capitalize).join(", ") }] : []),
-    ...(c.largeur && c.hauteur && c.profondeur ? [{ label: "Dimensions (L × P × H)", value: `${c.largeur} × ${c.profondeur} × ${c.hauteur} cm` }] : []),
-    ...(c.poids ? [{ label: "Poids", value: `${String(c.poids).replace(".", ",")} kg` }] : []),
-    ...(p.pose ? [{ label: "Pose", value: capitalize(p.pose) }] : []),
-    ...(p.couleur.length ? [{ label: "Couleur", value: p.couleur.map(capitalize).join(", ") }] : []),
-    ...(p.sonore != null ? [{ label: "Niveau sonore", value: `${p.sonore} dB` }] : []),
-    { label: "Connecté", value: p.connecter ? "Oui" : "Non" },
-    ...(p.garantie ? [{ label: "Garantie", value: `${p.garantie.duree} mois` }] : []),
-    { label: "Exposé en magasin", value: p.magasin ? "Oui" : "Non" },
+    { label: "Marke", value: p.marque },
+    { label: "Modell", value: p.modele },
+    { label: "Kategorie", value: capitalize(p.categorie) },
+    ...(p.sousCategorie.length ? [{ label: "Typ", value: p.sousCategorie.map(capitalize).join(", ") }] : []),
+    ...(c.largeur && c.hauteur && c.profondeur ? [{ label: "Abmessungen (B × T × H)", value: `${c.largeur} × ${c.profondeur} × ${c.hauteur} cm` }] : []),
+    ...(c.poids ? [{ label: "Gewicht", value: `${String(c.poids).replace(".", ",")} kg` }] : []),
+    ...(p.pose ? [{ label: "Aufstellung", value: capitalize(p.pose) }] : []),
+    ...(p.couleur.length ? [{ label: "Farbe", value: p.couleur.map(capitalize).join(", ") }] : []),
+    ...(p.sonore != null ? [{ label: "Geräuschpegel", value: `${p.sonore} dB` }] : []),
+    { label: "Smart / Vernetzt", value: p.connecter ? "Ja" : "Nein" },
+    ...(p.garantie ? [{ label: "Garantie", value: `${p.garantie.duree} Monate` }] : []),
+    { label: "In Filiale ausgestellt", value: p.magasin ? "Ja" : "Nein" },
   ];
 
   const productLd = {
@@ -89,8 +89,8 @@ export default async function ProductPage({ params }: { params: Params }) {
     },
   };
   const crumbs: { label: string; href?: string }[] = [
-    { label: "Accueil", href: "/" },
-    { label: "Boutique", href: "/boutique" },
+    { label: "Startseite", href: "/" },
+    { label: "Shop", href: "/boutique" },
     ...(category ? [{ label: capitalize(category.nom), href: `/categorie/${category.slug}` }] : []),
     { label: title },
   ];
@@ -121,12 +121,12 @@ export default async function ProductPage({ params }: { params: Params }) {
               <a href="#avis" className="flex items-center gap-2 text-sm hover:underline">
                 <Stars value={note} />
                 <span>
-                  {note.toFixed(1).replace(".", ",")} · {nbAvis} avis
+                  {note.toFixed(1).replace(".", ",")} · {nbAvis} {nbAvis > 1 ? "Bewertungen" : "Bewertung"}
                 </span>
               </a>
             ) : (
               <a href="#avis" className="text-sm text-graphite hover:underline">
-                Pas encore d&apos;avis
+                Noch keine Bewertungen
               </a>
             )}
             <StockBadge stock={p.stock} />
@@ -136,10 +136,10 @@ export default async function ProductPage({ params }: { params: Params }) {
             <Price prix={p.prix} promotionPrix={p.promotionPrix} size="xl" />
             {pct > 0 && <Tag tone="promo">-{pct} %</Tag>}
           </div>
-          {pct > 0 && <p className="mt-2 text-sm text-graphite">Vous économisez {formatEuros(p.prix - price)} par rapport au prix conseillé fabricant.</p>}
+          {pct > 0 && <p className="mt-2 text-sm text-graphite">Sie sparen {formatEuros(p.prix - price)} gegenüber der UVP des Herstellers.</p>}
           {offerApplies(price) && (
             <p className="mt-2 text-sm font-semibold text-promo">
-              -{BIG_TICKET_OFFER.percent} % supplémentaires appliqués au panier (produits de plus de 1 000 €) : {formatEuros(offerUnitEuros(price))}.
+              -{BIG_TICKET_OFFER.percent} % zusätzlicher Rabatt im Warenkorb (Geräte ab 1.000 €): {formatEuros(offerUnitEuros(price))}.
             </p>
           )}
 
@@ -151,38 +151,38 @@ export default async function ProductPage({ params }: { params: Params }) {
             <li className="flex gap-3">
               <IconTruck className="mt-0.5 shrink-0" />
               <span>
-                <span className="block font-medium">Livraison gratuite</span>
-                <span className="text-graphite">partout en France</span>
+                <span className="block font-medium">Kostenlose Lieferung</span>
+                <span className="text-graphite">in ganz Deutschland</span>
               </span>
             </li>
             <li className="flex gap-3">
               <IconWrench className="mt-0.5 shrink-0" />
               <span>
-                <span className="block font-medium">Installation</span>
-                <span className="text-graphite">et reprise de l&apos;ancien</span>
+                <span className="block font-medium">Montageservice</span>
+                <span className="text-graphite">und Altgerätemitnahme</span>
               </span>
             </li>
             <li className="flex gap-3">
               <IconShield className="mt-0.5 shrink-0" />
               <span>
-                <span className="block font-medium">En mains propres</span>
-                <span className="text-graphite">par nos agents de proximité</span>
+                <span className="block font-medium">Persönliche Übergabe</span>
+                <span className="text-graphite">durch eigene Serviceteams</span>
               </span>
             </li>
             <li className="flex gap-3">
               <IconLock className="mt-0.5 shrink-0" />
               <span>
-                <span className="block font-medium">Paiement sécurisé</span>
-                <span className="text-graphite">par virement bancaire</span>
+                <span className="block font-medium">Sichere Zahlung</span>
+                <span className="text-graphite">per Banküberweisung</span>
               </span>
             </li>
           </ul>
 
           <div className="mt-2">
-            <Accordion title="Description" defaultOpen>
+            <Accordion title="Beschreibung" defaultOpen>
               <div className="space-y-3 whitespace-pre-line">{p.description}</div>
             </Accordion>
-            <Accordion title="Fiche technique">
+            <Accordion title="Technische Daten">
               <dl className="divide-y divide-line">
                 {specs.map((s) => (
                   <div key={s.label} className="grid grid-cols-[1fr_1.2fr] gap-4 py-2.5">
@@ -192,8 +192,8 @@ export default async function ProductPage({ params }: { params: Params }) {
                 ))}
               </dl>
             </Accordion>
-            <Accordion title="Livraison et installation">
-              <p className="mb-4">Livraison offerte partout en France, quel que soit le mode choisi.</p>
+            <Accordion title="Lieferung & Montage">
+              <p className="mb-4">Kostenlose Lieferung in ganz Deutschland für alle Versandarten.</p>
               <DeliveryRates />
             </Accordion>
             {p.garantie && (
@@ -201,15 +201,15 @@ export default async function ProductPage({ params }: { params: Params }) {
                 <p className="flex gap-3">
                   <IconShield className="mt-1 shrink-0" />
                   <span>
-                    <span className="font-medium">{p.garantie.duree} mois.</span> {p.garantie.descriptif}
+                    <span className="font-medium">{p.garantie.duree} Monate.</span> {p.garantie.descriptif}
                   </span>
                 </p>
               </Accordion>
             )}
             {p.etiquetteEnergie?.url && (
-              <Accordion title="Étiquette énergie">
+              <Accordion title="Energielabel">
                 <div className="mx-auto max-w-[260px] bg-paper">
-                  <ImageComponent img={p.etiquetteEnergie.url} alt={`Étiquette énergie — ${title}`} size={520} className="h-auto w-full object-contain" />
+                  <ImageComponent img={p.etiquetteEnergie.url} alt={`Energielabel — ${title}`} size={520} className="h-auto w-full object-contain" />
                 </div>
               </Accordion>
             )}
@@ -229,16 +229,16 @@ export default async function ProductPage({ params }: { params: Params }) {
             <Reveal className="mb-12 flex flex-wrap items-end justify-between gap-6">
               <div>
                 <h2 id="suggestions" className="t-h2">
-                  Vous pourriez aussi aimer
+                  Das könnte Ihnen auch gefallen
                 </h2>
               </div>
               {category && (
                 <Link href={`/categorie/${category.slug}`} className="t-eyebrow link-underline">
-                  Tout le rayon {category.nom}
+                  Alle Geräte in {category.nom}
                 </Link>
               )}
             </Reveal>
-            <Rail label="Produits du même rayon">
+            <Rail label="Ähnliche Produkte">
               {suggestions.map((s) => (
                 <li key={s._id} className="w-[64vw] shrink-0 border border-line sm:w-[40vw] md:w-[30vw] lg:w-[23%]">
                   <ProductCard product={s} className="h-full" />

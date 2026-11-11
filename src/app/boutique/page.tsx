@@ -8,10 +8,10 @@ type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
   const q = parseCatalogQuery(await searchParams);
-  const title = q.recherche ? `Recherche « ${q.recherche} »` : "Boutique";
+  const title = q.recherche ? `Suche « ${q.recherche} »` : "Sortiment";
   return {
     title,
-    description: "Tout le catalogue d'électroménager disponible : réfrigérateurs, lave-linge, fours, plaques, petit électroménager. Livraison gratuite partout en France, installation et reprise de l'ancien appareil.",
+    description: "Unser gesamtes Sortiment an Haushaltsgeräten: Kühlschränke, Waschmaschinen, Backöfen und mehr. Kostenlose Lieferung in ganz Deutschland, Installation und Altgeräterücknahme.",
     alternates: { canonical: "/boutique" },
     // Les combinaisons de filtres ne sont pas indexées (contenu dupliqué) ; la boutique l'est.
     robots: q.recherche || q.categorie || q.page > 1 ? { index: false, follow: true } : undefined,
@@ -37,11 +37,11 @@ export default async function BoutiquePage({ searchParams }: { searchParams: Sea
   return (
     <>
       <PageHeader
-        title={q.recherche ? `« ${q.recherche} »` : "Boutique"}
+        title={q.recherche ? `« ${q.recherche} »` : "Sortiment"}
         intro={
           q.recherche
-            ? `${result.total} résultat${result.total > 1 ? "s" : ""} parmi les appareils disponibles.`
-            : "Tous les appareils disponibles, livrés gratuitement partout en France et installés chez vous si vous le souhaitez."
+            ? `${result.total} ${result.total === 1 ? "Ergebnis" : "Ergebnisse"} gefunden.`
+            : "Alle verfügbaren Geräte, mit kostenlosem Versand in ganz Deutschland und auf Wunsch fachgerechter Installation."
         }
       />
       <CatalogView

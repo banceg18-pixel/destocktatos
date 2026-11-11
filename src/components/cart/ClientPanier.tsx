@@ -61,11 +61,11 @@ export function ClientPanier() {
 
   const missing: string[] = [];
   if (!isPickupInStore) {
-    if (!isShippingAddressValid() || !shippingAddress) missing.push("Complétez l'adresse de livraison.");
-    else if (deliveryDistance <= 0) missing.push("La distance de livraison n'est pas encore calculée.");
-    else if (!deliveryMethod) missing.push("Choisissez une option de livraison.");
+    if (!isShippingAddressValid() || !shippingAddress) missing.push("Bitte vervollständigen Sie die Lieferadresse.");
+    else if (deliveryDistance <= 0) missing.push("Die Lieferdistanz wird berechnet.");
+    else if (!deliveryMethod) missing.push("Bitte wählen Sie eine Versandart.");
   }
-  if (!accepted) missing.push("Acceptez les conditions générales de vente.");
+  if (!accepted) missing.push("Bitte akzeptieren Sie die Allgemeinen Geschäftsbedingungen.");
   const canCheckout = missing.length === 0;
   // Économie de l'offre -10 % au-delà de 1 000 € (déjà comprise dans le total des articles).
   const offerSavings = cart.reduce((s, i) => s + (i.promotionPrix || i.prix) * i.quantity, 0) - totalPrice;
@@ -73,7 +73,7 @@ export function ClientPanier() {
   const checkout = () => {
     setAttempted(true);
     if (!canCheckout || processing || status === "loading") return;
-    if (!cart.length || !totalPrice) return setError("Votre panier est vide.");
+    if (!cart.length || !totalPrice) return setError("Ihr Warenkorb ist leer.");
     if (!authenticated) return setAccountOpen(true);
     void placeOrder();
   };
@@ -110,16 +110,16 @@ export function ClientPanier() {
       return;
     }
     setProcessing(false);
-    setError(res.status === 0 ? "Le serveur ne répond pas. Vérifiez votre connexion puis réessayez." : res.error || "La commande n'a pas pu être créée. Réessayez.");
+    setError(res.status === 0 ? "Der Server antwortet nicht. Bitte überprüfen Sie Ihre Verbindung." : res.error || "Bestellung konnte nicht erstellt werden.");
   };
 
   if (totalItems === 0) {
     return (
       <div className="flex flex-col items-start gap-6 border-t border-ink py-20">
-        <h2 className="t-h2">Votre panier est vide</h2>
-        <p className="max-w-lg text-graphite">Ajoutez des appareils depuis le catalogue : ils restent mémorisés sur cet appareil jusqu&apos;à votre commande.</p>
+        <h2 className="t-h2">Ihr Warenkorb ist leer</h2>
+        <p className="max-w-lg text-graphite">Entdecken Sie unser Sortiment an Qualitäts-Haushaltsgeräten zu besten Preisen.</p>
         <ButtonLink href="/boutique" size="lg" icon={<Arrow />}>
-          Découvrir la boutique
+          Sortiment entdecken
         </ButtonLink>
       </div>
     );
@@ -128,7 +128,7 @@ export function ClientPanier() {
   return (
     <div className="grid gap-14 lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-16">
       <div className="flex flex-col gap-14">
-        <Section n={1} title={`Articles (${totalItems})`}>
+        <Section n={1} title={`Artikel (${totalItems})`}>
           <ul className="divide-y divide-line">
             {cart.map((item) => (
               <CartItemRow key={item._id} item={item} />
@@ -136,69 +136,69 @@ export function ClientPanier() {
           </ul>
           <div className="mt-4 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-4 text-sm">
             <Link href="/boutique" className="link-underline inline-flex items-center gap-2">
-              <Arrow direction="left" /> Continuer mes achats
+              <Arrow direction="left" /> Weiter einkaufen
             </Link>
             {confirmClear ? (
               <span className="flex items-center gap-4">
-                Vider le panier ?
+                Warenkorb leeren?
                 <button type="button" className="font-medium text-danger underline underline-offset-4" onClick={clearCart}>
-                  Oui, vider
+                  Ja, leeren
                 </button>
                 <button type="button" className="underline underline-offset-4" onClick={() => setConfirmClear(false)}>
-                  Annuler
+                  Abbrechen
                 </button>
               </span>
             ) : (
               <button type="button" onClick={() => setConfirmClear(true)} className="text-graphite underline-offset-4 hover:text-ink hover:underline">
-                Vider le panier
+                Warenkorb leeren
               </button>
             )}
           </div>
         </Section>
 
-        <Section n={2} title="Réception">
+        <Section n={2} title="Lieferung & Adresse">
           <ShippingAddressForm />
         </Section>
 
         {!isPickupInStore && (
-          <Section n={3} title="Options de livraison">
+          <Section n={3} title="Versandoptionen">
             <DeliveryOptions />
           </Section>
         )}
       </div>
 
-      <aside aria-label="Récapitulatif" className="lg:sticky lg:top-[calc(var(--header-h)+28px)] lg:self-start">
+      <aside aria-label="Bestellübersicht" className="lg:sticky lg:top-[calc(var(--header-h)+28px)] lg:self-start">
         <div className="bg-mist p-6 lg:p-8">
-          <h2 className="t-h3">Récapitulatif</h2>
+          <h2 className="t-h3">Bestellübersicht</h2>
           <dl className="t-price mt-6 flex flex-col gap-3 text-sm">
             <div className="flex justify-between">
               <dt className="text-graphite">
-                Articles ({totalItems})
+                Artikel ({totalItems})
               </dt>
               <dd>{formatEuros(totalPrice)}</dd>
             </div>
             {offerSavings >= 0.01 && (
               <div className="flex justify-between font-semibold text-promo">
-                <dt>Dont offre -{BIG_TICKET_OFFER.percent} % (plus de 1 000 €)</dt>
+                <dt>Inklusive -{BIG_TICKET_OFFER.percent} % Rabatt (ab 1.000 €)</dt>
                 <dd>−{formatEuros(offerSavings)}</dd>
               </div>
             )}
             {appliedCoupon && (
               <div className="flex justify-between text-success">
-                <dt>Réduction {appliedCoupon.code}</dt>
+                <dt>Gutschein {appliedCoupon.code}</dt>
                 <dd>−{formatEuros(appliedCoupon.discount)}</dd>
               </div>
             )}
             <div className="flex justify-between">
-              <dt className="text-graphite">{isPickupInStore ? "Retrait en magasin" : "Livraison"}</dt>
-              <dd>{isPickupInStore || deliveryFee <= 0 ? "Offerte" : formatEuros(deliveryFee)}</dd>
+              <dt className="text-graphite">{isPickupInStore ? "Selbstabholung" : "Lieferung"}</dt>
+              <dd>{isPickupInStore || deliveryFee <= 0 ? "Kostenlos" : formatEuros(deliveryFee)}</dd>
             </div>
           </dl>
           <div className="mt-5 border-t border-line pt-5">
             <CouponForm />
           </div>
           <div className="mt-5 flex items-baseline justify-between border-t border-ink pt-5">
-            <span className="font-medium">Total TTC</span>
+            <span className="font-medium">Gesamtbetrag (inkl. MwSt.)</span>
             <span className="t-price font-display text-2xl font-medium [font-stretch:110%]" data-testid="cart-total">
               {formatEuros(calculateTotalWithDelivery())}
             </span>
@@ -206,8 +206,7 @@ export function ClientPanier() {
 
           {!authenticated && status !== "loading" && (
             <p className="mt-6 border border-line bg-paper p-4 text-sm">
-              Pas besoin de compte pour préparer votre commande : vous le créerez juste avant le paiement, en une minute. Déjà client ? Vous pourrez vous
-              connecter à cette étape.
+              Sie benötigen kein Konto, um die Bestellung vorzubereiten: Sie können es einfach vor der Zahlung in einer Minute einrichten. Bereits registriert? Sie können sich im nächsten Schritt einloggen.
             </p>
           )}
 
@@ -218,13 +217,13 @@ export function ClientPanier() {
             onChange={(e) => setAccepted(e.target.checked)}
             label={
               <>
-                J&apos;accepte les{" "}
+                Ich akzeptiere die{" "}
                 <Link href="/cgv" target="_blank" className="underline underline-offset-4">
-                  conditions générales de vente
+                  Allgemeinen Geschäftsbedingungen
                 </Link>{" "}
-                et la{" "}
+                und die{" "}
                 <Link href="/politique-confidentialite" target="_blank" className="underline underline-offset-4">
-                  politique de confidentialité
+                  Datenschutzerklärung
                 </Link>
                 .
               </>
@@ -253,14 +252,14 @@ export function ClientPanier() {
           >
             {processing ? (
               <>
-                <Spinner /> Création de la commande…
+                <Spinner /> Bestellung wird vorbereitet…
               </>
             ) : (
-              "Passer au paiement"
+              "Zur Kasse gehen"
             )}
           </Button>
           <p className="mt-4 flex items-center justify-center gap-2 text-xs text-graphite">
-            <IconLock size={14} /> Paiement sécurisé à l&apos;étape suivante
+            <IconLock size={14} /> Sichere Bezahlung im nächsten Schritt
           </p>
         </div>
       </aside>

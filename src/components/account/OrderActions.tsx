@@ -17,13 +17,13 @@ function InvoiceButton({ orderId, kind }: { orderId: string; kind: "download" | 
     setLoading(false);
     if (!res.ok) return setError(res.error);
     const url = kind === "download" ? res.data.downloadUrl : res.data.viewUrl;
-    if (!url) return setError("La facture n'a pas pu être générée. Réessayez.");
+    if (!url) return setError("Die Rechnung konnte nicht erstellt werden. Bitte versuchen Sie es erneut.");
     if (kind === "view") {
       window.open(url, "_blank", "noopener,noreferrer");
     } else {
       const a = document.createElement("a");
       a.href = url;
-      a.download = `facture_${res.data.invoiceNumber}.pdf`;
+      a.download = `rechnung_${res.data.invoiceNumber}.pdf`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -32,7 +32,7 @@ function InvoiceButton({ orderId, kind }: { orderId: string; kind: "download" | 
   return (
     <span className="flex flex-col gap-1">
       <Button variant={kind === "download" ? "solid" : "outline"} size="sm" plain={loading} disabled={loading} onClick={click}>
-        {loading ? <Spinner /> : kind === "download" ? "Télécharger la facture" : "Voir la facture"}
+        {loading ? <Spinner /> : kind === "download" ? "Rechnung herunterladen" : "Rechnung ansehen"}
       </Button>
       {error && (
         <span role="alert" className="text-xs text-danger">
@@ -53,7 +53,7 @@ function CancelOrder({ orderId }: { orderId: string }) {
     <span className="flex flex-wrap items-center gap-3 text-sm">
       {confirm ? (
         <>
-          <span>Annuler cette commande ? Les articles seront remis en vente.</span>
+          <span>Diese Bestellung stornieren? Die Artikel werden wieder zum Verkauf freigegeben.</span>
           <button
             type="button"
             disabled={busy}
@@ -67,15 +67,15 @@ function CancelOrder({ orderId }: { orderId: string }) {
               else setError(res.error);
             }}
           >
-            {busy ? <Spinner /> : "Oui, annuler"}
+            {busy ? <Spinner /> : "Ja, stornieren"}
           </button>
           <button type="button" className="underline underline-offset-4" onClick={() => setConfirm(false)}>
-            Retour
+            Zurück
           </button>
         </>
       ) : (
         <button type="button" onClick={() => setConfirm(true)} className="text-graphite underline-offset-4 hover:text-danger hover:underline">
-          Annuler la commande
+          Bestellung stornieren
         </button>
       )}
       {error && (
@@ -99,7 +99,7 @@ export function OrderActions({ orderId, status, paid }: { orderId: string; statu
   if (awaitingTransfer)
     return (
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
-        <p className="text-graphite">La facture vous sera envoyée par email dès réception du paiement.</p>
+        <p className="text-graphite">Die Rechnung wird Ihnen nach Zahlungseingang per E-Mail zugesandt.</p>
         <CancelOrder orderId={orderId} />
       </div>
     );
@@ -110,13 +110,13 @@ export function OrderActions({ orderId, status, paid }: { orderId: string; statu
         <InvoiceButton orderId={orderId} kind="download" />
       </div>
     );
-  if (active) return <p className="text-sm text-graphite">La facture sera disponible ici dès le règlement de la commande.</p>;
+  if (active) return <p className="text-sm text-graphite">Die Rechnung steht hier bereit, sobald die Bestellung bezahlt wurde.</p>;
   if (status !== "EN_ATTENTE_PAIEMENT") return null;
 
   return (
     <div className="flex flex-wrap items-center gap-3 text-sm">
       <ButtonLink href="/paiement" size="sm">
-        Finaliser le paiement
+        Zahlung abschließen
       </ButtonLink>
       <CancelOrder orderId={orderId} />
     </div>

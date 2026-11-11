@@ -5,7 +5,7 @@ import { getSession, isGoogleEnabled } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Mon profil", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "Mein Profil", robots: { index: false, follow: false } };
 
 /** Profil : nom affiché, mot de passe (ou création pour un compte Google), suppression du compte. */
 export default async function ProfilPage() {
@@ -15,9 +15,9 @@ export default async function ProfilPage() {
   if (!user) redirect("/connexion");
   return (
     <div>
-      <h1 className="t-h2">Mon profil</h1>
+      <h1 className="t-h2">Mein Profil</h1>
       <p className="mt-4 text-graphite">
-        Client depuis le {user.createdAt.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}.
+        Kunde seit dem {user.createdAt.toLocaleDateString("de-DE", { day: "numeric", month: "long", year: "numeric" })}.
       </p>
       <ProfileForms name={user.name} email={user.email} hasPassword={!!user.passwordHash} googleEnabled={isGoogleEnabled()} />
     </div>

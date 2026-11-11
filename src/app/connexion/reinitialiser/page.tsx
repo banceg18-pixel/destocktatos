@@ -4,7 +4,7 @@ import { AuthShell } from "@/components/auth/AuthShell";
 import { ResetPasswordForm } from "@/components/auth/ResetPasswordForm";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Nouveau mot de passe", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "Neues Passwort", robots: { index: false, follow: false } };
 
 export default async function ResetPasswordPage({ searchParams }: { searchParams: Promise<{ token?: string; creation?: string }> }) {
   const { token, creation } = await searchParams;
@@ -13,17 +13,17 @@ export default async function ResetPasswordPage({ searchParams }: { searchParams
   const create = creation === "1";
   return (
     <AuthShell
-      title={create ? "Créez votre compte" : "Nouveau mot de passe"}
+      title={create ? "Konto erstellen" : "Neues Passwort"}
       subtitle={
         valid
           ? create
-            ? "Choisissez votre mot de passe : vous retrouverez ensuite vos commandes et vos factures dans votre compte."
-            : "Choisissez le mot de passe que vous utiliserez désormais."
+            ? "Legen Sie Ihr Passwort fest: Anschließend können Sie Ihre Bestellungen und Rechnungen in Ihrem Konto einsehen."
+            : "Wählen Sie ein neues sicheres Passwort für Ihr Konto."
           : undefined
       }
       footer={
         <Link href="/connexion" className="underline underline-offset-4">
-          Retour à la connexion
+          Zurück zur Anmeldung
         </Link>
       }
     >
@@ -31,9 +31,9 @@ export default async function ResetPasswordPage({ searchParams }: { searchParams
         <ResetPasswordForm token={token!} />
       ) : (
         <div className="flex flex-col items-start gap-4">
-          <p>Ce lien est invalide ou incomplet. Les liens reçus par email ne servent qu&apos;une fois et ont une durée de validité limitée.</p>
+          <p>Dieser Link ist ungültig oder abgelaufen. Sicherheitslinks aus E-Mails können nur einmal verwendet werden und sind zeitlich befristet.</p>
           <Link href="/connexion/mot-de-passe-oublie" className="font-medium underline underline-offset-4">
-            Demander un nouveau lien
+            Neuen Link anfordern
           </Link>
         </div>
       )}

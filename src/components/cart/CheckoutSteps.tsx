@@ -1,6 +1,6 @@
 import { cn } from "@/lib/client/cn";
 
-const STEPS = ["Panier", "Livraison", "Paiement", "Confirmation"] as const;
+const STEPS = ["Warenkorb", "Lieferung", "Zahlung", "Bestätigung"] as const;
 
 /** Étapes de la commande (ordre réel du parcours) ; l'étape courante est annoncée aux lecteurs d'écran. */
 export function CheckoutSteps({ current }: { current: 0 | 1 | 2 | 3 }) {

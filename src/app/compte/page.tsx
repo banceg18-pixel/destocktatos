@@ -13,7 +13,7 @@ import { listUserOrders, toOrderDTO } from "@/lib/server/orders";
 import { ORDER_STATUS_LABELS, orderStatusLabel } from "@/services/orders";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Mon compte", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "Mein Konto", robots: { index: false, follow: false } };
 
 /** Tableau de bord client : commandes récentes, avantages fidélité, carnet d'adresses. */
 export default async function ComptePage() {
@@ -36,12 +36,12 @@ export default async function ComptePage() {
       <header className="flex flex-wrap items-end justify-between gap-6">
         <div className="min-w-0">
           <h1 className="t-h2 [overflow-wrap:anywhere]">
-            Bonjour,
+            Guten Tag,
             <br />
             {user.name}
           </h1>
           <p className="mt-4 text-graphite [overflow-wrap:anywhere]">
-            {user.email} · client depuis {user.createdAt.toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}
+            {user.email} · Kunde seit {user.createdAt.toLocaleDateString("de-DE", { month: "long", year: "numeric" })}
           </p>
         </div>
         <LogoutButton className="lg:hidden" />
@@ -49,9 +49,9 @@ export default async function ComptePage() {
 
       <dl className="grid grid-cols-3 border-y border-line">
         {[
-          { label: "Commandes", value: String(orders.length) },
-          { label: "À payer", value: String(pending) },
-          { label: "Adresses", value: String(addresses.length) },
+          { label: "Bestellungen", value: String(orders.length) },
+          { label: "Ausstehend", value: String(pending) },
+          { label: "Adressen", value: String(addresses.length) },
         ].map((s, i) => (
           <div key={s.label} className={i > 0 ? "min-w-0 border-l border-line px-3 py-5 sm:px-5 sm:py-6" : "min-w-0 py-5 pr-3 sm:py-6 sm:pr-5"}>
             <dt className="t-eyebrow truncate text-graphite">{s.label}</dt>
@@ -63,19 +63,19 @@ export default async function ComptePage() {
       <section aria-labelledby="commandes-recentes">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
           <h2 id="commandes-recentes" className="t-h3">
-            Commandes récentes
+            Aktuelle Bestellungen
           </h2>
           {orders.length > 0 && (
             <Link href="/compte/commandes" className="link-underline inline-flex items-center gap-2 text-sm">
-              Toutes mes commandes ({orders.length}) <Arrow />
+              Alle Bestellungen ({orders.length}) <Arrow />
             </Link>
           )}
         </div>
         {recent.length === 0 ? (
           <div className="flex flex-col items-start gap-5 border border-dashed border-line p-8">
-            <p className="text-graphite">Vous n&apos;avez pas encore passé de commande.</p>
+            <p className="text-graphite">Sie haben noch keine Bestellung aufgegeben.</p>
             <ButtonLink href="/boutique" variant="outline" icon={<Arrow />}>
-              Découvrir la boutique
+              Sortiment entdecken
             </ButtonLink>
           </div>
         ) : (
@@ -86,7 +86,7 @@ export default async function ComptePage() {
                   <div>
                     <p className="t-spec">{o.number}</p>
                     <p className="mt-1 text-sm text-graphite">
-                      {new Date(o.createdAt).toLocaleDateString("fr-FR")} · {o.items.reduce((s, i) => s + i.quantity, 0)} article(s) · {formatEuros(o.totalAmount)}
+                      {new Date(o.createdAt).toLocaleDateString("de-DE")} · {o.items.reduce((s, i) => s + i.quantity, 0)} Artikel · {formatEuros(o.totalAmount)}
                     </p>
                   </div>
                   <span className={`t-eyebrow rounded-full px-3 py-1.5 !text-[0.65rem] ${ORDER_STATUS_LABELS[o.status].className}`}>{orderStatusLabel(o.status, o.isPickupInStore)}</span>
@@ -99,10 +99,10 @@ export default async function ComptePage() {
 
       <section aria-labelledby="fidelite">
         <h2 id="fidelite" className="t-h3 mb-6">
-          Avantages fidélité
+          Gutscheine & Rabatte
         </h2>
         {usableCoupons.length === 0 ? (
-          <p className="text-graphite">Aucun code de réduction disponible pour le moment.</p>
+          <p className="text-graphite">Derzeit keine Gutscheincodes verfügbar.</p>
         ) : (
           <ul className="grid gap-3 md:grid-cols-2">
             {usableCoupons.map((c) => (
@@ -110,8 +110,8 @@ export default async function ComptePage() {
                 <p className="t-spec text-lg !tracking-[0.12em]">{c.code}</p>
                 <p className="text-sm">{c.description}</p>
                 <p className="text-xs text-graphite">
-                  {c.type === "POURCENTAGE" ? `${c.value} %` : formatEuros(c.value / 100)} de réduction, dans la limite de 10 % de la commande
-                  {c.expiresAt ? `, jusqu'au ${c.expiresAt.toLocaleDateString("fr-FR")}` : ""}.
+                  {c.type === "POURCENTAGE" ? `${c.value} %` : formatEuros(c.value / 100)} Rabatt, bis zu 10 % des Bestellwerts
+                  {c.expiresAt ? `, gültig bis ${c.expiresAt.toLocaleDateString("de-DE")}` : ""}.
                 </p>
               </li>
             ))}

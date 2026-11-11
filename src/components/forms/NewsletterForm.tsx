@@ -9,7 +9,7 @@ import { Arrow, Spinner } from "@/components/ui/Primitives";
  * Inscription à la newsletter (pied de page sur fond encre, page Promotions sur fond clair).
  * Le retour (succès, déjà inscrit, erreur) s'affiche sous le champ.
  */
-export function NewsletterForm({ tone = "paper", label = "Votre adresse email", compact = false, className }: { tone?: "paper" | "ink"; label?: string; compact?: boolean; className?: string }) {
+export function NewsletterForm({ tone = "paper", label = "Ihre E-Mail-Adresse", compact = false, className }: { tone?: "paper" | "ink"; label?: string; compact?: boolean; className?: string }) {
   const id = useId();
   const [email, setEmail] = useState("");
   const [state, setState] = useState<{ kind: "idle" | "loading" | "ok" | "error"; text?: string }>({ kind: "idle" });
@@ -18,16 +18,16 @@ export function NewsletterForm({ tone = "paper", label = "Votre adresse email", 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!/^\S+@\S+\.\S+$/.test(email.trim())) {
-      setState({ kind: "error", text: "Saisissez une adresse email valide, par exemple nom@exemple.fr." });
+      setState({ kind: "error", text: "Bitte geben Sie eine gültige E-Mail-Adresse ein." });
       return;
     }
     setState({ kind: "loading" });
     const res = await subscribeNewsletter(email.trim());
     if (res.ok) {
       setEmail("");
-      setState({ kind: "ok", text: "Inscription réussie : vous recevrez nos prochaines offres." });
+      setState({ kind: "ok", text: "Erfolgreich angemeldet: Sie erhalten in Kürze unsere aktuellen Angebote." });
     } else {
-      setState({ kind: "error", text: res.status === 409 ? "Cette adresse est déjà inscrite." : res.error || "L'inscription n'a pas abouti. Réessayez." });
+      setState({ kind: "error", text: res.status === 409 ? "Diese E-Mail-Adresse ist bereits registriert." : res.error || "Anmeldung fehlgeschlagen." });
     }
   };
 
@@ -43,13 +43,13 @@ export function NewsletterForm({ tone = "paper", label = "Votre adresse email", 
           autoComplete="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="nom@exemple.fr"
+          placeholder="name@beispiel.de"
           aria-invalid={state.kind === "error" || undefined}
           aria-describedby={`${id}-status`}
           className={cn("min-w-0 flex-1 bg-transparent focus:outline-none", compact ? "py-3 text-base" : "py-4 text-lg", dark ? "text-paper placeholder:text-white/35" : "text-ink placeholder:text-graphite-light")}
         />
         <button type="submit" disabled={state.kind === "loading"} className="t-eyebrow inline-flex shrink-0 items-center gap-3 py-3 pl-4 transition-opacity hover:opacity-70 disabled:opacity-50">
-          {state.kind === "loading" ? <Spinner /> : "S'inscrire"}
+          {state.kind === "loading" ? <Spinner /> : "Anmelden"}
           <Arrow />
         </button>
       </div>

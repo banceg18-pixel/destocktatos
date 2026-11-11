@@ -43,7 +43,7 @@ export function ProductCard({ product, priority = false, className }: { product:
         </div>
         <div className="pointer-events-none absolute left-2.5 top-2.5 flex flex-col items-start gap-1.5">
           {pct > 0 && <Tag tone="promo">-{pct} %</Tag>}
-          {product.stock <= 0 && <Tag tone="paper">Épuisé</Tag>}
+          {product.stock <= 0 && <Tag tone="paper">Ausverkauft</Tag>}
         </div>
         <QuickAdd
           product={product}
@@ -62,7 +62,7 @@ export function ProductCard({ product, priority = false, className }: { product:
         </h3>
         <div className="mt-auto pt-3">
           <Price prix={product.prix} promotionPrix={product.promotionPrix} size="sm" />
-          {product.stock === 1 && <p className="t-spec mt-1.5 text-warning">Dernier exemplaire</p>}
+          {product.stock === 1 && <p className="t-spec mt-1.5 text-warning">Letztes Exemplar</p>}
         </div>
       </div>
     </article>

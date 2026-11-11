@@ -36,10 +36,10 @@ export function InscriptionForm({ googleEnabled, onSuccess }: { googleEnabled: b
     const res = await registerAccount({ email, mdp: password, mdpv: confirm });
     if (!res.ok) {
       setLoading(false);
-      if (res.status === 409) return f.setServerErrors({ email: res.error && /déjà commandé/.test(res.error) ? res.error : "Un compte existe déjà avec cette adresse : connectez-vous, ou utilisez « Mot de passe oublié ? »." });
+      if (res.status === 409) return f.setServerErrors({ email: res.error && /déjà commandé/.test(res.error) ? res.error : "Es existiert bereits ein Konto mit dieser E-Mail-Adresse. Bitte melden Sie sich an." });
       const byField = serverFieldErrors(res.details);
       if (Object.keys(byField).length) return f.setServerErrors(byField);
-      return setError(res.status === 0 ? "Le serveur ne répond pas. Vérifiez votre connexion puis réessayez." : res.error || "Le compte n'a pas pu être créé.");
+      return setError(res.status === 0 ? "Der Server antwortet nicht. Bitte überprüfen Sie Ihre Verbindung." : res.error || "Das Konto konnte nicht erstellt werden.");
     }
     const login = await signIn("credentials", { email, mdp: password, callbackUrl: "/compte", redirect: false });
     if (login?.ok && !login.error) {
@@ -49,21 +49,21 @@ export function InscriptionForm({ googleEnabled, onSuccess }: { googleEnabled: b
       return;
     }
     setLoading(false);
-    setError("Votre compte est créé, mais la connexion automatique a échoué. Connectez-vous.");
+    setError("Ihr Konto wurde erstellt. Bitte melden Sie sich an.");
   };
 
   return (
     <div>
-      {!onSuccess && <GoogleButton label="S'inscrire avec Google" callbackUrl="/compte" enabled={googleEnabled} disabled={loading} onError={setError} />}
+      {!onSuccess && <GoogleButton label="Mit Google registrieren" callbackUrl="/compte" enabled={googleEnabled} disabled={loading} onError={setError} />}
       <form method="post" onSubmit={submit} noValidate className="flex flex-col gap-5">
-        <Field label="Email" htmlFor="email" error={f.errors.email}>
+        <Field label="E-Mail-Adresse" htmlFor="email" error={f.errors.email}>
           <Input
             type="email"
             name="email"
             id="email"
             data-cy="signup-email-input"
             autoComplete="email"
-            placeholder="nom@exemple.fr"
+            placeholder="ihre.email@beispiel.de"
             value={email}
             invalid={!!f.errors.email}
             onChange={(e) => {
@@ -73,13 +73,13 @@ export function InscriptionForm({ googleEnabled, onSuccess }: { googleEnabled: b
             onBlur={(e) => f.onBlur("email", e.target.value, rules.email)}
           />
         </Field>
-        <Field label="Mot de passe" htmlFor="mdp" error={f.errors.mdp}>
+        <Field label="Passwort" htmlFor="mdp" error={f.errors.mdp}>
           <InputPassword
             name="mdp"
             id="mdp"
             data-cy="signup-password-input"
             autoComplete="new-password"
-            placeholder="Choisissez un mot de passe"
+            placeholder="Wählen Sie ein sicheres Passwort"
             className={authInputClass}
             invalid={!!f.errors.mdp}
             onChange={(e) => {
@@ -90,13 +90,13 @@ export function InscriptionForm({ googleEnabled, onSuccess }: { googleEnabled: b
             onBlur={(e) => f.onBlur("mdp", e.target.value, rules.newPassword)}
           />
         </Field>
-        <Field label="Confirmez le mot de passe" htmlFor="mdpv" error={f.errors.mdpv}>
+        <Field label="Passwort bestätigen" htmlFor="mdpv" error={f.errors.mdpv}>
           <InputPassword
             name="mdpv"
             id="mdpv"
             data-cy="signup-confirm-password-input"
             autoComplete="new-password"
-            placeholder="Le même mot de passe"
+            placeholder="Passwort wiederholen"
             className={authInputClass}
             invalid={!!f.errors.mdpv}
             onChange={(e) => {
@@ -110,10 +110,10 @@ export function InscriptionForm({ googleEnabled, onSuccess }: { googleEnabled: b
         <Button type="submit" size="lg" block disabled={loading} plain={loading} data-cy="signup-submit">
           {loading ? (
             <>
-              <Spinner /> Création du compte…
+              <Spinner /> Konto wird erstellt…
             </>
           ) : (
-            "Créer mon compte"
+            "Konto erstellen"
           )}
         </Button>
       </form>

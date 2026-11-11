@@ -15,12 +15,12 @@ function StarPicker({ value, onChange, name }: { value: number; onChange: (n: nu
   const shown = hover || value;
   return (
     <fieldset>
-      <legend className="mb-3 text-sm font-medium">Votre note</legend>
+      <legend className="mb-3 text-sm font-medium">Ihre Bewertung</legend>
       <div className="flex gap-1" onMouseLeave={() => setHover(0)}>
         {[1, 2, 3, 4, 5].map((n) => (
           <label key={n} className="cursor-pointer" onMouseEnter={() => setHover(n)}>
             <input type="radio" name={name} value={n} checked={value === n} onChange={() => onChange(n)} className="peer sr-only" />
-            <span className="sr-only">{n} sur 5</span>
+            <span className="sr-only">{n} von 5</span>
             <svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true" className="rounded-xs transition-transform peer-focus-visible:outline-2 peer-focus-visible:outline-ink hover:scale-110">
               <path d="M12 2.6l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.4l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z" fill={n <= shown ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.2" />
             </svg>
@@ -54,7 +54,7 @@ function ReviewForm({
     <form
       onSubmit={async (e) => {
         e.preventDefault();
-        if (!note) return setError("Choisissez une note de 1 à 5 étoiles.");
+        if (!note) return setError("Bitte wählen Sie eine Bewertung von 1 bis 5 Sternen.");
         setError(null);
         setSending(true);
         const ok = await onSubmit(note, comment);
@@ -69,9 +69,9 @@ function ReviewForm({
       <StarPicker value={note} onChange={setNote} name={`${id}-note`} />
       <div className="flex flex-col gap-2">
         <label htmlFor={`${id}-comment`} className="text-sm font-medium">
-          Votre commentaire <span className="font-normal text-graphite">(facultatif)</span>
+          Ihr Kommentar <span className="font-normal text-graphite">(optional)</span>
         </label>
-        <Textarea id={`${id}-comment`} value={comment} maxLength={2000} onChange={(e) => setComment(e.target.value)} placeholder="Installation, bruit, consommation, finitions…" />
+        <Textarea id={`${id}-comment`} value={comment} maxLength={2000} onChange={(e) => setComment(e.target.value)} placeholder="Lieferung, Lautstärke, Verbrauch, Verarbeitung…" />
         <p className="t-spec text-right text-graphite">{comment.length} / 2000</p>
       </div>
       {error && (
@@ -85,7 +85,7 @@ function ReviewForm({
         </Button>
         {onCancel && (
           <Button variant="ghost" onClick={onCancel}>
-            Annuler
+            Abbrechen
           </Button>
         )}
       </div>
@@ -110,7 +110,7 @@ export function ProductReviews({ produitId }: { produitId: string }) {
   const reload = useCallback(async () => {
     const res = await fetchReviews(produitId);
     if (res.ok) setReviews(res.data);
-    else errRef.current("Les avis n'ont pas pu être chargés. Rechargez la page pour réessayer.");
+    else errRef.current("Bewertungen konnten nicht geladen werden. Bitte aktualisieren Sie die Seite.");
   }, [produitId]);
 
   const recheck = useCallback(async () => {
@@ -136,13 +136,13 @@ export function ProductReviews({ produitId }: { produitId: string }) {
   return (
     <div className="grid gap-14 lg:grid-cols-[340px_1fr] lg:gap-20">
       <div>
-        <h2 className="t-h2">Ce qu&apos;en disent les acheteurs</h2>
+        <h2 className="t-h2">Kundenmeinungen</h2>
         {loading ? (
           <p className="mt-8 flex items-center gap-3 text-graphite">
-            <Spinner /> Chargement des avis…
+            <Spinner /> Bewertungen werden geladen…
           </p>
         ) : count === 0 ? (
-          <p className="mt-6 text-graphite">Pas encore d&apos;avis sur ce produit.</p>
+          <p className="mt-6 text-graphite">Noch keine Bewertungen für dieses Produkt vorhanden.</p>
         ) : (
           <div className="mt-8">
             <div className="flex items-end gap-4">
@@ -150,11 +150,11 @@ export function ProductReviews({ produitId }: { produitId: string }) {
               <div className="pb-1">
                 <Stars value={average} size={16} />
                 <p className="t-spec mt-1.5 text-graphite">
-                  {count} avis vérifié{count > 1 ? "s" : ""}
+                  {count} verifizierte Bewertung{count > 1 ? "en" : ""}
                 </p>
               </div>
             </div>
-            <ul className="mt-8 flex flex-col gap-2" aria-label="Répartition des notes">
+            <ul className="mt-8 flex flex-col gap-2" aria-label="Notenverteilung">
               {distribution.map(({ n, c }) => (
                 <li key={n} className="flex items-center gap-3 text-sm">
                   <span className="t-spec w-6 text-graphite">{n} ★</span>
@@ -167,30 +167,30 @@ export function ProductReviews({ produitId }: { produitId: string }) {
             </ul>
           </div>
         )}
-        <p className="mt-8 text-sm text-graphite">Seuls les clients ayant acheté et payé ce produit peuvent publier un avis.</p>
+        <p className="mt-8 text-sm text-graphite">Nur Kunden, die dieses Produkt gekauft und bezahlt haben, können eine Bewertung abgeben.</p>
       </div>
 
       <div className="flex flex-col gap-8">
         {status === "unauthenticated" && (
           <p className="border border-line p-5 text-sm">
-            Vous avez acheté ce produit ?{" "}
+            Haben Sie dieses Produkt gekauft?{" "}
             <Link href={`/connexion?callbackUrl=${encodeURIComponent(typeof window !== "undefined" ? location.pathname : "/")}`} className="font-medium underline underline-offset-4">
-              Connectez-vous
+              Melden Sie sich an
             </Link>{" "}
-            pour donner votre avis.
+            um Ihre Meinung mitzuteilen.
           </p>
         )}
         {session && allowed && !editingId && (
           <ReviewForm
             id="nouvel-avis"
-            submitLabel="Publier mon avis"
+            submitLabel="Bewertung veröffentlichen"
             onSubmit={async (note, comment) => {
               const res = await postReview(produitId, note, comment);
               if (!res.ok) {
                 errRef.current(res.error);
                 return false;
               }
-              msgRef.current("Merci, votre avis est publié.");
+              msgRef.current("Vielen Dank, Ihre Bewertung wurde veröffentlicht.");
               setAllowed(false);
               await reload();
               return true;
@@ -198,7 +198,7 @@ export function ProductReviews({ produitId }: { produitId: string }) {
           />
         )}
 
-        {!loading && count > 0 && visible.length === 0 && <p className="text-graphite">Les notes ont été données sans commentaire.</p>}
+        {!loading && count > 0 && visible.length === 0 && <p className="text-graphite">Die Bewertungen wurden ohne Kommentar abgegeben.</p>}
 
         <ul className="divide-y divide-line border-y border-line">
           {visible.map((r) => {
@@ -210,7 +210,7 @@ export function ProductReviews({ produitId }: { produitId: string }) {
                     id={`avis-${r._id}`}
                     initialNote={r.note}
                     initialComment={r.commentaire}
-                    submitLabel="Enregistrer"
+                    submitLabel="Speichern"
                     onCancel={() => setEditingId(null)}
                     onSubmit={async (note, comment) => {
                       const res = await updateReview(r._id, note, comment);
@@ -218,7 +218,7 @@ export function ProductReviews({ produitId }: { produitId: string }) {
                         errRef.current(res.error);
                         return false;
                       }
-                      msgRef.current("Votre avis est mis à jour.");
+                      msgRef.current("Ihre Bewertung wurde aktualisiert.");
                       setEditingId(null);
                       await reload();
                       return true;
@@ -234,9 +234,9 @@ export function ProductReviews({ produitId }: { produitId: string }) {
                         <div>
                           <p className="text-sm font-medium">
                             {r.utilisateur.name}
-                            {mine && <span className="text-graphite"> · vous</span>}
+                            {mine && <span className="text-graphite"> · Sie</span>}
                           </p>
-                          <p className="t-spec text-graphite">{new Date(r.dateCreation).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</p>
+                          <p className="t-spec text-graphite">{new Date(r.dateCreation).toLocaleDateString("de-DE", { day: "numeric", month: "long", year: "numeric" })}</p>
                         </div>
                       </div>
                       <Stars value={r.note} />
@@ -244,13 +244,13 @@ export function ProductReviews({ produitId }: { produitId: string }) {
                     {r.commentaire?.trim() ? (
                       <p className="mt-4 leading-relaxed text-ink-soft">{r.commentaire}</p>
                     ) : (
-                      mine && <p className="mt-4 italic text-graphite">Vous avez noté ce produit sans commentaire.</p>
+                      mine && <p className="mt-4 italic text-graphite">Sie haben dieses Produkt ohne Kommentar bewertet.</p>
                     )}
                     {mine && (
                       <div className="mt-4 flex flex-wrap items-center gap-4 text-sm">
                         {confirmId === r._id ? (
                           <>
-                            <span>Supprimer définitivement cet avis ?</span>
+                            <span>Diese Bewertung endgültig löschen?</span>
                             <button
                               type="button"
                               className="font-medium text-danger underline underline-offset-4"
@@ -258,24 +258,24 @@ export function ProductReviews({ produitId }: { produitId: string }) {
                                 const res = await deleteReview(r._id);
                                 setConfirmId(null);
                                 if (!res.ok) return errRef.current(res.error);
-                                msgRef.current("Votre avis est supprimé.");
+                                msgRef.current("Ihre Bewertung wurde gelöscht.");
                                 await reload();
                                 await recheck();
                               }}
                             >
-                              Supprimer
+                              Löschen
                             </button>
                             <button type="button" className="underline underline-offset-4" onClick={() => setConfirmId(null)}>
-                              Garder
+                              Behalten
                             </button>
                           </>
                         ) : (
                           <>
                             <button type="button" className={cn("underline-offset-4 hover:underline")} onClick={() => setEditingId(r._id)}>
-                              Modifier
+                              Bearbeiten
                             </button>
                             <button type="button" className="text-graphite underline-offset-4 hover:text-danger hover:underline" onClick={() => setConfirmId(r._id)}>
-                              Supprimer
+                              Löschen
                             </button>
                           </>
                         )}

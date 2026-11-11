@@ -6,19 +6,19 @@ import { InscriptionForm } from "@/components/auth/InscriptionForm";
 import { getSession, isGoogleEnabled } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Créer un compte", robots: { index: false, follow: true } };
+export const metadata: Metadata = { title: "Konto erstellen", robots: { index: false, follow: true } };
 
 export default async function InscriptionPage() {
   if ((await getSession())?.user) redirect("/compte");
   return (
     <AuthShell
-      title="Créer un compte"
-      subtitle="En un clic avec Google, ou avec votre email et un mot de passe."
+      title="Konto erstellen"
+      subtitle="Mit einem Klick über Google oder mit Ihrer E-Mail-Adresse und einem Passwort."
       footer={
         <p>
-          Déjà client ?{" "}
+          Bereits Kunde?{" "}
           <Link href="/connexion" className="font-medium underline underline-offset-4">
-            Se connecter
+            Anmelden
           </Link>
         </p>
       }

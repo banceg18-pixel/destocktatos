@@ -18,7 +18,7 @@ export function SortSelect({ value }: { value: SortKey }) {
   return (
     <div className="flex items-center gap-3">
       <label htmlFor="catalog-sort" className="t-eyebrow hidden text-graphite sm:block">
-        Trier
+        Sortieren
       </label>
       <NativeSelect
         id="catalog-sort"
@@ -50,17 +50,17 @@ export function MobileFilters({ children, activeCount, total }: { children: Reac
   return (
     <>
       <Button variant="outline" size="sm" plain onClick={() => setOpen(true)} className="lg:hidden" icon={<IconFilter size={16} />}>
-        Filtrer{activeCount > 0 ? ` (${activeCount})` : ""}
+        Filter{activeCount > 0 ? ` (${activeCount})` : ""}
       </Button>
       <Drawer
         open={open}
         onClose={() => setOpen(false)}
         side="bottom"
-        title="Filtrer"
-        closeLabel="Fermer les filtres"
+        title="Filter"
+        closeLabel="Filter schließen"
         footer={
           <Button block size="lg" onClick={() => setOpen(false)}>
-            Voir {total} produit{total > 1 ? "s" : ""}
+            {total} {total === 1 ? "Produkt anzeigen" : "Produkte anzeigen"}
           </Button>
         }
       >

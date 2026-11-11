@@ -18,11 +18,11 @@ const EMPTY: ShippingAddress = { _id: "", fullName: "", address: "", city: "", p
 
 type AddressKey = "fullName" | "phone" | "address" | "postalCode" | "city";
 const ADDRESS_RULES: Record<AddressKey, (v: string) => string | null> = {
-  fullName: rules.recipient,
-  phone: (v) => (v.trim() ? rules.phone(v) : "Indiquez un téléphone : le livreur vous appelle avant de passer."),
-  address: rules.street,
-  postalCode: rules.postalCode,
-  city: rules.city,
+  fullName: (v) => (v.trim().length >= 2 ? null : "Bitte geben Sie Ihren vollständigen Namen an."),
+  phone: (v) => (v.trim() ? null : "Bitte geben Sie eine Telefonnummer an, damit der Zusteller Sie vorab kontaktieren kann."),
+  address: (v) => (v.trim().length >= 3 ? null : "Bitte geben Sie eine gültige Straße und Hausnummer an."),
+  postalCode: (v) => (/^\d{5}$/.test(v.trim()) ? null : "Bitte geben Sie eine 5-stellige Postleitzahl an."),
+  city: (v) => (v.trim().length >= 2 ? null : "Bitte geben Sie den Ort an."),
 };
 
 function validate(a: ShippingAddress) {
@@ -216,8 +216,8 @@ export function ShippingAddressForm() {
       <div className="flex gap-4 border border-ink p-5">
         <IconTruck className="mt-0.5 shrink-0" />
         <div className="text-sm">
-          <p className="font-medium">Livraison à domicile, offerte</p>
-          <p className="mt-1 text-graphite">Partout en France, en mains propres par nos agents de proximité.</p>
+          <p className="font-medium">Kostenlose Lieferung nach Hause</p>
+          <p className="mt-1 text-graphite">In ganz Deutschland, zuverlässig und sicher direkt zu Ihnen.</p>
         </div>
       </div>
 
@@ -225,12 +225,12 @@ export function ShippingAddressForm() {
           {session?.user && saved.length > 0 && (
             <div>
               <div className="mb-3 flex items-center justify-between">
-                <p className="text-sm font-medium">Mes adresses</p>
+                <p className="text-sm font-medium">Gespeicherte Adressen</p>
                 <button type="button" onClick={() => setShowForm((v) => !v)} className="text-sm underline underline-offset-4">
-                  {showForm ? "Masquer le formulaire" : "Utiliser une autre adresse"}
+                  {showForm ? "Formular ausblenden" : "Andere Adresse verwenden"}
                 </button>
               </div>
-              <div className="grid gap-3 md:grid-cols-2" role="radiogroup" aria-label="Adresses enregistrées">
+              <div className="grid gap-3 md:grid-cols-2" role="radiogroup" aria-label="Gespeicherte Adressen">
                 {saved.map((a) => (
                   <ChoiceCard
                     key={a._id}
@@ -248,10 +248,10 @@ export function ShippingAddressForm() {
                       <>
                         {a.address}, {a.postalCode} {a.city}
                         <br />
-                        {FLOOR_OPTIONS.find((f) => f.value === a.floor)?.short ?? "Rez-de-chaussée"} · {a.phone}
+                        {FLOOR_OPTIONS.find((f) => f.value === a.floor)?.short ?? "Erdgeschoss"} · {a.phone}
                       </>
                     }
-                    aside={a.isDefault ? <span className="t-spec text-graphite">Par défaut</span> : undefined}
+                    aside={a.isDefault ? <span className="t-spec text-graphite">Standard</span> : undefined}
                   />
                 ))}
               </div>
@@ -267,13 +267,13 @@ export function ShippingAddressForm() {
               noValidate
               className="grid gap-5 md:grid-cols-2"
             >
-              <Field label="Nom complet" htmlFor="ship-fullName" required error={errors.fullName}>
-                <Input id="ship-fullName" name="fullName" value={form.fullName} onChange={onInput} onBlur={() => touch("fullName")} invalid={!!errors.fullName} placeholder="Prénom et nom" autoComplete="name" />
+              <Field label="Vollständiger Name" htmlFor="ship-fullName" required error={errors.fullName}>
+                <Input id="ship-fullName" name="fullName" value={form.fullName} onChange={onInput} onBlur={() => touch("fullName")} invalid={!!errors.fullName} placeholder="Vor- und Nachname" autoComplete="name" />
               </Field>
-              <Field label="Téléphone" htmlFor="ship-phone" required error={errors.phone} hint="Le livreur vous appelle avant de passer.">
-                <Input id="ship-phone" type="tel" name="phone" value={form.phone} onChange={onInput} onBlur={() => touch("phone")} invalid={!!errors.phone} placeholder="06 12 34 56 78" autoComplete="tel" />
+              <Field label="Telefonnummer" htmlFor="ship-phone" required error={errors.phone} hint="Der Lieferant kontaktiert Sie vor der Zustellung.">
+                <Input id="ship-phone" type="tel" name="phone" value={form.phone} onChange={onInput} onBlur={() => touch("phone")} invalid={!!errors.phone} placeholder="+49 30 12345678" autoComplete="tel" />
               </Field>
-              <Field label="Adresse" htmlFor="ship-address" required error={errors.address} className="md:col-span-2">
+              <Field label="Straße & Hausnummer" htmlFor="ship-address" required error={errors.address} className="md:col-span-2">
                 <AddressAutocomplete
                   id="ship-address"
                   value={form.address}
@@ -287,16 +287,16 @@ export function ShippingAddressForm() {
                     if (geoError) setGeoError(null);
                     setTimeout(() => applyAddress(next), 100);
                   }}
-                  placeholder="Commencez à taper, puis choisissez dans la liste"
+                  placeholder="Straße und Hausnummer eingeben"
                 />
               </Field>
-              <Field label="Code postal" htmlFor="ship-postalCode" required error={errors.postalCode}>
-                <Input id="ship-postalCode" name="postalCode" value={form.postalCode} onChange={onInput} onBlur={() => touch("postalCode")} invalid={!!errors.postalCode} placeholder="93270" maxLength={5} autoComplete="postal-code" inputMode="numeric" />
+              <Field label="Postleitzahl" htmlFor="ship-postalCode" required error={errors.postalCode}>
+                <Input id="ship-postalCode" name="postalCode" value={form.postalCode} onChange={onInput} onBlur={() => touch("postalCode")} invalid={!!errors.postalCode} placeholder="10117" maxLength={5} autoComplete="postal-code" inputMode="numeric" />
               </Field>
-              <Field label="Ville" htmlFor="ship-city" required error={errors.city}>
-                <Input id="ship-city" name="city" value={form.city} onChange={onInput} onBlur={() => touch("city")} invalid={!!errors.city} placeholder="Sevran" autoComplete="address-level2" />
+              <Field label="Stadt / Ort" htmlFor="ship-city" required error={errors.city}>
+                <Input id="ship-city" name="city" value={form.city} onChange={onInput} onBlur={() => touch("city")} invalid={!!errors.city} placeholder="Berlin" autoComplete="address-level2" />
               </Field>
-              <Field label="Étage" htmlFor="ship-floor" hint="Pour préparer la montée de l'appareil (sans frais).">
+              <Field label="Etage" htmlFor="ship-floor" hint="Zur optimalen Vorbereitung der Anlieferung (kostenlos).">
                 <NativeSelect id="ship-floor" name="floor" value={form.floor} onChange={onInput}>
                   {FLOOR_OPTIONS.map((o) => (
                     <option value={o.value} key={o.value}>
@@ -305,13 +305,13 @@ export function ShippingAddressForm() {
                   ))}
                 </NativeSelect>
               </Field>
-              <Field label="Informations pour le livreur" htmlFor="ship-info">
-                <Textarea id="ship-info" name="additionalInfo" value={form.additionalInfo} onChange={onInput} placeholder="Code d'entrée, interphone, accès…" className="!min-h-12" rows={1} />
+              <Field label="Hinweise für die Zustellung" htmlFor="ship-info">
+                <Textarea id="ship-info" name="additionalInfo" value={form.additionalInfo} onChange={onInput} placeholder="Türcode, Hinterhaus, Gegensprechanlage…" className="!min-h-12" rows={1} />
               </Field>
               {session?.user && (
                 <div className="md:col-span-2">
                   <button type="submit" disabled={saving} className="text-sm underline underline-offset-4 disabled:opacity-50">
-                    {saving ? "Enregistrement…" : "Enregistrer cette adresse dans mon compte"}
+                    {saving ? "Wird gespeichert…" : "Diese Adresse in meinem Kundenkonto speichern"}
                   </button>
                 </div>
               )}
@@ -321,7 +321,7 @@ export function ShippingAddressForm() {
           <div aria-live="polite">
             {geocoding && (
               <p className="flex items-center gap-3 text-sm text-graphite">
-                <Spinner /> Calcul de la distance depuis le magasin…
+                <Spinner /> Berechnung der Entfernung…
               </p>
             )}
             {geoError && (
@@ -339,7 +339,7 @@ export function ShippingAddressForm() {
                         computeDistance(form.address, form.city, form.postalCode);
                       }}
                     >
-                      Relancer le calcul
+                      Erneut berechnen
                     </button>
                   )}
                 </div>
@@ -349,7 +349,7 @@ export function ShippingAddressForm() {
               <div className="flex gap-3 bg-mist p-4 text-sm">
                 <IconPin className="mt-0.5 shrink-0" />
                 <p>
-                  <strong className="font-medium">Livraison gratuite à cette adresse</strong>, en mains propres par nos agents de proximité.
+                  <strong className="font-medium">Kostenlose Lieferung an diese Adresse</strong> in ganz Deutschland.
                 </p>
               </div>
             )}
@@ -358,7 +358,7 @@ export function ShippingAddressForm() {
 
       <p className={cn("flex items-center gap-2 text-sm", complete ? "text-success" : "text-graphite")} role="status">
         {complete ? <IconCheck size={16} /> : <IconAlert size={16} />}
-        <span>{complete ? "Adresse de livraison complète" : "Complétez l'adresse de livraison"}</span>
+        <span>{complete ? "Lieferadresse vollständig" : "Bitte Lieferadresse vervollständigen"}</span>
       </p>
     </div>
   );

@@ -47,10 +47,10 @@ export default async function ConfirmationPage({ searchParams }: { searchParams:
   const count = order?.items.reduce((s, i) => s + i.quantity, 0) ?? 0;
   const delivery = order
     ? order.isPickupInStore
-      ? `Nous vous prévenons dès que c'est prêt : ${settings.addressLine}, ${settings.postalCode} ${settings.city}. ${settings.storeHours}.`
+      ? `Wir benachrichtigen Sie, sobald Ihre Bestellung abholbereit ist: ${settings.addressLine}, ${settings.postalCode} ${settings.city}. ${settings.storeHours}.`
       : order.shippingAddress
-        ? `Nous vous appelons pour fixer le créneau de livraison au ${order.shippingAddress.address}, ${order.shippingAddress.postalCode} ${order.shippingAddress.city}.`
-        : "Nous vous appelons pour fixer le créneau de livraison."
+        ? `Wir rufen Sie an, um den Liefertermin an folgende Adresse abzustimmen: ${order.shippingAddress.address}, ${order.shippingAddress.postalCode} ${order.shippingAddress.city}.`
+        : "Wir rufen Sie an, um den genauen Liefertermin abzustimmen."
     : "";
   const bank = bankDetailsOf(settings);
   // Coordonnées du virement directement dans « Et maintenant ? » (copiables, comme dans la procédure).
@@ -60,7 +60,7 @@ export default async function ConfirmationPage({ searchParams }: { searchParams:
         ...(transfer
           ? [
               {
-                title: "Virement",
+                title: "Banküberweisung",
                 body: (
                   <dl className="mt-2 flex flex-col gap-2" data-testid="transfer-account">
                     {transfer.rows.map(([label, value, mono]) => (
@@ -77,10 +77,10 @@ export default async function ConfirmationPage({ searchParams }: { searchParams:
               },
             ]
           : []),
-        ...(declared ? [{ title: "Vérification du virement", body: "Nous vérifions la réception de votre virement ; la facture vous est envoyée par email dès qu'il est reçu." }] : []),
-        { title: "Préparation", body: `${awaitingTransfer ? "Dès réception du virement, nous" : "Nous"} préparons vos ${count} article${count > 1 ? "s" : ""}.` },
-        { title: order.isPickupInStore ? "Retrait en magasin" : (DELIVERY_LABELS[order.deliveryMethod ?? ""] ?? "Livraison"), body: delivery },
-        { title: "Une question ?", body: `${settings.phone} · ${settings.email}` },
+        ...(declared ? [{ title: "Prüfung der Überweisung", body: "Wir prüfen den Zahlungseingang. Ihre Rechnung wird per E-Mail versandt, sobald der Betrag gebucht ist." }] : []),
+        { title: "Vorbereitung", body: `${awaitingTransfer ? "Nach Eingang der Überweisung bereiten wir" : "Wir bereiten"} Ihre ${count} Artikel für die Auslieferung vor.` },
+        { title: order.isPickupInStore ? "Selbstabholung in Filiale" : (DELIVERY_LABELS[order.deliveryMethod ?? ""] ?? "Lieferung"), body: delivery },
+        { title: "Haben Sie Fragen?", body: `${settings.phone} · ${settings.email}` },
       ]
     : [];
 

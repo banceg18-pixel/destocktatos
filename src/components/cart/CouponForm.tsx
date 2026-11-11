@@ -18,11 +18,11 @@ export function CouponForm() {
       <div className="flex items-start justify-between gap-3 bg-mist p-4 text-sm" role="status">
         <div>
           <p className="font-medium">
-            Code <span className="t-spec">{appliedCoupon.code}</span> appliqué : −{formatEuros(appliedCoupon.discount)}
+            Gutscheincode <span className="t-spec">{appliedCoupon.code}</span> angewendet: −{formatEuros(appliedCoupon.discount)}
           </p>
           <p className="mt-1 text-graphite">{appliedCoupon.message}</p>
         </div>
-        <button type="button" onClick={removeCoupon} className="rounded-full p-1 text-graphite hover:text-ink" aria-label="Retirer le code de réduction">
+        <button type="button" onClick={removeCoupon} className="rounded-full p-1 text-graphite hover:text-ink" aria-label="Gutscheincode entfernen">
           <IconClose size={16} />
         </button>
       </div>
@@ -32,7 +32,7 @@ export function CouponForm() {
   if (!open) {
     return (
       <button type="button" onClick={() => setOpen(true)} className="text-sm underline underline-offset-4">
-        J&apos;ai un code de réduction
+        Ich habe einen Gutscheincode
       </button>
     );
   }
@@ -49,7 +49,7 @@ export function CouponForm() {
       className="flex flex-col gap-2"
     >
       <label htmlFor="coupon-code" className="text-sm font-medium">
-        Code de réduction
+        Gutscheincode
       </label>
       <div className="flex gap-2">
         <input
@@ -63,13 +63,13 @@ export function CouponForm() {
           }}
           aria-invalid={!!error || undefined}
           aria-describedby={error ? "coupon-code-error" : undefined}
-          placeholder="EX. BIENVENUE10"
+          placeholder="Z. B. WILLKOMMEN10"
           disabled={couponLoading}
           autoComplete="off"
           className={`t-spec h-11 min-w-0 flex-1 rounded-sm border px-3 !text-sm focus:border-ink focus:outline-none ${error ? "border-danger" : "border-line"}`}
         />
         <button type="submit" disabled={couponLoading} className="flex h-11 items-center gap-2 rounded-sm bg-ink px-4 text-xs font-medium uppercase tracking-[0.09em] text-paper disabled:opacity-40">
-          {couponLoading ? <Spinner /> : "Appliquer"}
+          {couponLoading ? <Spinner /> : "Einlösen"}
         </button>
       </div>
       {error ? (
@@ -77,7 +77,7 @@ export function CouponForm() {
           {error}
         </p>
       ) : (
-        <p className="text-xs text-graphite">La réduction est plafonnée à 10 % du montant des articles.</p>
+        <p className="text-xs text-graphite">Der Rabatt ist auf maximal 10 % des Warenkorbwerts begrenzt.</p>
       )}
     </form>
   );

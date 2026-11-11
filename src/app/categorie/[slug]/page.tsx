@@ -32,9 +32,9 @@ async function findCategory(slug: string) {
 export async function generateMetadata({ params, searchParams }: { params: Params; searchParams: SearchParams }): Promise<Metadata> {
   const [{ slug }, sp] = await Promise.all([params, searchParams]);
   const [{ category }, page] = await Promise.all([findCategory(slug), getPage<CategoryTemplate>("categorie")]);
-  if (!category) return { title: "Catégorie introuvable", robots: { index: false } };
+  if (!category) return { title: "Kategorie nicht gefunden", robots: { index: false } };
   const name = capitalize(category.nom);
-  const description = (page?.data?.metaDescriptionTemplate ?? "").replace("{nom}", name) || `${name} : tous les modèles disponibles, livraison et installation.`;
+  const description = (page?.data?.metaDescriptionTemplate ?? "").replace("{nom}", name) || `${name}: Alle verfügbaren Modelle, kostenlose Lieferung und Montage.`;
   const filtered = Object.keys(sp).length > 0;
   return {
     title: name,
@@ -68,11 +68,11 @@ export default async function CategoryPage({ params, searchParams }: { params: P
     <>
       <PageHeader
         title={name}
-        intro={description ?? `Tous nos modèles de ${category.nom} disponibles, livrés gratuitement partout en France et installés chez vous.`}
+        intro={description ?? `Alle unsere Modelle im Bereich ${category.nom}, kostenlos in ganz Deutschland geliefert und montiert.`}
         meta={
           <p className="t-spec text-graphite">
-            {category.count} modèle{(category.count ?? 0) > 1 ? "s" : ""} disponible{(category.count ?? 0) > 1 ? "s" : ""}
-            {category.prixMin != null && ` · dès ${formatEuros(category.prixMin)}`}
+            {category.count} Modell{(category.count ?? 0) > 1 ? "e" : ""} verfügbar
+            {category.prixMin != null && ` · ab ${formatEuros(category.prixMin)}`}
           </p>
         }
         image={category.image}
@@ -93,13 +93,13 @@ export default async function CategoryPage({ params, searchParams }: { params: P
         <section className="border-t border-line py-20 lg:py-28">
           <div className="shell grid gap-14 lg:grid-cols-2 lg:gap-24">
             <Reveal>
-              <h2 className="t-h2">Bien choisir son {category.nom}</h2>
+              <h2 className="t-h2">Ratgeber: {category.nom} richtig wählen</h2>
               <div className="mt-8 space-y-4 text-ink-soft [&_h3]:mt-8 [&_h3]:font-sans [&_h3]:text-base [&_h3]:font-semibold [&_h3]:tracking-normal [&_h3]:[font-stretch:100%] [&_li]:mb-2 [&_ul]:list-disc [&_ul]:pl-5">
                 <ContentBlocks blocks={tpl.guide} />
               </div>
             </Reveal>
             <Reveal delay={100}>
-              <h2 className="t-h2 mb-8">Avant d&apos;acheter</h2>
+              <h2 className="t-h2 mb-8">Vor dem Kauf</h2>
               {tpl.faq.map((f) => (
                 <Accordion key={f.question} title={f.question} name="faq-categorie">
                   {f.answer}

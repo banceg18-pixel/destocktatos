@@ -29,7 +29,7 @@ export default async function ServicesPage() {
 
   return (
     <>
-      <PageHeader title="Livré, installé, suivi." intro={c.intro} />
+      <PageHeader title="Geliefert, montiert, betreut." intro={c.intro} />
 
       <div className="shell flex flex-col gap-20 pb-24 lg:gap-32">
         {c.services.map((s, i) => (

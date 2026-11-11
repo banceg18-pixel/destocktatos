@@ -20,18 +20,18 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
     <Drawer
       open={open}
       onClose={onClose}
-      title={totalItems ? `Panier · ${totalItems} article${totalItems > 1 ? "s" : ""}` : "Panier"}
-      closeLabel="Fermer le panier"
+      title={totalItems ? `Warenkorb · ${totalItems} Artikel` : "Warenkorb"}
+      closeLabel="Warenkorb schließen"
       footer={
         cart.length > 0 && (
           <div className="flex flex-col gap-4">
             <div className="flex items-baseline justify-between">
-              <span className="text-sm">Sous-total</span>
+              <span className="text-sm">Zwischensumme</span>
               <span className="t-price text-lg font-medium">{formatEuros(totalPrice)}</span>
             </div>
-            <p className="text-xs text-graphite">Livraison, installation et code promo se choisissent à l&apos;étape suivante.</p>
+            <p className="text-xs text-graphite">Lieferung, Montage und Gutscheine werden im nächsten Schritt gewählt.</p>
             <ButtonLink href="/panier" onClick={onClose} block size="lg">
-              Voir le panier et commander
+              Zum Warenkorb & Kasse
             </ButtonLink>
           </div>
         )
@@ -39,10 +39,10 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
     >
       {cart.length === 0 ? (
         <div className="flex h-full flex-col items-start justify-center gap-6 px-6 py-16">
-          <p className="t-h3">Votre panier est vide.</p>
-          <p className="text-graphite">Parcourez le catalogue : chaque appareil peut être livré, installé, ou retiré en magasin.</p>
+          <p className="t-h3">Ihr Warenkorb ist leer.</p>
+          <p className="text-graphite">Entdecken Sie unser Sortiment an modernen Haushaltsgeräten mit kostenlosem Versand.</p>
           <ButtonLink href="/boutique" onClick={onClose} variant="outline">
-            Découvrir la boutique
+            Sortiment entdecken
           </ButtonLink>
         </div>
       ) : (
@@ -62,7 +62,7 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                         {item.titre}
                       </Link>
                     </div>
-                    {item._id === lastAddedId && <Tag tone="ink">Ajouté</Tag>}
+                    {item._id === lastAddedId && <Tag tone="ink">Hinzugefügt</Tag>}
                   </div>
                   <p className="t-price text-sm">{formatEuros(unit)}</p>
                   <div className="mt-auto flex items-center justify-between pt-2">
@@ -70,10 +70,10 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                       size="sm"
                       value={item.quantity}
                       onChange={(q) => updateQuantity(item._id, q)}
-                      label={`Quantité de ${item.titre}`}
+                      label={`Menge für ${item.titre}`}
                     />
                     <button type="button" onClick={() => removeFromCart(item._id)} className="text-xs text-graphite underline-offset-4 hover:text-ink hover:underline">
-                      Retirer
+                      Entfernen
                     </button>
                   </div>
                 </div>

@@ -19,10 +19,10 @@ export function LogoutButton({ className = "" }: { className?: string }) {
     >
       {loading ? (
         <>
-          <Spinner /> Déconnexion…
+          <Spinner /> Abmeldung…
         </>
       ) : (
-        "Se déconnecter"
+        "Abmelden"
       )}
     </button>
   );

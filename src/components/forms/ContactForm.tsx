@@ -10,18 +10,18 @@ import { rules, serverFieldErrors } from "@/lib/client/form-rules";
 import { bindField, useFieldErrors } from "@/lib/client/use-field-errors";
 
 const SUBJECTS = [
-  { id: "commande", label: "Question sur une commande" },
-  { id: "produit", label: "Renseignement sur un produit" },
-  { id: "service", label: "Service après-vente" },
-  { id: "autre", label: "Autre demande" },
+  { id: "commande", label: "Frage zu einer Bestellung" },
+  { id: "produit", label: "Produktberatung" },
+  { id: "service", label: "Kundendienst & Reklamation" },
+  { id: "autre", label: "Sonstige Anfrage" },
 ];
 const EMPTY = { name: "", email: "", subject: "", message: "" };
 type Key = keyof typeof EMPTY;
 const RULES: Record<Key, (v: string) => string | null> = {
-  name: rules.name,
+  name: (v) => (v.trim().length >= 2 ? null : "Bitte geben Sie Ihren Namen an."),
   email: rules.email,
-  subject: rules.choice("le sujet de votre message"),
-  message: rules.text("votre message", 10),
+  subject: (v) => (v.trim() ? null : "Bitte wählen Sie ein Anliegen aus."),
+  message: (v) => (v.trim().length >= 10 ? null : "Bitte geben Sie eine Nachricht mit mindestens 10 Zeichen ein."),
 };
 
 /** Formulaire de contact : validation locale, enregistrement côté serveur, confirmation affichée. */
@@ -42,13 +42,13 @@ export function ContactForm() {
     const res = await sendContact(form);
     setSending(false);
     if (res.ok) {
-      setSent(res.data.message || "Votre message a été envoyé avec succès !");
+      setSent(res.data.message || "Ihre Nachricht wurde erfolgreich übermittelt!");
       setForm(EMPTY);
       f.reset();
     } else {
       const byField = serverFieldErrors(res.details);
       if (Object.keys(byField).length) return f.setServerErrors(byField);
-      setError(res.status === 0 ? "Le serveur ne répond pas. Vérifiez votre connexion puis réessayez." : res.error || "Le message n'a pas pu être envoyé.");
+      setError(res.status === 0 ? "Der Server antwortet nicht. Bitte überprüfen Sie Ihre Verbindung." : res.error || "Nachricht konnte nicht gesendet werden.");
     }
   };
 
@@ -59,9 +59,9 @@ export function ContactForm() {
           <IconCheck size={22} />
         </span>
         <p className="t-h3">{sent}</p>
-        <p className="text-graphite">Nous répondons par email, en général sous 24 heures.</p>
+        <p className="text-graphite">Wir antworten in der Regel innerhalb von 24 Stunden per E-Mail.</p>
         <button type="button" onClick={() => setSent(null)} className="text-sm underline underline-offset-4">
-          Envoyer un autre message
+          Weitere Nachricht senden
         </button>
       </div>
     );
@@ -69,16 +69,16 @@ export function ContactForm() {
 
   return (
     <form onSubmit={submit} noValidate className="grid gap-5 sm:grid-cols-2">
-      <Field label="Nom" htmlFor="name" required error={f.errors.name}>
-        <Input id="name" name="name" {...field("name")} autoComplete="name" placeholder="Prénom et nom" />
+      <Field label="Vollständiger Name" htmlFor="name" required error={f.errors.name}>
+        <Input id="name" name="name" {...field("name")} autoComplete="name" placeholder="Vor- und Nachname" />
       </Field>
-      <Field label="Email" htmlFor="contact-email" required error={f.errors.email}>
-        <Input id="contact-email" name="email" type="email" {...field("email")} autoComplete="email" placeholder="nom@exemple.fr" />
+      <Field label="E-Mail-Adresse" htmlFor="contact-email" required error={f.errors.email}>
+        <Input id="contact-email" name="email" type="email" {...field("email")} autoComplete="email" placeholder="name@beispiel.de" />
       </Field>
-      <Field label="Sujet" htmlFor="subject" required className="sm:col-span-2" error={f.errors.subject}>
+      <Field label="Betreff" htmlFor="subject" required className="sm:col-span-2" error={f.errors.subject}>
         <NativeSelect id="subject" name="subject" {...field("subject")}>
           <option value="" disabled>
-            Choisissez un sujet
+            Bitte ein Thema auswählen
           </option>
           {SUBJECTS.map((s) => (
             <option key={s.id} value={s.id}>
@@ -87,8 +87,8 @@ export function ContactForm() {
           ))}
         </NativeSelect>
       </Field>
-      <Field label="Message" htmlFor="message" required className="sm:col-span-2" error={f.errors.message}>
-        <Textarea id="message" name="message" {...field("message")} placeholder="Référence du produit, numéro de commande, question…" maxLength={5000} />
+      <Field label="Nachricht" htmlFor="message" required className="sm:col-span-2" error={f.errors.message}>
+        <Textarea id="message" name="message" {...field("message")} placeholder="Bestellnummer, Modellbezeichnung oder Ihre Frage…" maxLength={5000} />
       </Field>
       <div className="sm:col-span-2">
         <FormError text={error} />
@@ -97,10 +97,10 @@ export function ContactForm() {
         <Button type="submit" size="lg" disabled={sending} plain={sending}>
           {sending ? (
             <>
-              <Spinner /> Envoi…
+              <Spinner /> Wird gesendet…
             </>
           ) : (
-            "Envoyer le message"
+            "Nachricht senden"
           )}
         </Button>
       </div>
