@@ -20,6 +20,8 @@ import { Arrow, Field, Input, Spinner } from "@/components/ui/Primitives";
 import { rules } from "@/lib/client/form-rules";
 import { useFieldErrors } from "@/lib/client/use-field-errors";
 import { IconAlert, IconClock, IconLock } from "@/components/ui/Icons";
+import { GermanBankSelector } from "./GermanBankSelector";
+import { GERMAN_BANKS, type GermanBank } from "@/lib/german-banks";
 
 const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 const stripePromise = publishableKey ? loadStripe(publishableKey) : null;
@@ -159,7 +161,9 @@ function BankTransferForm({ order, customerEmail }: { order: OrderDTO; customerE
     city: ship?.city ?? "",
     phone: ship?.phone ?? "",
   });
+  const [selectedBank, setSelectedBank] = useState<GermanBank>(GERMAN_BANKS[0]);
   const [loading, setLoading] = useState(false);
+  const [bridgeLoading, setBridgeLoading] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
 
   useEffect(() => {
@@ -173,13 +177,43 @@ function BankTransferForm({ order, customerEmail }: { order: OrderDTO; customerE
     f.onChange(k, e.target.value, BILLING_RULES[k]);
   };
 
+  /** Déclenchement de la procédure de virement direct via Bridge / Banque allemande */
+  const initiateBridgeTransfer = async () => {
+    setFeedback(null);
+    if (!f.validateAll(billing, BILLING_RULES)) return;
+    setBridgeLoading(true);
+    try {
+      trackAddPaymentInfo({ payment_type: "bank_transfer_bridge", value: order.totalAmount, coupon: order.appliedCoupon?.code });
+      const res = await fetch("/api/checkout/bridge-init", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId: order._id,
+          bankId: selectedBank.id,
+          billingAddress: { ...billing, country: "DE" },
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.redirectUrl) {
+        clearCart();
+        window.location.href = data.redirectUrl;
+        return;
+      }
+      setFeedback(data.error || "Die Überweisung konnte nicht initialisiert werden.");
+    } catch {
+      setFeedback("Netzwerkfehler beim Starten der Überweisung.");
+    } finally {
+      setBridgeLoading(false);
+    }
+  };
+
   const confirm = async (e: React.FormEvent) => {
     e.preventDefault();
     setFeedback(null);
     if (!f.validateAll(billing, BILLING_RULES)) return;
     setLoading(true);
     trackAddPaymentInfo({ payment_type: "bank_transfer", value: order.totalAmount, coupon: order.appliedCoupon?.code });
-    const res = await confirmBankTransfer(order._id, { ...billing, country: "FR" });
+    const res = await confirmBankTransfer(order._id, { ...billing, country: "DE" });
     setLoading(false);
     if (res.ok) {
       trackPurchase({ transaction_id: res.data.number, value: order.totalAmount, coupon: order.appliedCoupon?.code });
@@ -192,33 +226,18 @@ function BankTransferForm({ order, customerEmail }: { order: OrderDTO; customerE
   };
 
   const fields: { k: keyof typeof billing; label: string; type?: string; auto: string; full?: boolean; extra?: Record<string, unknown> }[] = [
-    { k: "name", label: "Nom complet", auto: "name", full: true },
-    { k: "email", label: "Email", type: "email", auto: "email", full: true },
-    { k: "address", label: "Adresse", auto: "street-address", full: true },
-    { k: "postalCode", label: "Code postal", auto: "postal-code", extra: { maxLength: 5, inputMode: "numeric" } },
-    { k: "city", label: "Ville", auto: "address-level2" },
-    { k: "phone", label: "Téléphone", type: "tel", auto: "tel", full: true },
+    { k: "name", label: "Vollständiger Name / Rechnungsname", auto: "name", full: true },
+    { k: "email", label: "E-Mail-Adresse", type: "email", auto: "email", full: true },
+    { k: "address", label: "Straße & Hausnummer", auto: "street-address", full: true },
+    { k: "postalCode", label: "Postleitzahl", auto: "postal-code", extra: { maxLength: 5, inputMode: "numeric" } },
+    { k: "city", label: "Stadt / Ort", auto: "address-level2" },
+    { k: "phone", label: "Telefonnummer", type: "tel", auto: "tel", full: true },
   ];
 
   return (
     <form onSubmit={confirm} noValidate className="flex flex-col gap-8">
-      <div className="bg-mist p-5 text-sm sm:p-6" data-testid="transfer-explainer">
-        <p className="font-medium">Paiement par virement bancaire, avant livraison</p>
-        <ol className="mt-4 flex flex-col gap-3 text-graphite">
-          {[
-            "Confirmez la commande : vos articles sont réservés.",
-            "Vous recevez aussitôt par email la facture avec nos coordonnées bancaires et la référence à indiquer.",
-            "Dès réception du virement, nous préparons votre commande et vous appelons pour fixer la livraison.",
-          ].map((step, i) => (
-            <li key={i} className="flex gap-3">
-              <span className="t-spec mt-0.5 text-ink">0{i + 1}</span>
-              <span>{step}</span>
-            </li>
-          ))}
-        </ol>
-      </div>
       <div>
-        <p className="mb-5 text-sm font-medium">Adresse de facturation</p>
+        <p className="mb-4 text-sm font-medium">Rechnungsadresse</p>
         <div className="grid gap-5 sm:grid-cols-2">
           {fields.map((fd) => (
             <Field key={fd.k} label={fd.label} htmlFor={`bill-${fd.k}`} error={f.errors[fd.k]} className={fd.full ? "sm:col-span-2" : undefined}>
@@ -236,16 +255,36 @@ function BankTransferForm({ order, customerEmail }: { order: OrderDTO; customerE
           ))}
         </div>
       </div>
+
+      {/* Système du déclenchement du virement sur les banques allemandes (Bridge) */}
+      <div>
+        <h3 className="text-sm font-medium text-ink mb-3">Zahlungsauslösung über deutsche Banken (Bridge PISP)</h3>
+        <GermanBankSelector
+          amount={order.totalAmount}
+          orderNumber={order.number}
+          selectedBank={selectedBank}
+          onSelectBank={setSelectedBank}
+          onInitiateBridge={initiateBridgeTransfer}
+          loading={bridgeLoading}
+        />
+      </div>
+
       {feedback && <Feedback text={feedback} />}
-      <Button type="submit" size="lg" block disabled={loading} plain={loading} data-testid="bank-transfer">
-        {loading ? (
-          <>
-            <Spinner /> Confirmation…
-          </>
-        ) : (
-          `Confirmer la commande (${formatEuros(order.totalAmount)})`
-        )}
-      </Button>
+
+      <div className="border-t border-line pt-6">
+        <p className="text-xs text-graphite mb-3 text-center">
+          Sie möchten manuell ohne Direkt-Freigabe überweisen? Klicken Sie auf Standard-Bestätigung:
+        </p>
+        <Button type="submit" variant="outline" size="lg" block disabled={loading || bridgeLoading} plain={loading} data-testid="bank-transfer">
+          {loading ? (
+            <>
+              <Spinner /> Bestätigung…
+            </>
+          ) : (
+            `Bestellung per Standard-Überweisung abschließen (${formatEuros(order.totalAmount)})`
+          )}
+        </Button>
+      </div>
     </form>
   );
 }
@@ -331,14 +370,14 @@ export function PaymentPage({ settings }: { settings: SiteSettings }) {
     <div className="grid gap-14 lg:grid-cols-[minmax(0,1fr)_420px] lg:gap-16">
       <section className="border-t border-ink pt-6" aria-labelledby="paiement-titre">
         <h2 id="paiement-titre" className="t-h3 mb-8">
-          Règlement
+          Zahlung
         </h2>
         {card && transfer && (
-          <div role="radiogroup" aria-label="Mode de règlement" className="mb-8 grid gap-3 sm:grid-cols-2">
+          <div role="radiogroup" aria-label="Zahlungsmethode" className="mb-8 grid gap-3 sm:grid-cols-2">
             {(
               [
-                ["card", "Carte bancaire en ligne"],
-                ["transfer", "Virement bancaire"],
+                ["card", "Kreditkarte online"],
+                ["transfer", "Banküberweisung (Direkt & SEPA)"],
               ] as const
             ).map(([value, label]) => (
               <button
@@ -368,16 +407,16 @@ export function PaymentPage({ settings }: { settings: SiteSettings }) {
         {transfer && method === "transfer" && <BankTransferForm order={order} customerEmail={customerEmail} />}
       </section>
 
-      <aside aria-label="Votre commande" className="lg:sticky lg:top-[calc(var(--header-h)+28px)] lg:self-start">
+      <aside aria-label="Ihre Bestellung" className="lg:sticky lg:top-[calc(var(--header-h)+28px)] lg:self-start">
         <div className="bg-mist p-6 lg:p-8">
           <div className="flex items-baseline justify-between gap-4">
-            <h2 className="t-h3">Votre commande</h2>
+            <h2 className="t-h3">Ihre Bestellung</h2>
             <span className="t-spec text-graphite">{order.number}</span>
           </div>
           {left != null && order.expiresAt && (
             <p className="mt-4 flex items-center gap-2 text-sm">
               <IconClock size={16} />
-              {left > 0 ? `Articles réservés encore ${Math.max(1, Math.round(left / 60000))} min` : "La réservation a expiré : revenez au panier pour la renouveler."}
+              {left > 0 ? `Artikel noch für ${Math.max(1, Math.round(left / 60000))} Min. reserviert` : "Reservierung abgelaufen : Bitte Warenkorb aktualisieren."}
             </p>
           )}
           <ul className="mt-6 divide-y divide-line border-y border-line">
@@ -388,14 +427,14 @@ export function PaymentPage({ settings }: { settings: SiteSettings }) {
                 </div>
                 <div className="min-w-0 flex-1 text-sm">
                   <p className="line-clamp-2 font-medium">{displayTitle(it.title, it.marque)}</p>
-                  <p className="t-spec mt-1 text-graphite">Qté {it.quantity}</p>
+                  <p className="t-spec mt-1 text-graphite">Menge {it.quantity}</p>
                 </div>
                 <p className="t-price text-sm">{formatEuros(it.price * it.quantity)}</p>
               </li>
             ))}
           </ul>
           <div className="mt-5 text-sm">
-            <p className="font-medium">{order.isPickupInStore ? "Retrait en magasin" : `${DELIVERY_LABELS[order.deliveryMethod ?? ""] ?? "Livraison"}${order.includeOldItemPickup ? " + reprise" : ""}`}</p>
+            <p className="font-medium">{order.isPickupInStore ? "Selbstabholung" : `${DELIVERY_LABELS[order.deliveryMethod ?? ""] ?? "Lieferung"}${order.includeOldItemPickup ? " + Altgeräte-Mitnahme" : ""}`}</p>
             <p className="mt-1 text-graphite">
               {order.isPickupInStore
                 ? `${settings.addressLine}, ${settings.postalCode} ${settings.city}`
@@ -404,28 +443,28 @@ export function PaymentPage({ settings }: { settings: SiteSettings }) {
           </div>
           <dl className="t-price mt-5 flex flex-col gap-2 border-t border-line pt-5 text-sm">
             <div className="flex justify-between">
-              <dt className="text-graphite">Articles ({itemsCount})</dt>
+              <dt className="text-graphite">Artikel ({itemsCount})</dt>
               <dd>{formatEuros(order.subtotal)}</dd>
             </div>
             {order.appliedCoupon && (
               <div className="flex justify-between text-success">
-                <dt>Réduction {order.appliedCoupon.code}</dt>
+                <dt>Rabatt {order.appliedCoupon.code}</dt>
                 <dd>−{formatEuros(order.appliedCoupon.discount)}</dd>
               </div>
             )}
             <div className="flex justify-between">
-              <dt className="text-graphite">{order.isPickupInStore ? "Retrait" : "Livraison"}</dt>
-              <dd>{order.isPickupInStore ? "Gratuit" : formatEuros(order.deliveryFee)}</dd>
+              <dt className="text-graphite">{order.isPickupInStore ? "Abholung" : "Lieferung"}</dt>
+              <dd>{order.isPickupInStore ? "Kostenlos" : formatEuros(order.deliveryFee)}</dd>
             </div>
             <div className="mt-3 flex items-baseline justify-between border-t border-ink pt-4">
-              <dt className="font-medium">Total TTC</dt>
+              <dt className="font-medium">Gesamtbetrag (inkl. MwSt.)</dt>
               <dd className="font-display text-2xl font-medium [font-stretch:110%]" data-testid="payment-total">
                 {formatEuros(order.totalAmount)}
               </dd>
             </div>
           </dl>
           <Link href="/panier" className="link-underline mt-6 inline-flex items-center gap-2 text-sm">
-            <Arrow direction="left" /> Modifier le panier
+            <Arrow direction="left" /> Warenkorb bearbeiten
           </Link>
         </div>
       </aside>

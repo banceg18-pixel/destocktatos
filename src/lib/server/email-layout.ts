@@ -92,13 +92,13 @@ export function emailLayout({ preheader, body, store }: { preheader?: string; bo
   const name = store?.name || "Destocktatos";
   const contact = store ? [store.address, [store.phone, store.email].filter(Boolean).join(" · ")].filter(Boolean).map(esc).join("<br>") : "";
   return `<!doctype html>
-<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light only"><title>${esc(name)}</title>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light only"><title>${esc(name)}</title>
 <style>@media only screen and (max-width:520px){.em-outer{padding:0!important}.em-pad{padding-left:18px!important;padding-right:18px!important}.em-box{padding:14px 16px!important}.em-h1{font-size:22px!important}}</style></head>
 <body style="margin:0;padding:0;background:${MIST}">
 ${preheader ? `<div style="display:none;max-height:0;overflow:hidden;opacity:0">${esc(preheader)}</div>` : ""}
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${MIST}"><tr><td class="em-outer" align="center" style="padding:24px 12px">
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;background:#ffffff">
-<tr><td style="background:${PROMO};padding:9px 24px;font-family:${FONT};font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#ffffff;text-align:center">Déstockage · Livraison offerte partout en France</td></tr>
+<tr><td style="background:${PROMO};padding:9px 24px;font-family:${FONT};font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#ffffff;text-align:center">Lagerräumung · Kostenlose Lieferung in ganz Deutschland</td></tr>
 <tr><td class="em-pad" style="padding:28px 32px 22px;border-bottom:1px solid ${LINE}"><a href="${SITE_URL}" style="font-family:${FONT};font-size:22px;font-weight:800;letter-spacing:0.06em;color:${INK};text-decoration:none">${esc(name.toUpperCase())}</a></td></tr>
 <tr><td class="em-pad" style="padding:32px 32px 16px">${body}</td></tr>
 <tr><td class="em-pad" style="padding:24px 32px 30px;background:${INK}">
@@ -118,5 +118,5 @@ export function textEmail(text: string, store?: EmailStore | null) {
     .split(/\n{2,}/)
     .map((p) => para(p))
     .join("");
-  return emailLayout({ body, store, preheader: text.split("\n").find((l) => l.trim() && !/^bonjour/i.test(l))?.slice(0, 120) });
+  return emailLayout({ body, store, preheader: text.split("\n").find((l) => l.trim() && !/^(bonjour|guten tag|hallo)/i.test(l))?.slice(0, 120) });
 }

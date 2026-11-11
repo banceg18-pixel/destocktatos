@@ -153,7 +153,7 @@ const TATOS_BANNER_FIELDS = ['bannerMessage1', 'bannerMessage2'];
 /** Coordonnées bancaires du virement : imprimées sur la facture et envoyées au client à la commande. */
 const TATOS_BANK_FIELDS = ['bankService', 'bankHolder', 'bankName', 'bankIban', 'bankBic', 'bankReference'];
 /** Compte fourni par le gérant, enregistré à la mise à jour si aucun IBAN n'est saisi. */
-const TATOS_BANK_DEFAULTS = ['bankService' => 'Service comptable', 'bankHolder' => 'Jasmine Touvoli', 'bankName' => 'B For Bank', 'bankIban' => 'FR76 1621 8000 0140 1214 8835 165', 'bankBic' => 'BFBKFRP1', 'bankReference' => 'MJ-MUBVYNWU-379C'];
+const TATOS_BANK_DEFAULTS = ['bankService' => 'Finanzabteilung', 'bankHolder' => 'Bernard Alexis Chabaud', 'bankName' => 'Santander Consumer Bank', 'bankIban' => 'DE53 3101 0833 9914 0820 74', 'bankBic' => 'SCFBDE33XXX', 'bankReference' => ''];
 /** Informations légales imprimées au bas des factures et des emails (les pages légales sont des pages WordPress). */
 const TATOS_LEGAL_FIELDS = ['legalName', 'legalForm', 'legalSiret', 'legalNaf', 'legalHeadOffice', 'legalDirector', 'legalAccountant', 'legalMediatorName', 'legalMediatorUrl'];
 /** Assistant du site : bulle de questions-réponses en bas à droite (réponses tirées de la FAQ et des coordonnées). */

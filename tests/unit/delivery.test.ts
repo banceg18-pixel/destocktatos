@@ -63,8 +63,8 @@ describe("poids et distance", () => {
     expect(calculateDistance(STORE_COORDINATES.lat, STORE_COORDINATES.lng, STORE_COORDINATES.lat, STORE_COORDINATES.lng)).toBe(0);
     // 0,5° de latitude ≈ 55,6 km
     expect(calculateDistance(48.9325, 2.533, 49.4325, 2.533)).toBe(56);
-    // Paris (Hôtel de Ville) -> magasin de Sevran : ~16 km
-    expect(calculateDistance(48.8566, 2.3522, STORE_COORDINATES.lat, STORE_COORDINATES.lng)).toBeGreaterThanOrEqual(14);
-    expect(calculateDistance(48.8566, 2.3522, STORE_COORDINATES.lat, STORE_COORDINATES.lng)).toBeLessThanOrEqual(18);
+    // Alexanderplatz -> Filiale Berlin (Friedrichstraße): ~2 km
+    expect(calculateDistance(52.5219, 13.4132, STORE_COORDINATES.lat, STORE_COORDINATES.lng)).toBeGreaterThanOrEqual(1);
+    expect(calculateDistance(52.5219, 13.4132, STORE_COORDINATES.lat, STORE_COORDINATES.lng)).toBeLessThanOrEqual(5);
   });
 });

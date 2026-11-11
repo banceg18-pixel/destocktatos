@@ -15,10 +15,10 @@ export function AccountInvite({ email, hasPassword }: { email: string; hasPasswo
   if (hasPassword) {
     return (
       <div className="mt-8 max-w-xl border border-line p-5 sm:p-6" data-testid="account-invite">
-        <p className="font-medium">Votre espace client</p>
-        <p className="mt-2 text-sm text-graphite">Connectez-vous pour suivre votre commande et retrouver vos factures à tout moment.</p>
+        <p className="font-medium">Ihr Kundenbereich</p>
+        <p className="mt-2 text-sm text-graphite">Melden Sie sich an, um Ihre Bestellung zu verfolgen und jederzeit auf Ihre Rechnungen zuzugreifen.</p>
         <ButtonLink href={login} size="md" className="mt-5">
-          Me connecter
+          Anmelden
         </ButtonLink>
       </div>
     );
@@ -30,27 +30,26 @@ export function AccountInvite({ email, hasPassword }: { email: string; hasPasswo
   };
   return (
     <div className="mt-8 max-w-xl border border-line p-5 sm:p-6" data-testid="account-invite">
-      <p className="font-medium">Créez votre compte pour retrouver vos factures</p>
+      <p className="font-medium">Erstellen Sie Ihr Konto, um Ihre Rechnungen einzusehen</p>
       <p className="mt-2 text-sm text-graphite">
-        Votre compte est prêt à l&apos;adresse <strong className="text-ink">{email}</strong> : il ne manque que votre mot de passe. Choisissez-le avec le lien
-        « Créer mon compte » reçu par email avec votre facture.
+        Ihr Konto ist für die E-Mail-Adresse <strong className="text-ink">{email}</strong> vorbereitet: Vergeben Sie lediglich Ihr persönliches Passwort über den Link in Ihrer Bestätigungs-E-Mail.
       </p>
       <div className="mt-5 flex flex-wrap items-center gap-4">
         <Button size="md" onClick={send} disabled={state === "sending" || state === "sent"} plain={state !== "idle"}>
-          {state === "sending" ? <Spinner /> : state === "sent" ? "Lien envoyé" : "Recevoir à nouveau le lien"}
+          {state === "sending" ? <Spinner /> : state === "sent" ? "Link gesendet" : "Link erneut anfordern"}
         </Button>
         <a href={login} className="text-sm underline underline-offset-4">
-          J&apos;ai déjà un mot de passe
+          Ich habe bereits ein Passwort
         </a>
       </div>
       {state === "sent" && (
         <p role="status" className="mt-3 text-sm text-graphite">
-          Un nouveau lien vient de vous être envoyé à {email}.
+          Ein neuer Zugangslink wurde an {email} gesendet.
         </p>
       )}
       {state === "error" && (
         <p role="alert" className="mt-3 text-sm text-danger">
-          L&apos;envoi a échoué. Réessayez dans un instant.
+          Versand fehlgeschlagen. Bitte versuchen Sie es in Kürze erneut.
         </p>
       )}
     </div>

@@ -1,8 +1,7 @@
 /**
- * Règles de livraison : gratuite partout en France, quel que soit le mode (pied du camion, dans
- * la pièce ou avec installation), sans frais d'étage ni supplément pour la reprise de l'ancien
- * appareil. Module pur, partagé par le panier (affichage) et par le backend (calcul faisant foi
- * lors de la création de commande).
+ * Lieferregeln: Kostenlose Lieferung in ganz Deutschland, unabhängig von der Versandart
+ * (Bordsteinkante, in den Raum oder mit Installation), ohne Etagenzuschlag oder Altgeräterücknahmegebühr.
+ * Reines Modul, geteilt zwischen Warenkorb (Anzeige) und Backend (verbindliche Berechnung).
  */
 
 export type DeliveryMethod = "piedDuCamion" | "livraisonPiece" | "installation";
@@ -17,8 +16,8 @@ export type DeliveryOptions = Record<DeliveryMethod, DeliveryOption>;
 
 export const DELIVERY_METHODS: DeliveryMethod[] = ["piedDuCamion", "livraisonPiece", "installation"];
 
-/** Coordonnées du magasin (15 Rue Paul Langevin, 93270 Sevran) : distance indicative de l'adresse. */
-export const STORE_COORDINATES = { lat: 48.9325, lng: 2.533 };
+/** Standort der Filiale Berlin (Friedrichstraße 176-179, 10117 Berlin): Richtdistanz zur Lieferadresse. */
+export const STORE_COORDINATES = { lat: 52.5163, lng: 13.3883 };
 
 /** Tarifs par mode : tous offerts. `additionalFee` : reprise de l'ancien appareil avec l'installation. */
 export const DELIVERY_OPTIONS: DeliveryOptions = {

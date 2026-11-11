@@ -41,7 +41,7 @@ export const viewport: Viewport = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const [settings, menus, categories, assistant] = await Promise.all([getSiteSettings(), getMenus(), getCategories(), assistantSettings()]);
   return (
-    <html lang="fr" className={bannerMessagesOf(settings).length > 0 ? `${fontVariables} has-banner` : fontVariables}>
+    <html lang="de" className={bannerMessagesOf(settings).length > 0 ? `${fontVariables} has-banner` : fontVariables}>
       <body>
         <a href="#contenu" className="sr-only z-[400] rounded-sm bg-ink px-4 py-3 text-paper focus:not-sr-only focus:fixed focus:left-4 focus:top-4">
           Aller au contenu

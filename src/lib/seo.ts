@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 /** URL publique du site (jamais celle du site source) — sert aux canonicals et à Open Graph. */
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
 
-export const DEFAULT_TITLE = "Destocktatos - Électromenager de qualité au meilleur prix";
-export const DEFAULT_DESCRIPTION = "Produit électroménager de qualité au meilleur prix pour votre maison et votre entreprise.";
+export const DEFAULT_TITLE = "Destocktatos - Qualitäts-Haushaltsgeräte zum besten Preis";
+export const DEFAULT_DESCRIPTION = "Qualitäts-Haushaltsgeräte zum besten Preis für Ihr Zuhause und Ihr Unternehmen.";
 /** Visuel de partage (1200 × 630) et icône carrée (onglet, écran d'accueil, logo des moteurs de recherche). */
 export const LOGO_PATH = "/assets/images/branding/logo-destocktatos.png";
 export const ICON_PATH = "/assets/images/branding/icon-destocktatos.png";
@@ -21,7 +21,7 @@ export const rootMetadata: Metadata = {
   title: { default: DEFAULT_TITLE, template: "%s | Destocktatos" },
   description: DEFAULT_DESCRIPTION,
   manifest: "/manifest.webmanifest",
-  keywords: ["Electromenager", "qualité", "prix", "maison", "entreprise"],
+  keywords: ["Haushaltsgeräte", "Qualität", "Bestpreis", "Zuhause", "Küche", "GmbH"],
   creator: "Destocktatos",
   publisher: "Destocktatos",
   robots: {
@@ -38,7 +38,7 @@ export const rootMetadata: Metadata = {
     description: DEFAULT_DESCRIPTION,
     url: "/",
     siteName: "Destocktatos",
-    locale: "fr_FR",
+    locale: "de_DE",
     images: OG_IMAGES,
     type: "website",
   },
@@ -58,9 +58,9 @@ export function organizationJsonLd(phoneIntl: string) {
     name: "Destocktatos",
     url: SITE_URL,
     logo: `${SITE_URL}${ICON_PATH}`,
-    description: "Électroménager de qualité au meilleur prix",
-    address: { "@type": "PostalAddress", addressLocality: "France", addressCountry: "FR" },
-    contactPoint: { "@type": "ContactPoint", telephone: phoneIntl, contactType: "customer service", availableLanguage: ["Français"] },
+    description: "Qualitäts-Haushaltsgeräte zum besten Preis",
+    address: { "@type": "PostalAddress", streetAddress: "Friedrichstraße 176-179", addressLocality: "Berlin", postalCode: "10117", addressCountry: "DE" },
+    contactPoint: { "@type": "ContactPoint", telephone: phoneIntl, contactType: "customer service", availableLanguage: ["Deutsch"] },
   };
 }
 

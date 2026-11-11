@@ -1,69 +1,65 @@
 [
   {
-    "title": "Commandes et Livraisons",
+    "title": "Bestellungen und Lieferung",
     "items": [
       {
-        "question": "Comment suivre ma commande ?",
-        "answer": "Connectez-vous à votre compte client, rubrique « Mes commandes » : le statut de chaque commande y est à jour. Vous recevez aussi un email à chaque étape (virement reçu, préparation, livraison). Vous avez commandé sans compte ? Créez-le avec le lien reçu dans l'email de confirmation de commande."
+        "question": "Wie kann ich meine Bestellung verfolgen?",
+        "answer": "Melden Sie sich in Ihrem Kundenkonto im Bereich « Meine Bestellungen » an: Der Status jeder Bestellung wird dort in Echtzeit angezeigt. Zudem erhalten Sie bei jedem Schritt eine E-Mail (Zahlungseingang, Bearbeitung, Versand/Lieferung). Haben Sie als Gast bestellt? Sie können Ihr Konto jederzeit über den Link in Ihrer Bestätigungs-E-Mail aktivieren."
       },
       {
-        "question": "Quels sont les délais de livraison ?",
-        "answer": "La livraison est offerte partout en France. Dès réception de votre virement, nous vous appelons pour convenir ensemble du jour et du créneau de livraison. Le délai dépend de votre adresse ; celui indiqué lors de la commande est donné à titre indicatif."
+        "question": "Wie lange dauert die Lieferung?",
+        "answer": "Die Lieferung ist in ganz Deutschland kostenfrei. Sobald Ihre Überweisung eingegangen ist, setzen wir uns telefonisch mit Ihnen in Verbindung, um den gewünschten Liefertag und das Zeitfenster abzustimmen."
       },
       {
-        "question": "Puis-je modifier ma commande après l'avoir validée ?",
-        "answer": "Vous pouvez modifier votre commande dans l'heure qui suit sa validation en contactant notre service client. Au-delà de ce délai, la modification ne sera plus possible si la commande est déjà en cours de préparation."
+        "question": "Kann ich meine Bestellung nach Abschluss noch ändern?",
+        "answer": "Änderungen können innerhalb einer Stunde nach Bestellung über unseren Kundenservice vorgenommen werden. Sobald sich die Ware im Versandprozess befindet, ist eine nachträgliche Änderung leider nicht mehr möglich."
       }
     ]
   },
   {
-    "title": "Paiements et Factures",
+    "title": "Zahlung und Rechnungen",
     "items": [
       {
-        "question": "Quels moyens de paiement acceptez-vous ?",
-        "answer": "Le paiement se fait uniquement par virement bancaire, avant la livraison. Après la confirmation de votre commande, les coordonnées bancaires s'affichent à l'écran et vous sont envoyées par email avec votre devis ; vos articles restent réservés en attendant le virement. La carte bancaire, PayPal et le paiement en plusieurs fois ne sont pas proposés."
+        "question": "Welche Zahlungsmethoden werden akzeptiert?",
+        "answer": "Die Bezahlung erfolgt per sicherer Banküberweisung vor der Auslieferung: entweder per Direktüberweisung über Ihre deutsche Bank (Bridge Open Banking für Sparkasse, Deutsche Bank, Commerzbank, ING, Volksbanken, Postbank etc.) oder per klassischer SEPA-Banküberweisung auf unser Geschäftskonto bei der Santander Consumer Bank. Ihre Artikel bleiben währenddessen fest reserviert."
       },
       {
-        "question": "Comment obtenir ma facture ?",
-        "answer": "Votre devis, avec les informations de paiement, vous est envoyé par email dès la commande. La facture vous est envoyée par email dès réception de votre virement ; vous la retrouvez aussi dans votre espace client, rubrique « Mes commandes »."
+        "question": "Wie erhalte ich meine Rechnung?",
+        "answer": "Ihre Auftragsbestätigung mit allen Zahlungsdaten erhalten Sie sofort nach der Bestellung per E-Mail. Die offizielle Rechnung mit ausgewiesener Mehrwertsteuer wird Ihnen unmittelbar nach Zahlungseingang per E-Mail zugestellt und steht auch in Ihrem Kundenkonto zur Verfügung."
       },
       {
-        "question": "Le paiement sur votre site est-il sécurisé ?",
-        "answer": "Oui. Vous ne saisissez aucune donnée bancaire sur notre site : le règlement se fait par virement depuis votre propre banque, avec les coordonnées indiquées sur votre devis. Le site est protégé par une connexion chiffrée (HTTPS)."
+        "question": "Ist die Zahlung auf Destocktatos sicher?",
+        "answer": "Ja, absolut. Wir erfassen keinerlei sensible Bank- oder Kreditkartendaten auf unserer Plattform. Die Überweisung erfolgt verschlüsselt und direkt über Ihr eigenes Online-Banking oder Ihre gewohnte Banking-App gemäß europäischem PSD2-Standard."
       }
     ]
   },
   {
-    "title": "Retours et Remboursements",
+    "title": "Rückgabe und Erstattungen",
     "items": [
       {
-        "question": "Comment retourner un article ?",
-        "answer": "Contactez-nous par email à contacts@destocktatos.com ou par téléphone au 07 80 96 12 16, en indiquant votre numéro de commande : nous vous indiquons la marche à suivre. Les frais de retour sont à votre charge ; pour un appareil volumineux, nous pouvons organiser sa récupération à domicile, à un coût indiqué à l'avance. Les conditions sont détaillées dans nos conditions générales de vente."
+        "question": "Wie kann ich einen Artikel zurückgeben?",
+        "answer": "Kontaktieren Sie uns bitte per E-Mail an contacts@destocktatos.com oder telefonisch unter Angabe Ihrer Bestellnummer. Wir teilen Ihnen umgehend die Rücksendeadresse unserer Filiale in Berlin mit. Die Rücksendekosten richten sich nach den gesetzlichen Bestimmungen und unseren AGB."
       },
       {
-        "question": "Quel est le délai pour retourner un produit ?",
-        "answer": "Vous disposez de 14 jours à compter de la réception de votre commande pour exercer votre droit de rétractation, sans avoir à vous justifier. Le produit doit être retourné dans son état d'origine, avec son emballage et ses accessoires."
+        "question": "Welche Frist gilt für die Rückgabe?",
+        "answer": "Sie haben ein 14-tägiges gesetzliches Widerrufsrecht ab Erhalt der Ware, ohne Angaben von Gründen. Das Produkt muss im Originalzustand mit Zubehör und Verpackung zurückgesandt werden."
       },
       {
-        "question": "Sous quel délai serai-je remboursé ?",
-        "answer": "Nous vous remboursons la totalité des sommes versées, frais de livraison compris, au plus tard 14 jours après avoir été informés de votre décision de vous rétracter, par virement. Le délai de crédit sur votre compte dépend ensuite de votre banque."
+        "question": "Wann erhalte ich meine Rückzahlung?",
+        "answer": "Die Rückerstattung des vollständigen Zahlungsbetrags inklusive Standard-Lieferkosten erfolgt spätestens 14 Tage nach Eingang des Widerrufs per Banküberweisung auf Ihr Konto."
       }
     ]
   },
   {
-    "title": "Compte Client et Services",
+    "title": "Kundenkonto und Kundenservice",
     "items": [
       {
-        "question": "Comment créer un compte client ?",
-        "answer": "Ce n'est pas obligatoire pour commander : vous pouvez commander avec votre seul email, puis créer votre compte grâce au lien reçu après la commande. Vous pouvez aussi le créer à tout moment : « Mon compte » en haut à droite de notre site, puis « Créer un compte »."
+        "question": "Muss ich ein Kundenkonto anlegen?",
+        "answer": "Nein, Sie können ganz bequem als Gast mit Ihrer E-Mail-Adresse bestellen. Nach Abschluss der Bestellung können Sie auf Wunsch mit einem Klick ein Passwort festlegen, um Ihre Bestellungen und Rechnungen einzusehen."
       },
       {
-        "question": "Comment contacter le service client ?",
-        "answer": "Vous pouvez contacter notre service client par téléphone au 07 80 96 12 16 (du lundi au dimanche, 10h-20h), par email à contacts@destocktatos.com ou via le formulaire de contact disponible sur notre site."
-      },
-      {
-        "question": "Proposez-vous un service de réparation ?",
-        "answer": "Oui, nous proposons un service de réparation pour tous les produits achetés dans notre magasin, qu'ils soient sous garantie ou non. Contactez notre SAV pour obtenir un devis."
+        "question": "Wie erreiche ich den Kundenservice der Filiale Berlin?",
+        "answer": "Unser Kundenservice in Berlin (Friedrichstraße 176-179, 10117 Berlin) ist von Montag bis Sonntag von 10:00 bis 20:00 Uhr telefonisch, per E-Mail an contacts@destocktatos.com sowie über unseren Online-Chat erreichbar."
       }
     ]
   }

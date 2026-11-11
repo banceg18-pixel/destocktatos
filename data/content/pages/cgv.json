@@ -13,7 +13,7 @@
       "blocks": [
         {
           "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Les présentes conditions générales de vente s'appliquent à toutes les ventes de produits électroménagers conclues sur le site Internet Destocktatos entre :</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">D'une part, la société Destocktatos, société par actions simplifiée, dont le siège social est situé 15 Rue Paul Langevin, 93270 Sevran, immatriculée au Registre du Commerce et des Sociétés sous le numéro SIRET 94228991900014, activité NAF APE : commerce de gros non spécialisé, dirigée par Franck NEBOT, ci-après dénommée \"Destocktatos\" ou \"le Vendeur\".                       </p><p class=\"text-[color:var(--text-main)] opacity-90\">Et d'autre part, les personnes physiques ou morales souhaitant effectuer un achat via le site Internet de Destocktatos, ci-après dénommées \"l'Acheteur\" ou \"le Client\".                  </p>"
+          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Die vorliegenden Allgemeinen Geschäftsbedingungen gelten für alle Verkäufe über den Online-Shop Destocktatos zwischen:</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Einerseits der Destocktatos GmbH mit Sitz in Friedrichstraße 176-179, 10117 Berlin, Deutschland, USt-IdNr.: DE310108339, Vertretungsberechtigter: Bernard Alexis Chabaud, nachfolgend \"Destocktatos\" oder \"Verkäufer\" genannt.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Und andererseits natürlichen oder juristischen Personen, die über die Website von Destocktatos Waren bestellen, nachfolgend \"Käufer\" oder \"Kunde\" genannt.</p>"
         }
       ]
     },
@@ -49,7 +49,7 @@
       "blocks": [
         {
           "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Le paiement est exigible à la commande, y compris pour les produits en précommande ou en cours de réapprovisionnement. Il s'effectue uniquement par virement bancaire, avant la livraison : ni carte bancaire, ni PayPal.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Dès la validation de sa commande, l'Acheteur reçoit par email le devis correspondant, qui indique le montant à régler et les coordonnées bancaires de Destocktatos. Ces informations s'affichent également à l'écran à la confirmation de la commande. La facture est adressée par email dès réception du paiement.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-2 font-medium\">Coordonnées bancaires :</p><ul class=\"list-disc list-inside space-y-1 text-[color:var(--text-main)] opacity-90 mb-3\"><li>Service responsable : Service comptable</li><li>Titulaire : Jasmine Touvoli</li><li>Banque : B For Bank</li><li>IBAN : FR76 1621 8000 0140 1214 8835 165</li><li>BIC : BFBKFRP1</li></ul><p class=\"text-[color:var(--text-main)] opacity-90\">Les articles commandés sont réservés dans l'attente du virement. La commande est préparée puis livrée après réception du paiement. Aucune donnée bancaire de l'Acheteur n'est saisie ni conservée sur le site.</p>"
+          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Le paiement est exigible à la commande, y compris pour les produits en précommande ou en cours de réapprovisionnement. Il s'effectue par virement bancaire sécurisé (Direktüberweisung via Bridge oder Standard SEPA-Überweisung), avant la livraison : ni carte bancaire, ni PayPal.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Dès la validation de sa commande, l'Acheteur reçoit par email le devis correspondant, qui indique le montant à régler et les coordonnées bancaires de Destocktatos Filiale Berlin. Ces informations s'affichent également à l'écran à la confirmation de la commande. La facture est adressée par email dès réception du paiement.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-2 font-medium\">Coordonnées bancaires (Deutsche Bankverbindung) :</p><ul class=\"list-disc list-inside space-y-1 text-[color:var(--text-main)] opacity-90 mb-3\"><li>Service responsable : Finanzabteilung</li><li>Titulaire (Inhaber) : Bernard Alexis Chabaud</li><li>Banque : Santander Consumer Bank</li><li>IBAN : DE53 3101 0833 9914 0820 74</li><li>BIC : SCFBDE33XXX</li></ul><p class=\"text-[color:var(--text-main)] opacity-90\">Les articles commandés sont réservés dans l'attente du virement. La commande est préparée puis livrée après réception du paiement. Aucune donnée bancaire de l'Acheteur n'est saisie ni conservée sur le site.</p>"
         }
       ]
     },
@@ -72,47 +72,47 @@
       ]
     },
     {
-      "title": "Article 7 - Garanties",
+      "title": "Article 7 - Garanties & Gewährleistung",
       "blocks": [
         {
           "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Tous les produits fournis par Destocktatos bénéficient de la garantie légale de conformité prévue aux articles L. 217-4 et suivants du Code de la consommation et de la garantie des vices cachés prévue aux articles 1641 et suivants du Code civil.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">En cas de non-conformité d'un produit vendu, il pourra être retourné à Destocktatos qui le reprendra, l'échangera ou le remboursera. Toutes les réclamations doivent s'effectuer par voie postale à l'adresse suivante : Destocktatos, Service Clients, 15 Rue Paul Langevin, 93270 Sevran, ou par e-mail à l'adresse : contacts@destocktatos.com.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Certains produits bénéficient en outre d'une garantie commerciale dont les conditions sont précisées sur la fiche produit et dans le livret de garantie accompagnant le produit.</p>"
+          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Es gelten die gesetzlichen Gewährleistungsrechte nach dem Bürgerlichen Gesetzbuch (BGB, §§ 434 ff., 437 ff.).</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Reklamationen oder Rückfragen können schriftlich an Destocktatos GmbH, Friedrichstraße 176-179, 10117 Berlin oder per E-Mail an contacts@destocktatos.com gerichtet werden.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Einige Produkte verfügen zusätzlich über eine Herstellergarantie, deren Bedingungen den jeweiligen Produktunterlagen beiliegen.</p>"
         }
       ]
     },
     {
-      "title": "Article 8 - Service après-vente",
+      "title": "Article 8 - Service & Kundenservice",
       "blocks": [
         {
           "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Destocktatos propose un service après-vente accessible par téléphone du lundi au dimanche de 10h à 20h au 07 80 96 12 16 (prix d'un appel local) ou par e-mail à contacts@destocktatos.com.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Pour toute réparation hors garantie, un devis préalable sera établi et soumis à l'acceptation du client avant toute intervention.</p>"
+          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Unser Kundendienst steht Ihnen von Montag bis Samstag von 9:00 bis 19:00 Uhr telefonisch unter +49 30 12345678 oder per E-Mail an contacts@destocktatos.com zur Verfügung.</p>"
         }
       ]
     },
     {
-      "title": "Article 9 - Responsabilité",
+      "title": "Article 9 - Haftung",
       "blocks": [
         {
           "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Les produits proposés sont conformes à la législation française en vigueur. La responsabilité de Destocktatos ne saurait être engagée en cas de non-respect de la législation du pays où les produits sont livrés (par exemple en cas d'interdiction d'un produit).</p><p class=\"text-[color:var(--text-main)] opacity-90\">Destocktatos ne pourra être tenue responsable des dommages indirects résultant d'une mauvaise utilisation des produits vendus.</p>"
+          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Die angebotenen Produkte entsprechen den geltenden gesetzlichen Vorschriften in Deutschland und der Europäischen Union.</p>"
         }
       ]
     },
     {
-      "title": "Article 10 - Traitement des réclamations",
+      "title": "Article 10 - Streitbeilegung",
       "blocks": [
         {
           "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Pour toute réclamation, l'Acheteur peut contacter le service client de Destocktatos par e-mail à contacts@destocktatos.com ou par téléphone au 07 80 96 12 16 (prix d'un appel local).</p><p class=\"text-[color:var(--text-main)] opacity-90\">En cas de litige, l'Acheteur s'adressera en priorité à Destocktatos pour trouver une solution amiable. À défaut d'accord amiable, l'Acheteur est informé qu'il peut recourir à une médiation conventionnelle ou à tout autre mode alternatif de règlement des différends.</p>"
+          "html": "<p class=\"text-[color:var(--text-main)] opacity-90\">Im Falle von Beanstandungen steht Ihnen unser Kundenservice zur Verfügung. Zur Teilnahme an einem Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle sind wir nicht verpflichtet und nicht bereit.</p>"
         }
       ]
     },
     {
-      "title": "Article 11 - Droit applicable et juridiction compétente",
+      "title": "Article 11 - Anwendbares Recht & Gerichtsstand",
       "blocks": [
         {
           "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Les présentes conditions générales de vente sont régies par le droit français.</p><p class=\"text-[color:var(--text-main)] opacity-90\">En cas de litige, compétence expresse est attribuée aux tribunaux français, nonobstant pluralité de défendeurs ou appel en garantie, même pour les procédures d'urgence ou les procédures conservatoires en référé ou par requête.</p>"
+          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Es gilt das Recht der Bundesrepublik Deutschland unter Ausschluss des UN-Kaufrechts (CISG).</p><p class=\"text-[color:var(--text-main)] opacity-90\">Sofern gesetzlich zulässig, ist Gerichtsstand Berlin.</p>"
         }
       ]
     }

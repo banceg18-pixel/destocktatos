@@ -16,7 +16,7 @@ import { toOrderDTO } from "@/lib/server/orders";
 import { DELIVERY_LABELS } from "@/services/orders";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Confirmation de commande", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "Bestellbestätigung — Destocktatos", robots: { index: false, follow: false } };
 
 type SP = Promise<{ status?: string; order?: string; payment_id?: string }>;
 
@@ -96,56 +96,55 @@ export default async function ConfirmationPage({ searchParams }: { searchParams:
           </span>
           {paid && order ? (
             <>
-              <h1 className="t-display mt-8">Merci pour votre commande !</h1>
+              <h1 className="t-display mt-8">Vielen Dank für Ihre Bestellung!</h1>
               {order.paidAt ? (
                 <p className="t-lead mt-6 max-w-xl text-graphite" data-testid="confirmation-done">
-                  La commande <strong className="t-spec text-ink">{order.number}</strong> est payée ({formatEuros(order.totalAmount)}). Votre facture vous a été envoyée par email et
-                  nous vous appelons pour fixer la livraison.
+                  Die Bestellung <strong className="t-spec text-ink">{order.number}</strong> ist bezahlt ({formatEuros(order.totalAmount)}). Ihre Rechnung wurde per E-Mail versandt und wir rufen Sie zur Vereinbarung des Liefertermins an.
                 </p>
               ) : declared ? (
                 <p className="t-lead mt-6 max-w-xl text-graphite" data-testid="confirmation-done">
-                  La commande <strong className="t-spec text-ink">{order.number}</strong> est enregistrée et vos articles sont réservés. Merci d&apos;avoir effectué votre virement de{" "}
-                  {formatEuros(order.totalAmount)} : nous vérifions sa réception et vous envoyons la facture par email dès qu&apos;il est reçu.
+                  Die Bestellung <strong className="t-spec text-ink">{order.number}</strong> ist erfasst und Ihre Artikel sind reserviert. Vielen Dank für Ihre Überweisung von{" "}
+                  {formatEuros(order.totalAmount)} : Wir prüfen den Eingang und senden Ihnen die Rechnung per E-Mail, sobald der Betrag gebucht ist.
                 </p>
               ) : toPay ? (
                 <>
                   <p className="t-lead mt-6 max-w-xl text-graphite">
-                    La commande <strong className="t-spec text-ink">{order.number}</strong> est enregistrée et vos articles sont réservés. Pour la valider, réglez{" "}
-                    {formatEuros(order.totalAmount)} par virement bancaire : le devis, avec les informations de paiement, vous a aussi été envoyé par email.
+                    Die Bestellung <strong className="t-spec text-ink">{order.number}</strong> ist erfasst und Ihre Artikel sind reserviert. Bitte überweisen Sie{" "}
+                    {formatEuros(order.totalAmount)} per Banküberweisung : Die Zahlungsdaten finden Sie nachfolgend sowie in der Bestätigungs-E-Mail.
                   </p>
                   <TransferGuide amount={order.totalAmount} orderNumber={order.number} bank={bank} className="mt-8 max-w-xl" />
                 </>
               ) : (
                 <p className="t-lead mt-6 max-w-xl text-graphite">
-                  La commande <strong className="t-spec text-ink">{order.number}</strong> est enregistrée. Un récapitulatif est disponible dans votre compte.
+                  Die Bestellung <strong className="t-spec text-ink">{order.number}</strong> ist eingegangen. Eine Übersicht finden Sie in Ihrem Kundenkonto.
                 </p>
               )}
               <p className="mt-4 max-w-xl text-sm text-graphite" data-testid="spam-hint">
-                Vous ne trouvez pas notre email ? Regardez dans vos courriers indésirables (spams) et cliquez sur « Non spam » : nos prochains emails arriveront directement.
+                E-Mail nicht gefunden? Bitte prüfen Sie Ihren Spam-Ordner und markieren Sie unsere E-Mail als « Kein Spam ».
               </p>
               {/* Commande passée sans être connecté : création du compte (ou connexion) pour retrouver ses factures. */}
               {!session?.user?.id && customer && <AccountInvite email={customer.email} hasPassword={!!customer.passwordHash} />}
             </>
           ) : (
             <>
-              <h1 className="t-display mt-8">Paiement en cours de vérification</h1>
+              <h1 className="t-display mt-8">Zahlung wird geprüft</h1>
               <p className="t-lead mt-6 max-w-xl text-graphite">
-                Nous n&apos;avons pas encore la confirmation de votre banque. Le statut se met à jour automatiquement dans « Mes commandes ».
+                Wir warten noch auf die Bestätigung Ihrer Bank. Der Status wird in « Meine Bestellungen » automatisch aktualisiert.
               </p>
             </>
           )}
           <div className="mt-10 flex flex-wrap gap-3">
             {session?.user?.id && (
               <ButtonLink href="/compte/commandes" size="lg" variant={paid ? "outline" : "solid"} icon={<Arrow />}>
-                Mes commandes
+                Meine Bestellungen
               </ButtonLink>
             )}
           </div>
         </div>
 
         {paid && order && (
-          <aside className="self-start bg-mist p-6 lg:p-8" aria-label="Et maintenant ?">
-            <h2 className="t-h3">Et maintenant ?</h2>
+          <aside className="self-start bg-mist p-6 lg:p-8" aria-label="Wie geht es weiter?">
+            <h2 className="t-h3">Wie geht es weiter?</h2>
             <ol className="mt-6 flex flex-col gap-5 text-sm">
               {steps.map(({ title, body }, i) => (
                 <li key={title} className="flex gap-4">

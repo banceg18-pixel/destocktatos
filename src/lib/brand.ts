@@ -14,15 +14,13 @@ const REPLACEMENTS: [RegExp, string][] = [
   [/tatos-electromenager@[a-z0-9.-]+\.[a-z]{2,}/gi, "contacts@destocktatos.com"],
   [/contact@exemple\.fr/gi, "contacts@destocktatos.com"],
   [/\bTATOS\b/g, "Destocktatos"],
-  [/Example Hosting<br\s*\/?>456 avenue du Web<br\s*\/?>69000 Lyon, France<br\s*\/?>Téléphone : \+33 \(0\)4 56 78 90 12/g, "Hostinger International Ltd<br/>61 Lordou Vironos Street<br/>6023 Larnaca, Chypre<br/>Site : www.hostinger.fr"],
+  [/Example Hosting<br\s*\/?>456 avenue du Web<br\s*\/?>69000 Lyon, France<br\s*\/?>Téléphone : \+33 \(0\)4 56 78 90 12/g, "Hostinger International Ltd<br/>61 Lordou Vironos Street<br/>6023 Larnaca, Zypern<br/>Website: www.hostinger.de"],
   [/Example Hosting/g, "Hostinger International Ltd"],
-  // Adresse du magasin : 15 Rue Paul Langevin, 93270 Sevran (siège de Reims et variantes remplacés).
-  [/\b1[25] rue paul l(?:angevin|evangin)\b/gi, "15 Rue Paul Langevin"],
-  [/3 Rue Émile Zola,?\s*51100 Reims(?:,\s*France)?/gi, "15 Rue Paul Langevin, 93270 Sevran, France"],
-  // Numéro unique du magasin : 07 80 96 12 16 (anciens numéros remplacés, tous formats).
-  [/\+33-[16]-(?:51-64-41-84|83-75-01-21)/g, "+33-7-80-96-12-16"],
-  [/\+33(?:651644184|183750121)/g, "+33780961216"],
-  [/(?:\+33[\s.-]*\(?0?[16]\)?|\b0[16])[\s.-]?(?:51[\s.-]?64[\s.-]?41[\s.-]?84|83[\s.-]?75[\s.-]?01[\s.-]?21)\b/g, "07 80 96 12 16"],
+  // Adresse der Filiale Berlin
+  [/\b1[25] rue paul l(?:angevin|evangin),?\s*93270 Sevran(?:,\s*France)?\b/gi, "Friedrichstraße 176-179, 10117 Berlin, Deutschland"],
+  [/\b1[25] rue paul l(?:angevin|evangin)\b/gi, "Friedrichstraße 176-179"],
+  [/3 Rue Émile Zola,?\s*51100 Reims(?:,\s*France)?/gi, "Friedrichstraße 176-179, 10117 Berlin, Deutschland"],
+  [/15 Rue Paul Langevin,?\s*93270 Sevran(?:,\s*France)?/gi, "Friedrichstraße 176-179, 10117 Berlin, Deutschland"],
 ];
 
 export function rebrandText(s: string) {
@@ -44,8 +42,8 @@ export function rebrand<T>(value: T): T {
  * postal, la ville et le pays en sont tirés, pour ne jamais afficher deux adresses mélangées.
  */
 export function normalizeAddress<T extends Pick<SiteSettings, "addressLine" | "postalCode" | "city" | "country">>(s: T): T {
-  // Adresse du magasin : 15 Rue Paul Langevin, 93270 Sevran (remplace celle du siège de Reims).
-  if (/Zola|51100/.test(`${s.addressLine} ${s.postalCode}`)) return { ...s, addressLine: "15 Rue Paul Langevin", postalCode: "93270", city: "Sevran", country: "France" };
+  // Adresse der Filiale Berlin
+  if (/Zola|51100|Sevran|93270/.test(`${s.addressLine} ${s.postalCode}`)) return { ...s, addressLine: "Friedrichstraße 176-179", postalCode: "10117", city: "Berlin", country: "Deutschland" };
   const m = s.addressLine?.match(/^(.+?),\s*(\d{5})\s+([^,]+?)(?:,\s*([^,]+?))?\s*$/);
   if (!m) return s;
   return { ...s, addressLine: m[1].trim(), postalCode: m[2], city: m[3].trim(), country: m[4]?.trim() || s.country };
@@ -57,59 +55,57 @@ export function normalizeAddress<T extends Pick<SiteSettings, "addressLine" | "p
 export function company(s: SiteSettings) {
   return {
     name: s.legalName || s.siteName || "Destocktatos",
-    form: s.legalForm || "société par actions simplifiée",
-    siret: s.legalSiret || "94228991900014",
-    naf: s.legalNaf || "Commerce de gros non spécialisé",
-    headOffice: s.legalHeadOffice || "15 rue Paul Langevin, 93270 Sevran",
-    director: s.legalDirector || "Franck NEBOT",
-    accountant: s.legalAccountant || "Madame Jasmine Touvoli",
+    form: s.legalForm || "GmbH",
+    siret: s.legalSiret || "DE310108339",
+    naf: s.legalNaf || "Groß- und Einzelhandel mit Haushaltsgeräten",
+    headOffice: s.legalHeadOffice || "Friedrichstraße 176-179, 10117 Berlin, Deutschland",
+    director: s.legalDirector || "Bernard Alexis Chabaud",
+    accountant: s.legalAccountant || "Finanzabteilung",
   };
 }
 
 /** Mentions légales courtes, sur deux lignes (factures, emails). */
 export function legalLines(s: SiteSettings): [string, string] {
   const c = company(s);
-  return [`${c.name}, ${c.form} — Siège social : ${c.headOffice}`, `SIRET ${c.siret} — Activité NAF APE : ${c.naf}`];
+  return [`${c.name}, ${c.form} — Sitz: ${c.headOffice}`, `USt-IdNr.: ${c.siret} — Tätigkeitsbereich: ${c.naf}`];
 }
 
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const P = 'class="text-[color:var(--text-main)] opacity-90';
 
-/** CGV, article 4 : paiement par virement bancaire uniquement, coordonnées bancaires présentées en liste. */
+/** AGB, Artikel 4: Zahlung nur per Banküberweisung, Bankdaten als Liste aufgeführt. */
 function paymentHtml(s: SiteSettings) {
   const b = bankDetailsOf(s);
   const name = s.siteName || "Destocktatos";
   const rows: [string, string][] = [
-    ["Service responsable", b.service],
-    ["Titulaire", b.holder],
-    ...(b.bank ? ([["Banque", b.bank]] as [string, string][]) : []),
+    ["Zuständige Abteilung", b.service],
+    ["Kontoinhaber", b.holder],
+    ...(b.bank ? ([["Bank", b.bank]] as [string, string][]) : []),
     ["IBAN", b.iban],
     ...(b.bic ? ([["BIC", b.bic]] as [string, string][]) : []),
   ];
   return [
-    `<p ${P} mb-3">Le paiement est exigible à la commande, y compris pour les produits en précommande ou en cours de réapprovisionnement. Il s'effectue uniquement par virement bancaire, avant la livraison : ni carte bancaire, ni PayPal.</p>`,
-    `<p ${P} mb-3">Dès la validation de sa commande, l'Acheteur reçoit par email le devis correspondant, qui indique le montant à régler et les coordonnées bancaires de ${esc(name)}. Ces informations s'affichent également à l'écran à la confirmation de la commande. La facture est adressée par email dès réception du paiement.</p>`,
-    `<p ${P} mb-2 font-medium">Coordonnées bancaires :</p>`,
-    `<ul class="list-disc list-inside space-y-1 text-[color:var(--text-main)] opacity-90 mb-3">${rows.map(([l, v]) => `<li>${esc(l)} : ${esc(v)}</li>`).join("")}</ul>`,
-    `<p ${P}">Les articles commandés sont réservés dans l'attente du virement. La commande est préparée puis livrée après réception du paiement. Aucune donnée bancaire de l'Acheteur n'est saisie ni conservée sur le site.</p>`,
+    `<p ${P} mb-3">Die Zahlung ist bei der Bestellung fällig, auch für vorbestellte oder nachzuliefernde Artikel. Die Bezahlung erfolgt ausschließlich per Banküberweisung (Direktüberweisung oder SEPA-Standardüberweisung) vor der Lieferung: weder Kreditkarte noch PayPal.</p>`,
+    `<p ${P} mb-3">Sobald die Bestellung bestätigt ist, erhält der Käufer per E-Mail die entsprechende Proforma-Rechnung/Bestellbestätigung mit dem zu zahlenden Betrag und den Bankdaten von ${esc(name)}. Diese Informationen werden auch am Bildschirm bei der Bestellbestätigung angezeigt. Die quittierte Rechnung wird unmittelbar nach Zahlungseingang per E-Mail versendet.</p>`,
+    `<p ${P} mb-2 font-medium">Bankverbindung:</p>`,
+    `<ul class="list-disc list-inside space-y-1 text-[color:var(--text-main)] opacity-90 mb-3">${rows.map(([l, v]) => `<li>${esc(l)}: ${esc(v)}</li>`).join("")}</ul>`,
+    `<p ${P}">Die bestellten Artikel werden bis zum Zahlungseingang reserviert. Die Vorbereitung und der Versand erfolgen unmittelbar nach Eingang der Überweisung. Es werden keine Bankdaten des Käufers auf der Website gespeichert.</p>`,
   ].join("");
 }
 
-/** Mentions légales : médiation de la consommation (médiateur saisi dans les réglages, sinon sur demande). */
+/** Impressum: Verbraucherschlichtung (EU / VSBG). */
 function mediatorHtml(s: SiteSettings) {
   const name = s.siteName || "Destocktatos";
   const mediator = s.legalMediatorName?.trim();
   const url = s.legalMediatorUrl?.trim();
   const who = mediator
-    ? `Le médiateur de la consommation dont relève ${esc(name)} est : ${esc(mediator)}${url ? ` — <a href="${esc(url)}" target="_blank" rel="noopener noreferrer" class="underline">${esc(url.replace(/^https?:\/\//, ""))}</a>` : ""}.`
-    : "Les coordonnées du médiateur de la consommation compétent sont communiquées sur simple demande auprès du service client.";
+    ? `Zuständige Verbraucherschlichtungsstelle für ${esc(name)}: ${esc(mediator)}${url ? ` — <a href="${esc(url)}" target="_blank" rel="noopener noreferrer" class="underline">${esc(url.replace(/^https?:\/\//, ""))}</a>` : ""}.`
+    : "Die Kontaktdaten der zuständigen Verbraucherschlichtungsstelle werden auf einfache Anfrage beim Kundenservice mitgeteilt.";
   return [
-    `Conformément aux dispositions du Code de la consommation concernant le règlement amiable des litiges, tout consommateur a le droit de recourir gratuitement à un médiateur de la consommation.`,
-    `Après démarche préalable écrite des consommateurs vis-à-vis de ${esc(name)} (contacts@destocktatos.com), le service de médiation peut être saisi pour tout litige de consommation dont le règlement n'aurait pas abouti.`,
-    who,
-  ]
-    .map((t, i) => `<p ${P}${i < 2 ? " mb-3" : ""}">${t}</p>`)
-    .join("");
+    `<p ${P} mb-3">Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit, die Sie unter <a href="https://ec.europa.eu/consumers/odr/" target="_blank" rel="noopener noreferrer" class="underline">https://ec.europa.eu/consumers/odr/</a> finden.</p>`,
+    `<p ${P} mb-3">Wir sind bemüht, eventuelle Meinungsverschiedenheiten aus unserem Vertrag einvernehmlich beizulegen. Zur Teilnahme an einem Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle sind wir nicht verpflichtet und nicht bereit.</p>`,
+    `<p ${P}">${who}</p>`,
+  ].join("");
 }
 
 /** Numéro factice du texte d'origine (article 10 des CGV) : celui du service après-vente. */
@@ -132,12 +128,12 @@ export function legalPage<T>(page: PageContent<T> | null, s: SiteSettings): Page
       ...sec,
       blocks: sec.blocks.map((b) => {
         if (b.type !== "html") return b;
-        let html = b.html.replace(FAKE_PHONE, "06.51.64.41.84");
-        if (!hasAccountant && page.slug === "mentions-legales" && /Éditeur du site/i.test(sec.title)) {
-          html = html.replace(/(<li[^>]*>\s*Directeur de la publication\s*:[^<]*<\/li>)/, `$1<li>Comptable : ${esc(accountant)}</li>`);
+        let html = b.html.replace(FAKE_PHONE, "+49 30 12345678");
+        if (!hasAccountant && page.slug === "mentions-legales" && /(Éditeur du site|Herausgeber|Impressum)/i.test(sec.title)) {
+          html = html.replace(/(<li[^>]*>\s*(Directeur de la publication|Geschäftsführer)\s*:[^<]*<\/li>)/i, `$1<li>Finanzabteilung / Buchhaltung: ${esc(accountant)}</li>`);
         }
-        if (!hasAccountant && page.slug === "politique-confidentialite" && /Responsable du traitement/i.test(sec.title)) {
-          html = html.replace(/(Dirigée par\s*:\s*[^<]*<br\s*\/?>)/, `$1Comptable : ${esc(accountant)}<br/>`);
+        if (!hasAccountant && page.slug === "politique-confidentialite" && /(Responsable du traitement|Verantwortlicher)/i.test(sec.title)) {
+          html = html.replace(/((Dirigée par|Vertreten durch)\s*:\s*[^<]*<br\s*\/?>)/i, `$1Finanzabteilung: ${esc(accountant)}<br/>`);
         }
         return { ...b, html };
       }),

@@ -1,73 +1,73 @@
 {
   "slug": "mentions-legales",
-  "title": "Mentions Légales",
-  "metaTitle": "Mentions Légales",
-  "metaDescription": "Mentions légales et conditions générales de Destocktatos, votre spécialiste en électroménager de qualité.",
+  "title": "Impressum & Rechtliche Hinweise",
+  "metaTitle": "Impressum - Destocktatos GmbH",
+  "metaDescription": "Impressum und rechtliche Angaben der Destocktatos GmbH, Spezialist für Qualitäts-Haushaltsgeräte in Berlin.",
   "data": {
-    "titlePrefix": "Mentions",
-    "titleHighlight": "Légales"
+    "titlePrefix": "Rechtliche",
+    "titleHighlight": "Hinweise"
   },
   "sections": [
     {
-      "title": "Éditeur du site",
+      "title": "Angaben gemäß § 5 TMG / Herausgeber",
       "blocks": [
         {
           "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Le site Destocktatos est édité par la société Destocktatos, société par actions simplifiée.</p><ul class=\"list-disc list-inside space-y-2 text-[color:var(--text-main)] opacity-90\"><li>Numéro de SIRET : 94228991900014</li><li>Activité NAF APE : Commerce de gros non spécialisé</li><li>Siège social : 15 Rue Paul Langevin, 93270 Sevran</li><li>Téléphone : 07 80 96 12 16</li><li>Email : contacts@destocktatos.com</li><li>Directeur de la publication : Franck NEBOT</li><li>Comptable : Madame Jasmine Touvoli</li></ul>"
+          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Die Website Destocktatos wird betrieben von der Destocktatos GmbH.</p><ul class=\"list-disc list-inside space-y-2 text-[color:var(--text-main)] opacity-90\"><li>Umsatzsteuer-Identifikationsnummer (USt-IdNr.): DE310108339</li><li>Geschäftstätigkeit: Groß- und Einzelhandel mit Haushaltsgeräten</li><li>Sitz der Gesellschaft: Friedrichstraße 176-179, 10117 Berlin, Deutschland</li><li>Telefon: +49 30 12345678</li><li>E-Mail: contacts@destocktatos.com</li><li>Geschäftsführer: Bernard Alexis Chabaud</li><li>Finanzabteilung / Buchhaltung: Finanzabteilung</li></ul>"
         }
       ]
     },
     {
-      "title": "Hébergement du site",
+      "title": "Hosting / Webhosting",
       "blocks": [
         {
           "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Le site Destocktatos est hébergé par la société Hostinger International Ltd, dont le siège social est situé à l'adresse suivante :</p><p class=\"text-[color:var(--text-main)] opacity-90\">Hostinger International Ltd<br/>61 Lordou Vironos Street<br/>6023 Larnaca, Chypre<br/>Site : www.hostinger.fr</p>"
+          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Die Website Destocktatos wird gehostet von Hostinger International Ltd:</p><p class=\"text-[color:var(--text-main)] opacity-90\">Hostinger International Ltd<br/>61 Lordou Vironos Street<br/>6023 Larnaca, Zypern<br/>Website: www.hostinger.de</p>"
         }
       ]
     },
     {
-      "title": "Propriété intellectuelle",
+      "title": "Urheberrecht & Geistiges Eigentum",
       "blocks": [
         {
           "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">L'ensemble du contenu de ce site (structure, textes, logos, images, photos, éléments graphiques, etc.) est la propriété exclusive de Destocktatos ou de ses partenaires.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Ce contenu est protégé par les lois françaises et internationales relatives à la propriété intellectuelle.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Toute reproduction totale ou partielle de ce contenu est strictement interdite sans autorisation préalable écrite de Destocktatos.</p>"
+          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen und internationalen Urheberrecht.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der vorherigen schriftlichen Zustimmung der Destocktatos GmbH.</p>"
         }
       ]
     },
     {
-      "title": "Liens hypertextes",
+      "title": "Haftung für Links",
       "blocks": [
         {
           "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Le site Destocktatos peut contenir des liens hypertextes vers d'autres sites Internet. Destocktatos n'exerce aucun contrôle sur ces sites et ne peut être tenu responsable de leur contenu ou de leurs pratiques.</p><p class=\"text-[color:var(--text-main)] opacity-90\">La création de liens hypertextes vers le site Destocktatos est autorisée sous réserve qu'ils ouvrent une nouvelle fenêtre de navigateur et soient présentés de manière claire et non équivoque.</p>"
+          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Unser Angebot enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich.</p>"
         }
       ]
     },
     {
-      "title": "Limitation de responsabilité",
+      "title": "Haftung für Inhalte",
       "blocks": [
         {
           "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Destocktatos s'efforce d'assurer l'exactitude et la mise à jour des informations diffusées sur son site. Toutefois, Destocktatos ne peut garantir l'exactitude, la précision ou l'exhaustivité des informations mises à disposition sur le site.</p><p class=\"text-[color:var(--text-main)] opacity-90\">En conséquence, Destocktatos décline toute responsabilité pour toute imprécision, inexactitude ou omission portant sur des informations disponibles sur le site, ainsi que pour tous dommages résultant d'une intrusion frauduleuse d'un tiers ayant entraîné une modification des informations mises à disposition sur le site.</p>"
+          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen.</p>"
         }
       ]
     },
     {
-      "title": "Médiation de la consommation",
+      "title": "Verbraucherstreitbeilegung",
       "blocks": [
         {
           "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Conformément aux dispositions du Code de la consommation concernant le règlement amiable des litiges, tout consommateur a le droit de recourir gratuitement à un médiateur de la consommation.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Après démarche préalable écrite des consommateurs vis-à-vis de Destocktatos (contacts@destocktatos.com), le service de médiation peut être saisi pour tout litige de consommation dont le règlement n'aurait pas abouti.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Les coordonnées du médiateur de la consommation compétent sont communiquées sur simple demande auprès du service client.</p>"
+          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: <a href=\"https://ec.europa.eu/consumers/odr/\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"underline\">https://ec.europa.eu/consumers/odr/</a>.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Unsere E-Mail-Adresse finden Sie oben im Impressum.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>"
         }
       ]
     },
     {
-      "title": "Droit applicable et juridiction compétente",
+      "title": "Anwendbares Recht und Gerichtsstand",
       "blocks": [
         {
           "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Les présentes mentions légales sont soumises au droit français.</p><p class=\"text-[color:var(--text-main)] opacity-90\">En cas de litige non résolu à l'amiable entre un utilisateur et Destocktatos, les tribunaux français seront seuls compétents.</p>"
+          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Es gilt das Recht der Bundesrepublik Deutschland.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Gerichtsstand für alle Streitigkeiten ist, soweit gesetzlich zulässig, Berlin.</p>"
         }
       ]
     }

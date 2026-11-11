@@ -1,39 +1,39 @@
 {
   "slug": "contact",
-  "title": "Nous Contacter",
+  "title": "Kontakt",
   "data": {
-    "formTitle": "Formulaire de Contact",
-    "infoTitle": "Nos Coordonnées",
+    "formTitle": "Kontaktformular",
+    "infoTitle": "Unsere Kontaktdaten",
     "address": {
       "title": "Adresse",
       "lines": [
-        "15 Rue Paul Langevin",
-        "93270 Sevran",
-        "France"
+        "Friedrichstraße 176-179",
+        "10117 Berlin",
+        "Deutschland"
       ]
     },
     "phone": {
-      "title": "Téléphone",
-      "value": "07 80 96 12 16",
-      "tel": "+33780961216",
-      "note": "Du lundi au dimanchd de 10h à 20h"
+      "title": "Telefon",
+      "value": "+49 30 12345678",
+      "tel": "+493012345678",
+      "note": "Montag bis Samstag von 9:00 bis 19:00 Uhr"
     },
     "email": {
-      "title": "Email",
+      "title": "E-Mail",
       "value": "contacts@destocktatos.com",
-      "note": "Nous répondons sous 24h"
+      "note": "Wir antworten in der Regel innerhalb von 24 Stunden"
     },
     "hours": {
-      "title": "Horaires d'ouverture",
-      "value": "Lundi - Dimanche: 10h00 - 20h00"
+      "title": "Öffnungszeiten",
+      "value": "Montag - Samstag: 09:00 - 19:00 Uhr"
     },
     "urgent": {
-      "title": "Besoin d'aide urgente?",
-      "text": "Notre équipe de support est disponible pour vous aider immédiatement.",
-      "cta": "Chat en direct",
+      "title": "Dringende Unterstützung?",
+      "text": "Unser Kundenservice steht Ihnen gerne zur Verfügung.",
+      "cta": "Problem melden",
       "link": "/signaler-bug"
     },
-    "mapTitle": "Notre Emplacement",
-    "mapEmbedUrl": "https://www.google.com/maps?q=15+Rue+Paul+Langevin+93270+Sevran&output=embed"
+    "mapTitle": "Unser Standort in Berlin",
+    "mapEmbedUrl": "https://www.google.com/maps?q=Friedrichstraße+176-179+10117+Berlin&output=embed"
   }
 }

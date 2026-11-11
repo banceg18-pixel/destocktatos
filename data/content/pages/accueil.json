@@ -1,8 +1,8 @@
 {
   "slug": "accueil",
   "title": "Accueil",
-  "metaTitle": "Destocktatos | Électroménager livré, installé et garanti",
-  "metaDescription": "Réfrigérateurs, lave-linge, fours, plaques et petit électroménager : livraison gratuite partout en France, installation à domicile et reprise de l'ancien appareil.",
+  "metaTitle": "Destocktatos | Haushaltsgeräte geliefert, installiert und garantiert",
+  "metaDescription": "Kühlschränke, Waschmaschinen, Backöfen und Kleingeräte: Kostenlose Lieferung in ganz Deutschland, Installation vor Ort und Altgeräterücknahme.",
   "data": {
     "hero": {
       "slides": [
@@ -25,8 +25,8 @@
         {
           "image": "/assets/images/home/accueil-slide-gros-electromenager.png",
           "imageAlt": "Cuisine en bois avec hotte murale et plan de travail",
-          "title": "Du magasin à votre pièce",
-          "text": "Livraison gratuite partout en France : au pied du camion, dans la pièce de votre choix ou avec installation complète.",
+          "title": "Von unserer Berliner Filiale direkt zu Ihnen",
+          "text": "Kostenlose Lieferung in ganz Deutschland: bis zur Bordsteinkante, in den gewünschten Raum oder inklusive Montage.",
           "cta": "Nos services",
           "href": "/services"
         }
@@ -44,8 +44,8 @@
     "services": [
       {
         "icon": "truck",
-        "title": "Livraison gratuite partout en France",
-        "text": "En mains propres par nos agents de proximité : au pied du camion, dans la pièce de votre choix ou avec installation."
+        "title": "Kostenlose Lieferung in ganz Deutschland",
+        "text": "Zuverlässig bis zur Bordsteinkante, direkt in den Raum Ihrer Wahl oder mit professioneller Installation."
       },
       {
         "icon": "wrench",
@@ -70,7 +70,7 @@
       "stats": {
         "products": "appareils disponibles",
         "brands": "marques",
-        "radius": "€ de frais de livraison en France"
+        "radius": "€ Versandkosten in ganz Deutschland"
       }
     },
     "band": {

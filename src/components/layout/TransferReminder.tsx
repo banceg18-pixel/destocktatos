@@ -161,30 +161,30 @@ export function TransferReminder() {
               <IconCheck size={26} />
             </span>
             <h2 id={titleId} className="t-h3 mt-5">
-              Paiement reçu, merci !
+              Zahlung erhalten, vielen Dank!
             </h2>
             <p className="mt-3 text-sm text-graphite">
-              Votre commande {order.number} passe en préparation. Votre facture vous a été envoyée par email et nous vous appelons pour fixer la livraison.
+              Ihre Bestellung {order.number} wird nun vorbereitet. Ihre Rechnung wurde Ihnen per E-Mail gesendet und wir kontaktieren Sie zur Lieferterminabsprache.
             </p>
             <Button size="lg" block className="mt-7" onClick={done} data-testid="transfer-continue">
-              Continuer
+              Weiter
             </Button>
           </div>
         ) : state === "confirm" ? (
           <div className="text-center" data-testid="transfer-confirm">
-            <p className="t-eyebrow text-promo">Confirmation du paiement</p>
+            <p className="t-eyebrow text-promo">Zahlungsbestätigung</p>
             <h2 id={titleId} className="t-h3 mt-3">
-              Avez-vous effectué le virement de {formatEuros(order.amount)} ?
+              Haben Sie die Überweisung über {formatEuros(order.amount)} getätigt?
             </h2>
             <p className="mt-3 text-sm text-graphite">
-              Confirmez-le pour passer à la suite : nous vérifions la réception du virement et vous envoyons la facture dès qu&apos;il est reçu.
+              Bestätigen Sie die Ausführung, um fortzufahren: Wir prüfen den Zahlungseingang und senden Ihnen die Rechnung, sobald der Betrag verbucht ist.
             </p>
             {details}
             <Button size="lg" block className="mt-7" onClick={declare} disabled={sending} plain={sending} data-testid="transfer-declare">
-              {sending ? <Spinner /> : "Confirmer"}
+              {sending ? <Spinner /> : "Überweisung bestätigen"}
             </Button>
             <button type="button" onClick={() => setState("pending")} className="mt-4 text-sm text-graphite underline-offset-4 hover:text-ink hover:underline">
-              Revoir les informations de paiement
+              Zahlungsinformationen erneut ansehen
             </button>
           </div>
         ) : state === "declared" ? (
@@ -193,47 +193,46 @@ export function TransferReminder() {
               <IconCheck size={26} />
             </span>
             <h2 id={titleId} className="t-h3 mt-5">
-              Merci, c&apos;est noté !
+              Vielen Dank, ist vermerkt!
             </h2>
             <p className="mt-3 text-sm text-graphite">
-              Nous vérifions la réception de votre virement pour la commande {order.number}. Dès qu&apos;il est reçu, vous recevez votre facture par email et nous vous appelons pour
-              fixer la livraison.
+              Wir prüfen den Eingang Ihrer Überweisung für die Bestellung {order.number}. Sobald der Betrag verbucht ist, erhalten Sie Ihre Rechnung per E-Mail und wir vereinbaren den Liefertermin.
             </p>
             {details}
             <Button size="lg" block className="mt-7" onClick={done} data-testid="transfer-continue">
-              Continuer
+              Weiter
             </Button>
           </div>
         ) : state === "cancelled" ? (
           <div className="text-center">
             <h2 id={titleId} className="t-h3">
-              Commande {order.number} annulée
+              Bestellung {order.number} storniert
             </h2>
-            <p className="mt-3 text-sm text-graphite">Aucun paiement n&apos;est attendu pour cette commande.</p>
+            <p className="mt-3 text-sm text-graphite">Für diese Bestellung wird keine Zahlung erwartet.</p>
             <Button size="lg" block className="mt-7" onClick={done}>
-              Continuer
+              Weiter
             </Button>
           </div>
         ) : (
           <>
-            <p className="t-eyebrow text-promo">Paiement à effectuer</p>
+            <p className="t-eyebrow text-promo">Zahlung ausstehend</p>
             <h2 id={titleId} className="t-h3 mt-3">
-              Réglez votre commande {order.number} par virement
+              Bestellung {order.number} per Banküberweisung begleichen
             </h2>
             <p className="mt-2 text-sm text-graphite">
-              Vos articles sont réservés. Faites le virement avec les informations ci-dessous : nous suivons votre paiement et vous accompagnons si besoin.
+              Ihre Artikel sind reserviert. Bitte führen Sie die Überweisung mit den nachfolgenden Angaben aus:
             </p>
             {details}
             <p className="mt-4 text-sm text-graphite">{note}</p>
             <div className="mt-5 flex items-center gap-3 border border-line p-4 text-sm" role="status" aria-live="polite">
               <Spinner />
               <span>
-                En attente de la réception de votre virement. Cette fenêtre se met à jour toute seule dès que le paiement est reçu.
+                Warten auf den Eingang Ihrer Überweisung. Dieses Fenster aktualisiert sich automatisch bei Zahlungseingang.
               </span>
             </div>
             {contact && (
               <p className="mt-4 text-center text-xs text-graphite">
-                Une question sur le paiement ? {contact.phone} · {contact.email}
+                Fragen zur Zahlung? {contact.phone} · {contact.email}
               </p>
             )}
           </>
