@@ -65,13 +65,13 @@ export async function quoteOrder(
   const lines: Quote["lines"] = [];
   for (const [id, quantity] of merged) {
     const p = products.find((x) => x.id === id);
-    if (!p) throw new ApiError(404, "Un produit de votre panier n'est plus disponible. Veuillez mettre à jour votre panier.");
+    if (!p) throw new ApiError(404, "Ein Produkt in Ihrem Warenkorb ist nicht mehr verfügbar. Bitte aktualisieren Sie Ihren Warenkorb.");
     if (p.stock < quantity) {
       throw new ApiError(
         409,
         p.stock <= 0
-          ? `« ${p.titre} » est en rupture de stock. Veuillez le retirer de votre panier.`
-          : `Stock insuffisant pour « ${p.titre} » : ${p.stock} disponible(s).`,
+          ? `„${p.titre}" ist nicht vorrätig. Bitte entfernen Sie es aus Ihrem Warenkorb.`
+          : `Nicht genügend Lagerbestand für „${p.titre}": noch ${p.stock} verfügbar.`,
         { productId: p.id, available: p.stock },
       );
     }
@@ -128,7 +128,7 @@ export async function quoteOrder(
 /** Distance (km) entre le magasin et l'adresse de livraison, calculée côté serveur. */
 export async function distanceTo(a: { address: string; city: string; postalCode: string }, geocoder: Geocoder = geocodeAddress) {
   const coords = await geocoder(a.address, a.city, a.postalCode);
-  if (!coords) throw new ApiError(422, "Impossible de calculer la distance de livraison. Veuillez vérifier votre adresse.");
+  if (!coords) throw new ApiError(422, "Die Lieferdistanz konnte nicht berechnet werden. Bitte überprüfen Sie Ihre Adresse.");
   const d = calculateDistance(coords.lat, coords.lng, STORE_COORDINATES.lat, STORE_COORDINATES.lng);
   return d <= 0 ? 1 : d; // adresse du magasin : distance minimale facturable
 }
@@ -179,14 +179,14 @@ export async function createOrder(userId: string, req: OrderRequest, geocoder?: 
     if (Math.abs(quote.totalCents - Math.round(req.totalAmount * 100)) > 1) {
       throw new ApiError(
         409,
-        `Le total de votre commande a été recalculé (${toEuros(quote.totalCents).toLocaleString("fr-FR")} €). Veuillez vérifier votre panier.`,
+        `Der Gesamtbetrag Ihrer Bestellung wurde neu berechnet (${toEuros(quote.totalCents).toLocaleString("de-DE")} €). Bitte überprüfen Sie Ihren Warenkorb.`,
         { totalAmount: toEuros(quote.totalCents) },
       );
     }
     // Réservation atomique : la décrémentation échoue si le stock a changé entre-temps.
     for (const l of quote.lines) {
       const r = await tx.product.updateMany({ where: { id: l.productId, stock: { gte: l.quantity } }, data: { stock: { decrement: l.quantity } } });
-      if (r.count !== 1) throw new ApiError(409, `Stock insuffisant pour « ${l.titre} ».`, { productId: l.productId });
+      if (r.count !== 1) throw new ApiError(409, `Nicht genügend Lagerbestand für „${l.titre}".`, { productId: l.productId });
     }
     const order = await tx.order.create({
       data: {

@@ -23,11 +23,11 @@ export const POST = route("POST /api/auth/forgot-password", async (req: Request)
     await sendMail({
       to: email,
       tag: "reinitialisation-mot-de-passe",
-      subject: creation ? "Destocktatos — Créez votre mot de passe" : "Destocktatos — Réinitialisation de votre mot de passe",
+      subject: creation ? "Destocktatos — Erstellen Sie Ihr Passwort" : "Destocktatos — Passwort zurücksetzen",
       text: creation
-        ? `Bonjour,\n\nVotre compte est prêt : pour y retrouver vos commandes et vos factures, choisissez votre mot de passe avec ce lien (valable 1 heure) :\n${link}\n\nSi vous n'êtes pas à l'origine de cette demande, ignorez cet email.`
-        : `Bonjour,\n\nPour choisir un nouveau mot de passe, ouvrez ce lien (valable 1 heure) :\n${link}\n\nSi vous n'êtes pas à l'origine de cette demande, ignorez cet email.`,
+        ? `Hallo,\n\nIhr Konto ist bereit: Um Ihre Bestellungen und Rechnungen einzusehen, legen Sie Ihr Passwort über diesen Link fest (gültig 1 Stunde):\n${link}\n\nFalls Sie diese Anfrage nicht gestellt haben, ignorieren Sie bitte diese E-Mail.`
+        : `Hallo,\n\nUm ein neues Passwort festzulegen, öffnen Sie diesen Link (gültig 1 Stunde):\n${link}\n\nFalls Sie diese Anfrage nicht gestellt haben, ignorieren Sie bitte diese E-Mail.`,
     });
   }
-  return json({ message: "Si un compte existe pour cette adresse, un email de réinitialisation a été envoyé." });
+  return json({ message: "Falls ein Konto für diese Adresse existiert, wurde eine E-Mail zum Zurücksetzen des Passworts gesendet." });
 });

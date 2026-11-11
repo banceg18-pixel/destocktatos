@@ -10,9 +10,9 @@
  */
 export type ApiResult<T> = { ok: true; status: number; data: T } | { ok: false; status: number; error: string; details?: unknown };
 
-const NETWORK_ERROR = "Impossible de contacter le serveur. Vérifiez votre connexion et réessayez.";
-const OFFLINE_ERROR = "Vous êtes hors connexion. Réessayez dès le retour du réseau.";
-const TIMEOUT_ERROR = "Le serveur met trop de temps à répondre. Vérifiez votre connexion et réessayez.";
+const NETWORK_ERROR = "Der Server ist nicht erreichbar. Überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.";
+const OFFLINE_ERROR = "Sie sind offline. Versuchen Sie es erneut, sobald die Verbindung wiederhergestellt ist.";
+const TIMEOUT_ERROR = "Der Server antwortet zu langsam. Überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.";
 const BUSY_STATUSES = new Set([502, 503, 504]);
 const DEFAULT_TIMEOUT_MS = 20_000;
 
@@ -64,7 +64,7 @@ export async function apiFetch<T>(input: string, init?: ApiInit): Promise<ApiRes
     } catch {
       const timedOut = t.timedOut();
       t.done();
-      if (outer?.aborted) return { ok: false, status: 0, error: "Requête annulée" };
+      if (outer?.aborted) return { ok: false, status: 0, error: "Anfrage abgebrochen" };
       if (attempt < maxRetries && !offline()) {
         await wait(600 * 2 ** attempt);
         continue;
@@ -78,7 +78,7 @@ export async function apiFetch<T>(input: string, init?: ApiInit): Promise<ApiRes
     }
     if (!res.ok) {
       const b = (body ?? {}) as { error?: string; message?: string; details?: unknown };
-      const fallback = BUSY_STATUSES.has(res.status) ? "Le site est très sollicité en ce moment. Réessayez dans quelques instants." : "Une erreur est survenue";
+      const fallback = BUSY_STATUSES.has(res.status) ? "Die Website ist derzeit sehr ausgelastet. Bitte versuchen Sie es in wenigen Augenblicken erneut." : "Ein Fehler ist aufgetreten";
       return { ok: false, status: res.status, error: b.error || b.message || fallback, details: b.details };
     }
     return { ok: true, status: res.status, data: body as T };

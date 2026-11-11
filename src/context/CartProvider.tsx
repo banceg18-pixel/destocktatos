@@ -151,12 +151,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const getTotalWithDiscount = useCallback(() => Math.max(0, totalPrice - (appliedCoupon?.discount || 0)), [totalPrice, appliedCoupon]);
 
   const applyCoupon = async (code: string): Promise<string | null> => {
-    if (!code.trim()) return "Saisissez le code de réduction, par exemple BIENVENUE10.";
-    if (status !== "authenticated") return "Connectez-vous à votre compte pour utiliser un code de réduction.";
+    if (!code.trim()) return "Geben Sie den Rabattcode ein, z. B. WILLKOMMEN10.";
+    if (status !== "authenticated") return "Melden Sie sich in Ihrem Konto an, um einen Rabattcode zu verwenden.";
     setCouponLoading(true);
     try {
       const result = await validateCoupon(code.trim(), totalPrice);
-      if (!result.ok) return result.error || "Ce code n'est pas valable : vérifiez l'orthographe.";
+      if (!result.ok) return result.error || "Dieser Code ist nicht gültig: Überprüfen Sie die Schreibweise.";
       setAppliedCoupon({
         coupon_id: result.data.coupon_id,
         code: result.data.couponCode,

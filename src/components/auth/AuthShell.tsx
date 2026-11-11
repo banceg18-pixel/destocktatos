@@ -3,7 +3,12 @@ import type { ReactNode } from "react";
 import { fieldClasses } from "@/components/ui/Primitives";
 import { IconCheck } from "@/components/ui/Icons";
 
-const BENEFITS = ["Suivez vos commandes et téléchargez vos factures", "Enregistrez vos adresses de livraison", "Donnez votre avis sur vos achats", "Profitez des codes de fidélité"];
+const BENEFITS = [
+  "Bestellungen verfolgen und Rechnungen herunterladen",
+  "Lieferadressen bequem speichern",
+  "Bewertungen zu Ihren Einkäufen abgeben",
+  "Von Treuegutscheinen und Rabatten profitieren",
+];
 
 /**
  * Mise en page des écrans d'authentification : panneau encre (avantages du compte) et formulaire.
@@ -14,7 +19,7 @@ export function AuthShell({ title, subtitle, children, footer }: { title: string
     <div className="grid min-h-[calc(100dvh-var(--header-h))] lg:grid-cols-[1fr_1.1fr]">
       <aside className="on-dark relative hidden flex-col justify-between overflow-hidden bg-ink p-12 text-paper lg:flex xl:p-16">
         <div>
-          <p className="t-h2 max-w-md">Tout votre équipement, au même endroit.</p>
+          <p className="t-h2 max-w-md">Ihre Haushaltsgeräte an einem Ort.</p>
           <ul className="mt-10 flex flex-col gap-4 text-white/80">
             {BENEFITS.map((b) => (
               <li key={b} className="flex items-start gap-3">
@@ -24,9 +29,9 @@ export function AuthShell({ title, subtitle, children, footer }: { title: string
           </ul>
         </div>
         <p className="text-sm text-white/45">
-          Besoin d&apos;aide ?{" "}
+          Brauchen Sie Hilfe?{" "}
           <Link href="/contact" className="underline underline-offset-4 hover:text-paper">
-            Contactez le magasin
+            Kontaktieren Sie uns
           </Link>
         </p>
       </aside>

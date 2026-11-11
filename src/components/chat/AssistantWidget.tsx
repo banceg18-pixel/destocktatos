@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import { STARTERS } from "@/lib/chat/starters";
-import { FR_PHONE_HINT, isFrPhone } from "@/lib/phone";
+import { DE_PHONE_HINT, isDePhone } from "@/lib/phone";
 import { cn } from "@/lib/client/cn";
 import { IconChat, IconCheck, IconClose, IconSend } from "@/components/ui/Icons";
 import { Spinner } from "@/components/ui/Primitives";
@@ -110,9 +110,9 @@ export function AssistantWidget({ botName, welcome }: { botName: string; welcome
       try {
         const res = await fetch("/api/assistant", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question: q }) });
         const body = await res.json().catch(() => ({}));
-        reply = res.ok ? (body as Reply) : { kind: "unknown", text: (body as { error?: string }).error || "Je n'arrive pas à répondre pour le moment. Réessayez dans un instant." };
+        reply = res.ok ? (body as Reply) : { kind: "unknown", text: (body as { error?: string }).error || "Ich kann im Moment nicht antworten. Bitte versuchen Sie es in einem Moment erneut." };
       } catch {
-        reply = { kind: "unknown", text: "Connexion impossible pour le moment. Vérifiez votre réseau et réessayez." };
+        reply = { kind: "unknown", text: "Verbindung derzeit nicht möglich. Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut." };
       }
       await new Promise((r) => setTimeout(r, Math.max(0, TYPING_MS - (Date.now() - started))));
       setMsgs((m) => [
@@ -135,7 +135,7 @@ export function AssistantWidget({ botName, welcome }: { botName: string; welcome
   const sent = (id: string, name: string, by: string) =>
     setMsgs((m) => [
       ...m.map((x) => (x.id === id ? { ...x, form: "sent" as const } : x)),
-      { id: uid(), from: "assistant", text: `Merci ${name} ! Votre demande est bien transmise : notre équipe vous recontacte rapidement ${by}.` },
+      { id: uid(), from: "assistant", text: `Vielen Dank, ${name}! Ihre Anfrage wurde übermittelt: Unser Team kontaktiert Sie schnellstmöglich ${by}.` },
     ]);
 
   const onKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -156,7 +156,7 @@ export function AssistantWidget({ botName, welcome }: { botName: string; welcome
           type="button"
           onClick={() => setOpen(true)}
           aria-haspopup="dialog"
-          aria-label={`Une question ? Discuter avec ${botName}`}
+          aria-label={`Eine Frage? Chatten Sie mit ${botName}`}
           data-testid="assistant-open"
           className={cn(
             "fixed right-4 z-[230] flex items-center gap-2.5 rounded-full bg-ink p-4 text-paper shadow-[0_10px_30px_rgba(0,0,0,0.25)] transition-transform duration-300 hover:-translate-y-0.5 sm:right-5 sm:bottom-5 sm:py-3.5 sm:pr-5 sm:pl-4",
@@ -164,7 +164,7 @@ export function AssistantWidget({ botName, welcome }: { botName: string; welcome
           )}
         >
           <IconChat size={22} />
-          <span className="hidden text-sm font-medium sm:inline">Une question ?</span>
+          <span className="hidden text-sm font-medium sm:inline">Eine Frage?</span>
         </button>
       )}
 
@@ -186,10 +186,10 @@ export function AssistantWidget({ botName, welcome }: { botName: string; welcome
               </p>
               <p className="flex items-center gap-1.5 text-xs text-white/70">
                 <span className="size-1.5 rounded-full bg-[#8fd6a8]" aria-hidden="true" />
-                Répond instantanément
+                Antwortet sofort
               </p>
             </div>
-            <button type="button" onClick={() => setOpen(false)} aria-label="Fermer l'assistant" className="rounded-full p-2 text-white/70 transition-colors hover:text-paper">
+            <button type="button" onClick={() => setOpen(false)} aria-label="Assistent schließen" className="rounded-full p-2 text-white/70 transition-colors hover:text-paper">
               <IconClose size={20} />
             </button>
           </header>
@@ -233,7 +233,7 @@ export function AssistantWidget({ botName, welcome }: { botName: string; welcome
               </div>
             ))}
             {busy && (
-              <div className="flex items-center gap-1 self-start rounded-2xl rounded-bl-sm border border-line bg-paper px-4 py-3.5" aria-label="L'assistant écrit">
+              <div className="flex items-center gap-1 self-start rounded-2xl rounded-bl-sm border border-line bg-paper px-4 py-3.5" aria-label="Assistent schreibt">
                 {[0, 150, 300].map((d) => (
                   <span key={d} className="size-1.5 animate-bounce rounded-full bg-graphite" style={{ animationDelay: `${d}ms` }} />
                 ))}
@@ -250,7 +250,7 @@ export function AssistantWidget({ botName, welcome }: { botName: string; welcome
           >
             <div className="flex items-end gap-2">
               <label htmlFor="assistant-input" className="sr-only">
-                Votre question
+                Ihre Frage
               </label>
               <textarea
                 id="assistant-input"
@@ -264,21 +264,21 @@ export function AssistantWidget({ botName, welcome }: { botName: string; welcome
                   e.target.style.height = `${Math.min(e.target.scrollHeight, 112)}px`;
                 }}
                 onKeyDown={onKeyDown}
-                placeholder="Écrivez votre question…"
+                placeholder="Schreiben Sie Ihre Frage…"
                 className="max-h-28 min-h-11 flex-1 resize-none rounded-md border border-line bg-paper px-3 py-2.5 text-base outline-none transition-colors focus:border-ink sm:text-sm"
                 data-testid="assistant-input"
               />
               <button
                 type="submit"
                 disabled={!input.trim() || busy}
-                aria-label="Envoyer la question"
+                aria-label="Frage absenden"
                 className="flex size-11 shrink-0 items-center justify-center rounded-md bg-ink text-paper transition-opacity disabled:opacity-30"
                 data-testid="assistant-send"
               >
                 <IconSend size={19} />
               </button>
             </div>
-            <p className="mt-2 text-center text-[0.68rem] text-graphite">Assistant automatique · vos questions ne sont pas enregistrées</p>
+            <p className="mt-2 text-center text-[0.68rem] text-graphite">Automatischer Assistent · Ihre Fragen werden nicht gespeichert</p>
           </form>
         </div>
       )}
@@ -296,11 +296,11 @@ function CallbackForm({ question, transcript, page, onSent }: { question: string
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!f.name.trim()) return setError("Indiquez votre nom.");
-    if (!f.phone.trim() && !f.email.trim()) return setError("Indiquez votre téléphone ou votre email pour être recontacté.");
-    if (f.phone.trim() && !isFrPhone(f.phone)) return setError(FR_PHONE_HINT);
-    if (f.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.trim())) return setError("Adresse email invalide.");
-    if (!f.question.trim()) return setError("Indiquez votre question.");
+    if (!f.name.trim()) return setError("Bitte geben Sie Ihren Namen an.");
+    if (!f.phone.trim() && !f.email.trim()) return setError("Bitte geben Sie Ihre Telefonnummer oder E-Mail-Adresse an, um kontaktiert zu werden.");
+    if (f.phone.trim() && !isDePhone(f.phone)) return setError(DE_PHONE_HINT);
+    if (f.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.trim())) return setError("Ungültige E-Mail-Adresse.");
+    if (!f.question.trim()) return setError("Bitte geben Sie Ihre Frage an.");
     setError("");
     setSending(true);
     try {
@@ -317,8 +317,8 @@ function CallbackForm({ question, transcript, page, onSent }: { question: string
         }),
       });
       const body = (await res.json().catch(() => ({}))) as { error?: string };
-      if (!res.ok) throw new Error(body.error || "Envoi impossible, réessayez.");
-      onSent(f.name.trim().split(" ")[0], f.phone.trim() ? "par téléphone" : "par email");
+      if (!res.ok) throw new Error(body.error || "Versand nicht möglich, bitte versuchen Sie es erneut.");
+      onSent(f.name.trim().split(" ")[0], f.phone.trim() ? "telefonisch" : "per E-Mail");
     } catch (err) {
       setError((err as Error).message);
       setSending(false);
@@ -329,36 +329,36 @@ function CallbackForm({ question, transcript, page, onSent }: { question: string
   const field = "h-10 w-full rounded-md border border-line bg-paper px-3 text-base outline-none focus:border-ink sm:text-sm";
   return (
     <form onSubmit={submit} noValidate className="flex w-full max-w-[88%] flex-col gap-2.5 rounded-lg border border-line bg-paper p-3.5" data-testid="assistant-callback">
-      <p className="text-xs font-medium tracking-[0.08em] text-graphite uppercase">Être recontacté</p>
+      <p className="text-xs font-medium tracking-[0.08em] text-graphite uppercase">Rückruf anfordern</p>
       <label className="sr-only" htmlFor={`${id}-name`}>
-        Nom
+        Name
       </label>
-      <input id={`${id}-name`} value={f.name} onChange={set("name")} autoComplete="name" placeholder="Prénom et nom *" className={field} data-testid="callback-name" />
+      <input id={`${id}-name`} value={f.name} onChange={set("name")} autoComplete="name" placeholder="Vor- und Nachname *" className={field} data-testid="callback-name" />
       <label className="sr-only" htmlFor={`${id}-phone`}>
-        Téléphone
+        Telefon
       </label>
-      <input id={`${id}-phone`} value={f.phone} onChange={set("phone")} type="tel" inputMode="tel" autoComplete="tel-national" placeholder="Téléphone (06 12 34 56 78)" className={field} data-testid="callback-phone" />
+      <input id={`${id}-phone`} value={f.phone} onChange={set("phone")} type="tel" inputMode="tel" autoComplete="tel-national" placeholder="Telefonnummer (z. B. 030 12345678)" className={field} data-testid="callback-phone" />
       <label className="sr-only" htmlFor={`${id}-email`}>
-        Email
+        E-Mail
       </label>
-      <input id={`${id}-email`} value={f.email} onChange={set("email")} type="email" autoComplete="email" placeholder="Email" className={field} data-testid="callback-email" />
+      <input id={`${id}-email`} value={f.email} onChange={set("email")} type="email" autoComplete="email" placeholder="E-Mail" className={field} data-testid="callback-email" />
       <label className="sr-only" htmlFor={`${id}-q`}>
-        Votre question
+        Ihre Frage
       </label>
-      <textarea id={`${id}-q`} value={f.question} onChange={set("question")} rows={2} maxLength={2000} placeholder="Votre question *" className={cn(field, "h-auto min-h-16 py-2")} data-testid="callback-question" />
-      <p className="text-[0.7rem] text-graphite">Téléphone ou email : au moins l&apos;un des deux.</p>
+      <textarea id={`${id}-q`} value={f.question} onChange={set("question")} rows={2} maxLength={2000} placeholder="Ihre Frage *" className={cn(field, "h-auto min-h-16 py-2")} data-testid="callback-question" />
+      <p className="text-[0.7rem] text-graphite">Telefon oder E-Mail: mindestens eine Angabe erforderlich.</p>
       {error && (
         <p role="alert" className="text-xs text-danger">
           {error}
         </p>
       )}
-      <button type="submit" disabled={sending} className="flex h-10 items-center justify-center gap-2 rounded-md bg-ink text-xs font-medium tracking-[0.09em] text-paper uppercase disabled:opacity-60" data-testid="callback-submit">
-        {sending ? <Spinner /> : (
-          <>
-            <IconCheck size={15} /> Envoyer mes coordonnées
-          </>
-        )}
-      </button>
-    </form>
-  );
-}
+          <button type="submit" disabled={sending} className="flex h-10 items-center justify-center gap-2 rounded-md bg-ink text-xs font-medium tracking-[0.09em] text-paper uppercase disabled:opacity-60" data-testid="callback-submit">
+            {sending ? <Spinner /> : (
+              <>
+                <IconCheck size={15} /> Kontaktdaten absenden
+              </>
+            )}
+          </button>
+        </form>
+      );
+    }

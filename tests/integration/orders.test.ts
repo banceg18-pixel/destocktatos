@@ -108,14 +108,14 @@ describe("devis serveur (quoteOrder)", () => {
     const user = await makeUser();
     const p = await makeProduct();
     const req = orderRequest([{ _id: p.id, quantity: 1 }], 0, { isPickupInStore: false, deliveryMethod: "piedDuCamion", shippingAddress: ADDRESS });
-    await expectApiError(quoteOrder(prisma, user.id, req, { geocoder: async () => null }), 422, /distance/);
+    await expectApiError(quoteOrder(prisma, user.id, req, { geocoder: async () => null }), 422, /Lieferdistanz|distance/);
   });
 
   it("produit inconnu -> 404, rupture -> 409 avec le stock disponible", async () => {
     const user = await makeUser();
     const p = await makeProduct({ stock: 1 });
     await expectApiError(quoteOrder(prisma, user.id, orderRequest([{ _id: "inconnu", quantity: 1 }], 0)), 404);
-    const e = await expectApiError(quoteOrder(prisma, user.id, orderRequest([{ _id: p.id, quantity: 2 }], 0)), 409, /1 disponible/);
+    const e = await expectApiError(quoteOrder(prisma, user.id, orderRequest([{ _id: p.id, quantity: 2 }], 0)), 409, /verfügbar|disponible/);
     expect(e.details).toEqual({ productId: p.id, available: 1 });
   });
 });
@@ -138,7 +138,7 @@ describe("création de commande", () => {
   it("total affiché différent du total serveur -> 409, rien n'est réservé", async () => {
     const user = await makeUser();
     const p = await makeProduct({ stock: 3 });
-    const e = await expectApiError(createOrder(user.id, orderRequest([{ _id: p.id, quantity: 1 }], 1)), 409, /recalculé/);
+    const e = await expectApiError(createOrder(user.id, orderRequest([{ _id: p.id, quantity: 1 }], 1)), 409, /berechnet|recalculé/);
     expect(e.details).toEqual({ totalAmount: 500 });
     expect(await stockOf(p.id)).toBe(3);
     expect(await prisma.order.count()).toBe(0);
@@ -159,7 +159,7 @@ describe("création de commande", () => {
     const [u1, u2] = [await makeUser(), await makeUser()];
     const p = await makeProduct({ stock: 1 });
     await createOrder(u1.id, orderRequest([{ _id: p.id, quantity: 1 }], 500));
-    await expectApiError(createOrder(u2.id, orderRequest([{ _id: p.id, quantity: 1 }], 500)), 409, /rupture/);
+    await expectApiError(createOrder(u2.id, orderRequest([{ _id: p.id, quantity: 1 }], 500)), 409, /vorrätig|rupture/);
     expect(await stockOf(p.id)).toBe(0);
   });
 

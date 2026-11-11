@@ -8,7 +8,7 @@ export function TransferDetails({ amount, reference, bank, className }: { amount
   const { rows, note } = transferLines(formatEuros(amount), reference, bank);
   return (
     <div className={cn("border border-ink p-5 sm:p-6", className)} data-testid="transfer-details">
-      <p className="font-medium">Virement bancaire à effectuer</p>
+      <p className="font-medium">Ausstehende Banküberweisung</p>
       <dl className="mt-4 grid gap-x-6 gap-y-2.5 text-sm sm:grid-cols-[auto_1fr]">
         {rows.map(([label, value, mono]) => (
           <div key={label} className="contents">

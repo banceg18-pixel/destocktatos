@@ -9,7 +9,7 @@ import { passwordLink } from "@/lib/server/password-link";
 
 const schema = z
   .object({ email: emailSchema, mdp: passwordSchema, mdpv: z.string() })
-  .refine((d) => d.mdp === d.mdpv, { message: "Mot de passe de confirmation erroné.", path: ["mdpv"] });
+  .refine((d) => d.mdp === d.mdpv, { message: "Das Bestätigungspasswort stimmt nicht überein.", path: ["mdpv"] });
 
 /** POST /api/auth/register — création de compte (mot de passe haché avec bcrypt). */
 export const POST = route("POST /api/auth/register", async (req: Request) => {
@@ -22,20 +22,20 @@ export const POST = route("POST /api/auth/register", async (req: Request) => {
     await sendMail({
       to: email,
       tag: "creation-compte",
-      subject: "Destocktatos — Créez votre mot de passe",
-      text: `Bonjour,
+      subject: "Destocktatos — Erstellen Sie Ihr Passwort",
+      text: `Hallo,
 
-Votre compte est prêt : vos commandes passées avec cette adresse y sont déjà. Pour y accéder, choisissez votre mot de passe avec ce lien (valable 24 heures) :
+Ihr Konto ist bereit: Ihre bisherigen Bestellungen mit dieser Adresse sind bereits vorhanden. Um auf Ihr Konto zuzugreifen, legen Sie Ihr Passwort über diesen Link fest (gültig 24 Stunden):
 ${link}
 
-Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.`,
+Falls Sie diese Anfrage nicht gestellt haben, ignorieren Sie bitte diese E-Mail.`,
     });
-    throw new ApiError(409, "Vous avez déjà commandé avec cette adresse : nous venons de vous envoyer par email un lien pour choisir votre mot de passe et accéder à votre compte.", { field: "email" });
+    throw new ApiError(409, "Sie haben bereits mit dieser Adresse bestellt: Wir haben Ihnen per E-Mail einen Link gesendet, um Ihr Passwort festzulegen und auf Ihr Konto zuzugreifen.", { field: "email" });
   }
-  if (existing) throw new ApiError(409, "Un compte existe déjà avec cette adresse email.");
+  if (existing) throw new ApiError(409, "Mit dieser E-Mail-Adresse existiert bereits ein Konto.");
   const user = await prisma.user.create({
     data: { email, name: email.split("@")[0], passwordHash: await bcrypt.hash(mdp, 12) },
   });
   notifyWelcome(user);
-  return json({ message: "Compte créé avec succès" }, 201);
+  return json({ message: "Konto erfolgreich erstellt" }, 201);
 });

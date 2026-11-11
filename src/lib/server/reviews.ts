@@ -28,12 +28,12 @@ export async function listReviews(productId: string) {
 /** Un client peut noter un produit qu'il a acheté (commande payée) et qu'il n'a pas encore noté. */
 export async function canUserReview(userId: string, productId: string): Promise<{ ok: boolean; raison?: string }> {
   const existing = await prisma.review.findUnique({ where: { productId_userId: { productId, userId } } });
-  if (existing) return { ok: false, raison: "Vous avez déjà donné votre avis sur ce produit" };
+  if (existing) return { ok: false, raison: "Sie haben dieses Produkt bereits bewertet" };
   const bought = await prisma.orderItem.findFirst({
     where: { productId, order: { userId, status: { in: [...PURCHASED_STATUSES] } } },
     select: { id: true },
   });
-  if (!bought) return { ok: false, raison: "Seuls les clients ayant acheté ce produit peuvent laisser un avis" };
+  if (!bought) return { ok: false, raison: "Nur Kunden, die dieses Produkt gekauft haben, können eine Bewertung hinterlassen" };
   return { ok: true };
 }
 
@@ -41,7 +41,7 @@ export async function createReview(userId: string, productId: string, note: numb
   const product = await prisma.product.findUnique({ where: { id: productId }, select: { id: true } });
   if (!product) throw new ApiError(404, "Produit introuvable");
   const check = await canUserReview(userId, productId);
-  if (!check.ok) throw new ApiError(check.raison?.startsWith("Vous avez déjà") ? 409 : 403, check.raison!);
+  if (!check.ok) throw new ApiError(check.raison?.includes("bereits") || check.raison?.startsWith("Vous avez déjà") ? 409 : 403, check.raison!);
   const r = await prisma.review.create({
     data: { productId, userId, note, commentaire },
     include: { user: { select: { id: true, name: true, image: true } } },
@@ -52,8 +52,8 @@ export async function createReview(userId: string, productId: string, note: numb
 
 async function ownReview(userId: string, id: string) {
   const review = await prisma.review.findUnique({ where: { id } });
-  if (!review) throw new ApiError(404, "Avis introuvable");
-  if (review.userId !== userId) throw new ApiError(403, "Vous ne pouvez modifier que vos propres avis");
+  if (!review) throw new ApiError(404, "Bewertung nicht gefunden");
+  if (review.userId !== userId) throw new ApiError(403, "Sie können nur Ihre eigenen Bewertungen bearbeiten");
   return review;
 }
 

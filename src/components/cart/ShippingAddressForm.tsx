@@ -124,11 +124,11 @@ export function ShippingAddressForm() {
           setDeliveryDistance(calculateDistance(coords.lat, coords.lng, STORE_COORDINATES.lat, STORE_COORDINATES.lng) || 1);
         } else {
           setDeliveryDistance(0);
-          setGeoError(`Nous ne trouvons pas « ${address}, ${postalCode} ${city} ». Vérifiez l'orthographe ou choisissez une suggestion dans la liste.`);
+          setGeoError(`Wir konnten „${address}, ${postalCode} ${city}“ nicht finden. Bitte überprüfen Sie die Schreibweise oder wählen Sie einen Vorschlag aus der Liste.`);
         }
       } catch {
         setDeliveryDistance(0);
-        setGeoError("Le calcul de distance n'a pas abouti. Vérifiez votre connexion puis réessayez.");
+        setGeoError("Die Entfernungsberechnung konnte nicht abgeschlossen werden. Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.");
       } finally {
         setGeocoding(false);
       }
@@ -142,7 +142,7 @@ export function ShippingAddressForm() {
     setLoaded(true);
     (async () => {
       const res = await fetchAddresses();
-      if (!res.ok) return errRef.current("Vos adresses enregistrées n'ont pas pu être chargées.");
+      if (!res.ok) return errRef.current("Ihre gespeicherten Adressen konnten nicht geladen werden.");
       const list = res.data.addresses || [];
       setSaved(list);
       if (!selectedId && !shippingAddress && list.length > 0) {
@@ -199,8 +199,8 @@ export function ShippingAddressForm() {
     void _id;
     const res = await createAddress({ ...payload, isDefault: saved.length === 0 });
     setSaving(false);
-    if (!res.ok) return setError(res.error || "L'adresse n'a pas pu être enregistrée.");
-    setMessage("Adresse enregistrée dans votre carnet.");
+    if (!res.ok) return setError(res.error || "Die Adresse konnte nicht gespeichert werden.");
+    setMessage("Adresse in Ihrem Adressbuch gespeichert.");
     const a = { ...form, _id: res.data.address._id, isDefault: saved.length === 0 };
     setForm(a);
     setSelectedId(res.data.address._id);

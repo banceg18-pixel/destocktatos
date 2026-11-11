@@ -8,8 +8,8 @@ import { jsonLd } from "@/lib/seo";
 import { slugify } from "@/lib/text";
 
 export const metadata: Metadata = {
-  title: "Questions fréquentes",
-  description: "Commandes, livraison, installation, paiement, garantie : les réponses aux questions les plus courantes.",
+  title: "Häufige Fragen",
+  description: "Bestellungen, Lieferung, Installation, Zahlung, Garantie: Antworten auf die häufigsten Fragen.",
   alternates: { canonical: "/faq" },
 };
 
@@ -23,9 +23,9 @@ export default async function FaqPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(faqLd)} />
-      <PageHeader title="Questions fréquentes" intro="Les réponses aux questions que l'on nous pose le plus souvent. Vous ne trouvez pas la vôtre ? Écrivez-nous." />
+      <PageHeader title="Häufige Fragen" intro="Antworten auf die Fragen, die uns am häufigsten gestellt werden. Haben Sie Ihre Frage nicht gefunden? Schreiben Sie uns." />
       <div className="shell grid gap-12 pb-24 lg:grid-cols-[240px_1fr] lg:gap-20">
-        <nav aria-label="Thèmes" className="min-w-0 lg:sticky lg:top-[calc(var(--header-h)+28px)] lg:self-start">
+        <nav aria-label="Themen" className="min-w-0 lg:sticky lg:top-[calc(var(--header-h)+28px)] lg:self-start">
           <ul className="scroll-x -mx-[clamp(20px,3.4vw,48px)] flex gap-2 px-[clamp(20px,3.4vw,48px)] lg:mx-0 lg:flex-col lg:gap-0 lg:px-0">
             {categories.map((c) => (
               <li key={c.title} className="shrink-0">
@@ -50,10 +50,10 @@ export default async function FaqPage() {
             </Reveal>
           ))}
           <div className="flex flex-col items-start gap-6 bg-mist p-8 lg:p-10">
-            <p className="t-h3">Toujours une question ?</p>
-            <p className="text-graphite">Un conseiller vous répond par téléphone ou par email, 7 jours sur 7.</p>
+            <p className="t-h3">Noch eine Frage?</p>
+            <p className="text-graphite">Ein Berater antwortet Ihnen per Telefon oder E-Mail, 7 Tage die Woche.</p>
             <ButtonLink href="/contact" icon={<Arrow />}>
-              Nous contacter
+              Kontakt aufnehmen
             </ButtonLink>
           </div>
         </div>

@@ -61,7 +61,7 @@ function StripeForm({ order }: { order: OrderDTO }) {
         redirect: "if_required",
       });
       if (error) {
-        setFeedback({ text: error.message || "Le paiement a été refusé. Vérifiez vos informations ou utilisez une autre carte.", kind: "error" });
+        setFeedback({ text: error.message || "Die Zahlung wurde abgelehnt. Überprüfen Sie Ihre Angaben oder verwenden Sie eine andere Karte.", kind: "error" });
         trackPaymentError(error.message || "stripe_confirm_error", error.code);
       } else if (paymentIntent) {
         // Vérification serveur : la commande n'est marquée payée qu'après contrôle auprès de Stripe.
@@ -85,13 +85,13 @@ function StripeForm({ order }: { order: OrderDTO }) {
           clearCart();
           router.push(`/confirmation?status=success&order=${res.data.orderId}&payment_id=${paymentIntent.id}`);
         } else if (res.ok) {
-          setFeedback({ text: "Votre banque confirme le paiement : la page se mettra à jour dès réception.", kind: "info" });
+          setFeedback({ text: "Ihre Bank bestätigt die Zahlung: die Seite wird nach Zahlungseingang automatisch aktualisiert.", kind: "info" });
         } else {
           setFeedback({ text: res.error, kind: "error" });
         }
       }
     } catch {
-      setFeedback({ text: "Le paiement n'a pas pu aboutir pour une raison technique. Aucun montant n'a été débité. Réessayez.", kind: "error" });
+      setFeedback({ text: "Die Zahlung konnte aus einem technischen Grund nicht abgeschlossen werden. Es wurde kein Betrag abgebucht. Bitte versuchen Sie es erneut.", kind: "error" });
       trackPaymentError("technical_error");
     } finally {
       setLoading(false);
@@ -100,7 +100,7 @@ function StripeForm({ order }: { order: OrderDTO }) {
 
   return (
     <form onSubmit={submit} noValidate className="flex flex-col gap-8">
-      <Field label="Email pour le reçu" htmlFor="email" error={ef.errors.email}>
+      <Field label="E-Mail für die Quittung" htmlFor="email" error={ef.errors.email}>
         <Input
           type="email"
           id="email"
@@ -112,28 +112,28 @@ function StripeForm({ order }: { order: OrderDTO }) {
           }}
           onBlur={(e) => ef.onBlur("email", e.target.value, rules.email)}
           autoComplete="email"
-          placeholder="nom@exemple.fr"
+          placeholder="name@beispiel.de"
         />
       </Field>
       <div>
-        <p className="mb-4 text-sm font-medium">Adresse de facturation</p>
+        <p className="mb-4 text-sm font-medium">Rechnungsadresse (Karteninhaber)</p>
         <AddressElement options={{ mode: "billing", fields: { phone: "always" }, validation: { phone: { required: "always" } } }} />
       </div>
       <div>
-        <p className="mb-4 text-sm font-medium">Carte bancaire</p>
+        <p className="mb-4 text-sm font-medium">Bankkarte (Kreditkarte / Debitkarte)</p>
         <PaymentElement />
       </div>
       {feedback && <Feedback text={feedback.text} kind={feedback.kind} />}
       <Button type="submit" size="lg" block disabled={!stripe || loading} plain={loading} icon={loading ? undefined : <IconLock size={16} />}>
         {loading ? (
           <>
-            <Spinner /> Paiement en cours…
+            <Spinner /> Zahlung wird verarbeitet…
           </>
         ) : (
-          `Payer ${formatEuros(order.totalAmount)}`
+          `Jetzt bezahlen ${formatEuros(order.totalAmount)}`
         )}
       </Button>
-      <p className="text-center text-xs text-graphite">Paiement chiffré et traité par Stripe. Nous ne voyons jamais votre numéro de carte.</p>
+      <p className="text-center text-xs text-graphite">Verschlüsselte Zahlung, verarbeitet von Stripe. Wir sehen Ihre Kartennummer niemals.</p>
     </form>
   );
 }
@@ -327,14 +327,14 @@ export function PaymentPage({ settings }: { settings: SiteSettings }) {
           router.push("/panier");
           return;
         }
-        setError("Votre commande n'a pas pu être récupérée. Rechargez la page ou revenez au panier.");
+        setError("Ihre Bestellung konnte nicht abgerufen werden. Laden Sie die Seite neu oder gehen Sie zurück zum Warenkorb.");
         setLoading(false);
         return;
       }
       setOrder(latest.data);
       setCustomerEmail(latest.data.customerEmail ?? null);
       const intent = await createPaymentIntent();
-      if (!intent.ok) setError(intent.error || "Le paiement n'a pas pu être initialisé. Réessayez dans un instant.");
+      if (!intent.ok) setError(intent.error || "Die Zahlung konnte nicht initialisiert werden. Bitte versuchen Sie es in einem Moment erneut.");
       else {
         const cardReady = intent.data.provider === "stripe" && !!stripePromise && !!intent.data.clientSecret;
         setCard(cardReady);
@@ -351,16 +351,16 @@ export function PaymentPage({ settings }: { settings: SiteSettings }) {
   if (status === "loading" || loading) {
     return (
       <p className="flex min-h-[40vh] items-center justify-center gap-3 text-graphite" role="status">
-        <Spinner /> Préparation du paiement…
+        <Spinner /> Zahlung wird vorbereitet…
       </p>
     );
   }
   if (error || !order) {
     return (
       <div className="flex max-w-xl flex-col items-start gap-6 border-t border-ink py-12">
-        <Feedback text={error ?? "Aucune commande en attente de paiement."} />
+        <Feedback text={error ?? "Keine ausstehende Bestellung gefunden."} />
         <ButtonLink href="/panier" variant="outline" icon={<Arrow direction="left" />}>
-          Revenir au panier
+          Zurück zum Warenkorb
         </ButtonLink>
       </div>
     );

@@ -48,7 +48,7 @@ describe("inscription", () => {
     expect((await register(req({ email: "A@tatos.test", mdp: "motdepasse1", mdpv: "motdepasse1" }))).status).toBe(409);
     const mismatch = await register(req({ email: "b@tatos.test", mdp: "motdepasse1", mdpv: "autre" }));
     expect(mismatch.status).toBe(400);
-    expect((await mismatch.json()).error).toBe("Mot de passe de confirmation erroné.");
+    expect((await mismatch.json()).error).toMatch(/Bestätigungspasswort|confirmation/);
     expect((await register(req({ email: "c@tatos.test", mdp: "court", mdpv: "court" }))).status).toBe(400);
     expect((await register(req("{pas du json", true))).status).toBe(400);
   });

@@ -37,7 +37,7 @@ export function NetworkStatus() {
     <div role="status" aria-live="polite" className="pointer-events-none fixed inset-x-0 top-[calc(var(--header-h)+8px)] z-[270] flex justify-center px-4">
       {state !== "online" && (
         <p className="on-dark animate-[slide-up_0.4s_var(--ease-out-expo)_both] rounded-full bg-ink px-4 py-2 text-center text-[0.8rem] text-paper shadow-xl">
-          {state === "offline" ? "Hors connexion : votre panier est conservé, reprise automatique au retour du réseau." : "Connexion rétablie."}
+          {state === "offline" ? "Offline: Ihr Warenkorb ist gespeichert, automatische Wiederherstellung bei Verbindung." : "Verbindung wiederhergestellt."}
         </p>
       )}
     </div>

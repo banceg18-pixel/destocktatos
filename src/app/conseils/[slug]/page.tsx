@@ -12,7 +12,7 @@ type Params = Promise<{ slug: string }>;
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const post = await getPost((await params).slug);
-  if (!post) return { title: "Article introuvable", robots: { index: false } };
+  if (!post) return { title: "Artikel nicht gefunden", robots: { index: false } };
   return {
     title: post.title,
     description: post.excerpt.slice(0, 300),
@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   };
 }
 
-const dateFr = (iso: string) => new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+const dateDe = (iso: string) => new Date(iso).toLocaleDateString("de-DE", { day: "numeric", month: "long", year: "numeric" });
 
 export default async function ArticlePage({ params }: { params: Params }) {
   const { slug } = await params;
@@ -44,7 +44,7 @@ export default async function ArticlePage({ params }: { params: Params }) {
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(ld)} />
       <header className="shell pb-10 pt-8 lg:pt-12">
         <div className="mx-auto max-w-3xl">
-          <p className="t-spec text-graphite">{[post.category, dateFr(post.date), `${readingMinutes(post.content)} min de lecture`].filter(Boolean).join(" · ")}</p>
+          <p className="t-spec text-graphite">{[post.category, dateDe(post.date), `${readingMinutes(post.content)} Min. Lesezeit`].filter(Boolean).join(" · ")}</p>
           <h1 className="t-display mt-6 !text-[clamp(2.2rem,5vw,4.2rem)]">{post.title}</h1>
           <p className="t-lead mt-6 text-graphite">{post.excerpt}</p>
         </div>
@@ -59,9 +59,9 @@ export default async function ArticlePage({ params }: { params: Params }) {
       <div className="shell py-14 lg:py-20">
         <div className="prose-article mx-auto max-w-3xl" dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }} />
         <div className="mx-auto mt-16 flex max-w-3xl flex-wrap items-center justify-between gap-6 border-t border-line pt-8">
-          <p className="text-graphite">Une question sur un appareil ? Nos conseillers vous répondent 7 jours sur 7.</p>
+          <p className="text-graphite">Eine Frage zu einem Gerät? Unsere Berater antworten 7 Tage die Woche.</p>
           <ButtonLink href="/contact" variant="outline" icon={<Arrow />}>
-            Nous contacter
+            Kontakt aufnehmen
           </ButtonLink>
         </div>
       </div>
@@ -69,13 +69,13 @@ export default async function ArticlePage({ params }: { params: Params }) {
         <section className="border-t border-line py-16 lg:py-20" aria-labelledby="autres-conseils">
           <div className="shell">
             <h2 id="autres-conseils" className="t-h3 mb-8">
-              Autres conseils
+              Weitere Ratgeber
             </h2>
             <ul className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {others.map((p) => (
                 <li key={p.slug}>
                   <Link href={`/conseils/${p.slug}`} className="group block">
-                    <p className="t-spec text-graphite">{dateFr(p.date)}</p>
+                    <p className="t-spec text-graphite">{dateDe(p.date)}</p>
                     <h3 className="t-h3 mt-3 group-hover:underline group-hover:underline-offset-4">{p.title}</h3>
                   </Link>
                 </li>

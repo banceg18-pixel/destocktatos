@@ -58,6 +58,6 @@ export function transferLines(amount: string, orderNumber: string, bank: BankDet
   ];
   const how = bank?.reference
     ? `Bitte geben Sie ${bank.reference} sowie Ihre Bestellnummer ${orderNumber} als Verwendungszweck an.`
-    : `Bitte geben Sie Ihre Bestellnummer ${orderNumber} als Verwendungszweck an (Indiquez votre référence de commande).`;
+    : `Bitte geben Sie Ihre Bestellnummer ${orderNumber} als Verwendungszweck an.`;
   return { rows, note: `${how} Ihre Bestellung wird vorbereitet und geliefert, sobald die Zahlung eingegangen ist.` };
 }

@@ -19,7 +19,7 @@ export function AddressAutocomplete({
   value,
   onChange,
   onAddressSelect,
-  placeholder = "Commencez à taper votre adresse...",
+  placeholder = "Geben Sie Ihre Adresse ein...",
   className = "",
   required = false,
   id = "address",
