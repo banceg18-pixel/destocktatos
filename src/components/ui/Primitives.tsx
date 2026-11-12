@@ -86,7 +86,7 @@ export function Price({
         <>
           {/* Le prix barré est le prix conseillé par le fabricant (jamais un ancien prix du magasin). */}
           <span className={cn(size === "xl" ? "text-base" : "text-xs", tone === "paper" ? "text-white/60" : "text-graphite")}>
-            Prix conseillé fabricant <s>{formatEuros(prix)}</s>
+            UVP des Herstellers <s>{formatEuros(prix)}</s>
           </span>
           {showBadge && (
             <span className="t-spec rounded-xs bg-promo px-1.5 py-0.5 font-semibold text-white">-{pct} %</span>

@@ -214,7 +214,7 @@ async function couponData(input: z.infer<typeof couponSchema>) {
   let userId: string | null = null;
   if (input.customerEmail) {
     const u = await prisma.user.findUnique({ where: { email: input.customerEmail }, select: { id: true } });
-    if (!u) throw new ApiError(404, "Aucun client avec cet email.");
+    if (!u) throw new ApiError(404, "Kein Kunde mit dieser E-Mail-Adresse.");
     userId = u.id;
   }
   const expiresAt = input.expiresAt ? new Date(input.expiresAt.length === 10 ? `${input.expiresAt}T23:59:59` : input.expiresAt) : null;

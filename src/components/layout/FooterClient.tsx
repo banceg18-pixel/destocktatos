@@ -13,7 +13,7 @@ export function CookiePreferencesButton() {
   const { resetCookieConsent } = useCart();
   return (
     <button type="button" onClick={resetCookieConsent} className="link-underline hover:text-paper">
-      Préférences cookies
+      Cookie-Einstellungen
     </button>
   );
 }

@@ -98,6 +98,19 @@ export async function createBridgePaymentRequest(p: BridgePaymentRequestParams):
 
   if (!res.ok) {
     const text = await res.text().catch(() => "");
+    // Refus d'authentification ou de permission côté Bridge (401/403 : clés absentes de la
+    // plateforme, scope PISP pas encore activée…) : on retombe sur le simulateur de banque
+    // plutôt que de bloquer le client pendant sa commande.
+    if (res.status === 401 || res.status === 403) {
+      console.error(`[bridge] Repli simulateur (payment-request refusée ${res.status}) : ${text.slice(0, 200)}`);
+      const simId = `pr_sim_${crypto.randomBytes(6).toString("hex")}`;
+      const token = signBridgeToken({ orderId: p.orderId, orderNumber: p.orderNumber, amount: p.amount, bankId: p.bankId, user: p.user });
+      return {
+        id: simId,
+        url: `${p.appOrigin}/bank-sim?token=${encodeURIComponent(token)}&bank=${encodeURIComponent(p.bankId || "sparkasse")}`,
+        mode: "sandbox-sim",
+      };
+    }
     throw new Error(`Bridge payment-request failed (${res.status}): ${text}`);
   }
 

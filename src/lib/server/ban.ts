@@ -1,43 +1,75 @@
 import "server-only";
 
-/** Client serveur de la Base Adresse Nationale (service public français, sans clé). */
-const BAN = (process.env.ADDRESS_API_URL || "https://api-adresse.data.gouv.fr").replace(/\/$/, "");
+/**
+ * Adressvorschläge (Autocomplete) über Nominatim (OpenStreetMap, ohne Schlüssel), auf
+ * Deutschland beschränkt. Liefert strukturierte Treffer: Adresse, Postleitzahl, Stadt.
+ */
+const NOMINATIM = "https://nominatim.openstreetmap.org";
 
-interface BanFeature {
-  geometry: { coordinates: [number, number] };
-  properties: { id: string; label: string; name: string; postcode: string; city: string; score: number; type: string };
+interface NomFeature {
+  place_id: string | number;
+  display_name: string;
+  lat: string;
+  lon: string;
+  address?: {
+    house_number?: string;
+    road?: string;
+    pedestrian?: string;
+    postcode?: string;
+    city?: string;
+    town?: string;
+    village?: string;
+    municipality?: string;
+  };
 }
 
-async function ban(path: string): Promise<BanFeature[]> {
-  const res = await fetch(`${BAN}${path}`, { headers: { Accept: "application/json" }, next: { revalidate: 86400 } });
-  if (!res.ok) throw new Error(`BAN HTTP ${res.status}`);
-  const data = (await res.json()) as { features?: BanFeature[] };
-  return data.features ?? [];
+async function nominatim(path: string) {
+  const res = await fetch(`${NOMINATIM}${path}`, {
+    // Nominatim exige un User-Agent identifiant l'application (politique OSM).
+    headers: { "User-Agent": "Destocktatos/1.0 (https://destocktatos.com)", Accept: "application/json", "Accept-Language": "de" },
+    next: { revalidate: 86400 },
+  });
+  if (!res.ok) throw new Error(`Nominatim HTTP ${res.status}`);
+  return (await res.json()) as NomFeature[];
 }
+
+const cityOf = (a: NomFeature["address"]) => a?.city ?? a?.town ?? a?.village ?? a?.municipality ?? "";
 
 export async function suggestAddresses(q: string) {
-  const features = await ban(`/search/?q=${encodeURIComponent(q)}&limit=5&autocomplete=1`);
-  return features.map((f) => ({
-    id: f.properties.id,
-    label: f.properties.label,
-    address: f.properties.name,
-    postalCode: f.properties.postcode,
-    city: f.properties.city,
-  }));
+  const list = await nominatim(
+    `/search?format=json&q=${encodeURIComponent(q)}&limit=5&countrycodes=de&addressdetails=1&accept-language=de`,
+  );
+  return list.map((f) => {
+    const a = f.address ?? {};
+    const house = a.house_number ? ` ${a.house_number}` : "";
+    const street = a.road ?? a.pedestrian ?? "";
+    const address = street ? `${street}${house}` : f.display_name.split(",")[0];
+    return {
+      id: String(f.place_id),
+      label: f.display_name.split(",").slice(0, 3).join(",").trim(),
+      address,
+      postalCode: a.postcode ?? "",
+      city: cityOf(a),
+    };
+  });
 }
 
-/** Valide une adresse : correspondance suffisante dans la BAN pour ce code postal. */
+/** Valide eine Adresse: ausreichende Übereinstimmung beim Suchbegriff (PLZ enthalten). */
 export async function validateAddress(address: string, postalCode: string, city: string) {
-  const features = await ban(`/search/?q=${encodeURIComponent(`${address} ${postalCode} ${city}`)}&limit=3&postcode=${encodeURIComponent(postalCode)}`);
-  const best = features.find((f) => f.properties.score >= 0.4);
+  const list = await nominatim(
+    `/search?format=json&q=${encodeURIComponent(`${address}, ${postalCode} ${city}`)}&limit=3&countrycodes=de&addressdetails=1&accept-language=de`,
+  );
+  const best = list.find((f) => (f.address?.postcode ?? "") === postalCode) ?? (list.length ? list[0] : null);
   if (!best) return { valid: false as const, error: "Adresse nicht gefunden. Überprüfen Sie Adresse, Postleitzahl und Stadt." };
+  const a = best.address ?? {};
+  const street = a.road ?? a.pedestrian ?? "";
   return {
     valid: true as const,
     normalizedAddress: {
-      address: best.properties.type === "municipality" ? address : best.properties.name,
-      postalCode: best.properties.postcode,
-      city: best.properties.city,
+      address: street ? [street, a.house_number].filter(Boolean).join(" ") : address,
+      postalCode: a.postcode ?? postalCode,
+      city: cityOf(a) || city,
     },
-    coordinates: { lat: best.geometry.coordinates[1], lng: best.geometry.coordinates[0] },
+    coordinates: { lat: parseFloat(best.lat), lng: parseFloat(best.lon) },
   };
 }
