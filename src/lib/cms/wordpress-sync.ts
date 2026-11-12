@@ -1,5 +1,6 @@
 import "server-only";
 import { rebrandText } from "@/lib/brand";
+import { categoryNameOf, germanProductTexts } from "@/lib/catalog/de-labels";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/text";
 
@@ -69,27 +70,39 @@ async function wp<T>(endpoint: string): Promise<{ data: T; totalPages: number }>
 
 /** Catégorie locale du produit (créée à la volée si WordPress en a ajouté une). */
 async function categoryIdFor(p: WpProduct, cache: Map<string, string>): Promise<string> {
-  const known = cache.get(p.categorie);
+  const known = cache.get(p.categorie) ?? cache.get(categoryNameOf(p.categorie));
   if (known) return known;
+  const nomDe = categoryNameOf(p.categorie);
   const slug = p.categorieSlug || slugify(p.categorie);
-  const c = await prisma.category.upsert({ where: { slug }, update: {}, create: { slug, nom: p.categorie, ordre: 999 } });
+  const c = await prisma.category.upsert({ where: { slug }, update: { nom: nomDe }, create: { slug, nom: nomDe, ordre: 999 } });
   cache.set(p.categorie, c.id);
+  cache.set(nomDe, c.id);
   return c.id;
 }
 
 async function upsertProduct(p: WpProduct, categoryId: string, syncStock: boolean) {
+  // Libellés allemands : les titres/descriptions françaises du WordPress en ligne passent par
+  // le mapping du dépôt (voir catalog/de-labels.ts ; slugs inchangés).
+  const de = germanProductTexts({
+    titre: p.titre,
+    marque: p.marque,
+    description: p.description ?? "",
+    categorie: p.categorie,
+    caracteristiques: p.caracteristiques ?? {},
+    garantie: p.garantie,
+  });
   const data = {
     slug: p.slug,
-    titre: p.titre,
+    titre: de.titre,
     marque: p.marque,
     modele: p.modele,
     prixCents: Math.round(p.prix * 100),
     promotionPrixCents: p.promotionPrix != null ? Math.round(p.promotionPrix * 100) : null,
     categoryId,
     sousCategories: p.sousCategorie ?? [],
-    description: rebrandText(p.description ?? ""),
+    description: rebrandText(de.description),
     caracteristiques: p.caracteristiques ?? {},
-    garantie: p.garantie ?? undefined,
+    garantie: de.garantie ?? undefined,
     pose: p.pose,
     couleurs: p.couleur ?? [],
     connecter: p.connecter,
@@ -119,12 +132,14 @@ export async function syncCategoriesFromWordPress() {
   const { data: cats } = await wp<WpCategory[]>("/tatos/v1/categories");
   const catIds = new Map<string, string>();
   for (const c of cats) {
+    const nomDe = categoryNameOf(c.nom);
     const row = await prisma.category.upsert({
       where: { slug: c.slug },
-      update: { nom: c.nom, ordre: c.ordre, image: localize(c.image) },
-      create: { slug: c.slug, nom: c.nom, ordre: c.ordre, image: localize(c.image) },
+      update: { nom: nomDe, ordre: c.ordre, image: localize(c.image) },
+      create: { slug: c.slug, nom: nomDe, ordre: c.ordre, image: localize(c.image) },
     });
     catIds.set(c.nom, row.id);
+    catIds.set(nomDe, row.id);
   }
   return { categories: cats.length, catIds };
 }

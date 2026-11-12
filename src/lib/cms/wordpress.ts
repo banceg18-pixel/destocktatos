@@ -2,6 +2,7 @@ import "server-only";
 import { memo } from "@/lib/server/memo";
 import { currentVersion, syncCaches } from "@/lib/server/sync-version";
 import { localProvider } from "./local";
+import { looksFrench } from "./lang-guard";
 import type { ContentBlock, ContentProvider, ContentSection, FaqCategory, MenuSet, PageContent, Post, SiteSettings } from "./types";
 
 /**
@@ -87,7 +88,14 @@ export async function wpFetch<T>(endpoint: string): Promise<T> {
 
 async function withFallback<T>(label: string, fn: () => Promise<T>, fallback: () => Promise<T>): Promise<T> {
   try {
-    return await fn();
+    const value = await fn();
+    // Garde de langue : un contenu WordPress encore en français cède la place au contenu
+    // allemand du dépôt (voir cms/lang-guard.ts).
+    if (looksFrench(value)) {
+      console.warn(`[cms:wordpress] ${label} en français détecté, contenu allemand du dépôt servi`);
+      return await fallback();
+    }
+    return value;
   } catch (e) {
     console.error(`[cms:wordpress] ${label} indisponible, contenu local utilisé :`, (e as Error).message);
     return fallback();
