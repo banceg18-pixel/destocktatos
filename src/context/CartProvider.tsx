@@ -97,7 +97,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         }
         setConsentLoaded(true);
       } catch {
-        setErrorRef.current("Impossible d'accéder au localStorage");
+        setErrorRef.current("Auf den lokalen Speicher konnte nicht zugegriffen werden");
         setConsentLoaded(true);
         setConsentHidden(false);
       }
@@ -138,7 +138,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     try {
       return calculateDeliveryFee(deliveryMethod, includeOldItemPickup);
     } catch {
-      setErrorRef.current("Impossible de calculer les frais de livraison");
+      setErrorRef.current("Die Versandkosten konnten nicht berechnet werden");
       return 0;
     }
   }, [deliveryMethod, deliveryDistance, includeOldItemPickup, isPickupInStore]);
@@ -165,7 +165,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       });
       return null;
     } catch {
-      return "Le code n'a pas pu être vérifié. Réessayez dans un instant.";
+      return "Der Code konnte nicht überprüft werden. Versuchen Sie es gleich erneut.";
     } finally {
       setCouponLoading(false);
     }
@@ -235,7 +235,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             setConsentHidden(false);
             setConsentLoaded(true);
           } catch {
-            setErrorRef.current("Impossible de réinitialiser les préférences");
+            setErrorRef.current("Die Einstellungen konnten nicht zurückgesetzt werden");
           }
         },
         userId,

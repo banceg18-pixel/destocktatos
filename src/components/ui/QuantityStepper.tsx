@@ -10,7 +10,7 @@ export function QuantityStepper({
   min = 1,
   max = 99,
   size = "md",
-  label = "Quantité",
+  label = "Menge",
   className,
 }: {
   value: number;
@@ -24,13 +24,13 @@ export function QuantityStepper({
   const btn = cn("flex items-center justify-center transition-colors hover:bg-mist disabled:opacity-30 disabled:hover:bg-transparent", size === "sm" ? "size-8" : "size-12");
   return (
     <div role="group" aria-label={label} className={cn("inline-flex items-center rounded-sm border border-line", className)}>
-      <button type="button" className={btn} onClick={() => onChange(Math.max(min, value - 1))} disabled={value <= min} aria-label="Diminuer la quantité">
+      <button type="button" className={btn} onClick={() => onChange(Math.max(min, value - 1))} disabled={value <= min} aria-label="Menge verringern">
         <IconMinus size={size === "sm" ? 14 : 16} />
       </button>
       <span className={cn("t-price text-center text-sm", size === "sm" ? "w-7" : "w-10")} aria-live="polite">
         {value}
       </span>
-      <button type="button" className={btn} onClick={() => onChange(Math.min(max, value + 1))} disabled={value >= max} aria-label="Augmenter la quantité">
+      <button type="button" className={btn} onClick={() => onChange(Math.min(max, value + 1))} disabled={value >= max} aria-label="Menge erhöhen">
         <IconPlus size={size === "sm" ? 14 : 16} />
       </button>
     </div>

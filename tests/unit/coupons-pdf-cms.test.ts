@@ -21,7 +21,7 @@ describe("coupons : réduction plafonnée à 10 % de la commande", () => {
   it("montant fixe plafonné", () => {
     const r = computeDiscount({ type: "MONTANT", value: 2_000 }, 10_000);
     expect(r).toMatchObject({ discountCents: 1_000, capped: true });
-    expect(r.message).toContain("plafonnée à 10 %");
+    expect(r.message).toContain("begrenzt auf 10 %");
   });
 
   it("montant fixe sous le plafond", () => {

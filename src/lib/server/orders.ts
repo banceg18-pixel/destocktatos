@@ -57,7 +57,7 @@ export async function quoteOrder(
   req: OrderRequest,
   opts: { geocoder?: Geocoder; distanceKm?: number } = {},
 ): Promise<Quote> {
-  if (!req.items.length) throw new ApiError(400, "Panier vide.");
+  if (!req.items.length) throw new ApiError(400, "Warenkorb leer.");
   const merged = new Map<string, number>();
   for (const it of req.items) merged.set(it._id, (merged.get(it._id) ?? 0) + it.quantity);
 
@@ -107,15 +107,15 @@ export async function quoteOrder(
 
   // Retrait en magasin retiré de l'offre (réactivable avec STORE_PICKUP_ENABLED=true).
   if (req.isPickupInStore && process.env.STORE_PICKUP_ENABLED !== "true") {
-    throw new ApiError(422, "Le retrait en magasin n'est plus proposé : la livraison est offerte partout en France.");
+    throw new ApiError(422, "Die Selbstabholung wird nicht mehr angeboten: Die Lieferung ist in ganz Deutschland kostenlos.");
   }
 
   let deliveryFeeCents = 0;
   let deliveryDistanceKm = 0;
   if (!req.isPickupInStore) {
     const a = req.shippingAddress;
-    if (!a) throw new ApiError(400, "Adresse de livraison incomplète. Veuillez remplir tous les champs obligatoires.");
-    if (!req.deliveryMethod) throw new ApiError(400, "Veuillez sélectionner une méthode de livraison.");
+    if (!a) throw new ApiError(400, "Unvollständige Lieferadresse. Bitte füllen Sie alle Pflichtfelder aus.");
+    if (!req.deliveryMethod) throw new ApiError(400, "Bitte wählen Sie eine Versandart.");
     // Livraison offerte partout en France : la distance (adresse géocodée) reste enregistrée pour la tournée.
     deliveryDistanceKm = opts.distanceKm ?? (await distanceTo(a, opts.geocoder ?? geocodeAddress));
     deliveryFeeCents = calculateDeliveryFee(req.deliveryMethod, req.deliveryMethod === "installation" && req.includeOldItemPickup) * 100;
@@ -282,7 +282,7 @@ export async function getLatestPendingOrder(userId: string) {
 
 export async function getUserOrder(userId: string, id: string) {
   const o = await prisma.order.findUnique({ where: { id }, include: { ...orderInclude, payments: true } });
-  if (!o || o.userId !== userId) throw new ApiError(404, "Commande introuvable");
+  if (!o || o.userId !== userId) throw new ApiError(404, "Bestellung nicht gefunden");
   return o;
 }
 
@@ -294,7 +294,7 @@ export async function listUserOrders(userId: string) {
 /** Annulation par le client d'une commande non payée, ou dont le virement n'est pas encore reçu (stock libéré). */
 export async function cancelPendingOrder(userId: string, id: string) {
   const o = await getUserOrder(userId, id);
-  if (o.status !== "EN_ATTENTE_PAIEMENT" && o.status !== "EN_ATTENTE_VIREMENT") throw new ApiError(409, "Seule une commande pas encore payée peut être annulée.");
+  if (o.status !== "EN_ATTENTE_PAIEMENT" && o.status !== "EN_ATTENTE_VIREMENT") throw new ApiError(409, "Nur eine noch nicht bezahlte Bestellung kann storniert werden.");
   await prisma.$transaction(async (tx) => {
     const r = await tx.order.updateMany({ where: { id, status: o.status }, data: { status: "ANNULEE" } });
     if (r.count === 1) await restock(tx, o.items);
@@ -322,13 +322,13 @@ export async function markOrderPaid(orderId: string, payment: { provider: string
   let transitioned = false;
   const paid = await prisma.$transaction(async (tx) => {
     const o = await tx.order.findUnique({ where: { id: orderId }, include: { items: true } });
-    if (!o) throw new ApiError(404, "Commande introuvable");
+    if (!o) throw new ApiError(404, "Bestellung nicht gefunden");
     if (o.status === "PAYEE" || o.status === "EN_PREPARATION" || o.status === "EXPEDIEE" || o.status === "LIVREE") return o;
     if (o.status === "ANNULEE") {
       // Paiement reçu après expiration : on tente de réserver à nouveau le stock.
       for (const it of o.items) {
         const r = await tx.product.updateMany({ where: { id: it.productId, stock: { gte: it.quantity } }, data: { stock: { decrement: it.quantity } } });
-        if (r.count !== 1) console.warn(`[orders] Stock insuffisant après paiement de la commande ${o.number} (produit ${it.productId}) — traitement manuel requis.`);
+        if (r.count !== 1) console.warn(`[orders] Lagerbestand nach Zahlungseingang der Bestellung ${o.number} unzureichend (Produkt ${it.productId}) — manuelle Bearbeitung erforderlich.`);
       }
     }
     await tx.payment.upsert({
@@ -354,7 +354,7 @@ export async function markOrderPaid(orderId: string, payment: { provider: string
   });
   invalidateCatalog();
   // Une seule confirmation par commande, même si Stripe et la page de retour confirment tous deux.
-  if (transitioned) notifyOrderPaid(paid.id).catch((e) => console.error("[notifications] confirmation de commande", e));
+  if (transitioned) notifyOrderPaid(paid.id).catch((e) => console.error("[notifications] Bestellbestätigung", e));
   return paid;
 }
 
@@ -368,12 +368,12 @@ export async function confirmBankTransfer(orderId: string) {
   const ref = transferRef(orderId);
   const confirmed = await prisma.$transaction(async (tx) => {
     const o = await tx.order.findUnique({ where: { id: orderId } });
-    if (!o) throw new ApiError(404, "Commande introuvable");
+    if (!o) throw new ApiError(404, "Bestellung nicht gefunden");
     const r = await tx.order.updateMany({
       where: { id: orderId, status: "EN_ATTENTE_PAIEMENT" },
       data: { status: "EN_ATTENTE_VIREMENT", paymentProvider: "virement", paymentMode: "live", paymentIntentId: ref },
     });
-    if (r.count !== 1) throw new ApiError(409, "Cette commande est déjà confirmée.");
+    if (r.count !== 1) throw new ApiError(409, "Diese Bestellung wurde bereits bestätigt.");
     // Une intention de paiement en ligne préparée puis abandonnée est close.
     await tx.payment.updateMany({ where: { orderId, status: "EN_ATTENTE", provider: { not: "virement" } }, data: { status: "ANNULE" } });
     await tx.payment.upsert({
@@ -384,7 +384,7 @@ export async function confirmBankTransfer(orderId: string) {
     await redeemCoupon(tx, o);
     return tx.order.findUniqueOrThrow({ where: { id: orderId } });
   });
-  notifyOrderPaid(confirmed.id).catch((e) => console.error("[notifications] confirmation de commande", e));
+  notifyOrderPaid(confirmed.id).catch((e) => console.error("[notifications] Bestellbestätigung", e));
   return confirmed;
 }
 
@@ -419,21 +419,21 @@ export type AdminOrderStatus = (typeof ADMIN_ORDER_STATUSES)[number];
 export async function adminSetOrderStatus(orderId: string, status: AdminOrderStatus) {
   const updated = await prisma.$transaction(async (tx) => {
     const o = await tx.order.findUnique({ where: { id: orderId }, include: { items: true } });
-    if (!o) throw new ApiError(404, "Commande introuvable");
+    if (!o) throw new ApiError(404, "Bestellung nicht gefunden");
     if (o.status === status) return o;
-    if (o.status === "ANNULEE") throw new ApiError(409, "Cette commande est annulée : son statut ne peut plus changer.");
+    if (o.status === "ANNULEE") throw new ApiError(409, "Diese Bestellung ist storniert: Ihr Status kann nicht mehr geändert werden.");
     if (status === "PAYEE") {
-      if (o.status !== "EN_ATTENTE_VIREMENT") throw new ApiError(409, o.paidAt ? "Cette commande est déjà payée." : "Seule une commande en attente de virement peut être marquée payée.");
+      if (o.status !== "EN_ATTENTE_VIREMENT") throw new ApiError(409, o.paidAt ? "Diese Bestellung ist bereits bezahlt." : "Nur eine Bestellung in Wartestellung auf Überweisung kann als bezahlt markiert werden.");
       // Virement reçu sur le compte du magasin.
       await tx.payment.updateMany({ where: { orderId, provider: "virement", status: "EN_ATTENTE" }, data: { status: "REUSSI" } });
       return tx.order.update({ where: { id: orderId }, data: { status, paidAt: new Date() }, include: { items: true } });
     }
     if (status !== "ANNULEE" && o.status === "EN_ATTENTE_VIREMENT") {
-      throw new ApiError(409, "Le virement n'est pas encore reçu : passez d'abord la commande à « Payée (virement reçu) ».");
+      throw new ApiError(409, "Die Überweisung ist noch nicht eingegangen: setzen Sie die Bestellung zuerst auf „Bezahlt (Überweisung erhalten)“.");
     }
     // Anciennes commandes « à régler à la livraison » : « Livrée » enregistre le règlement reçu sur place.
     const onDelivery = o.paymentProvider === "sur_place" && o.status !== "EN_ATTENTE_PAIEMENT";
-    if (status !== "ANNULEE" && !o.paidAt && !onDelivery) throw new ApiError(409, "Cette commande n'est pas payée : elle peut seulement être annulée.");
+    if (status !== "ANNULEE" && !o.paidAt && !onDelivery) throw new ApiError(409, "Diese Bestellung ist nicht bezahlt: sie kann nur storniert werden.");
     if (status === "ANNULEE") {
       const r = await tx.order.updateMany({ where: { id: orderId, status: { not: "ANNULEE" } }, data: { status } });
       if (r.count === 1) await restock(tx, o.items);

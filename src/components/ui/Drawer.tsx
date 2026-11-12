@@ -37,7 +37,7 @@ export function Drawer({
   tone = "paper",
   hideTitle = false,
   id,
-  closeLabel = "Fermer",
+  closeLabel = "Schließen",
 }: {
   open: boolean;
   onClose: () => void;

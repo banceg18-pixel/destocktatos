@@ -178,7 +178,7 @@ export function ProfileForms({ name: initialName, email, hasPassword: initialHas
             <Input id="delete-confirm" autoComplete="off" value={confirm} onChange={(e) => setConfirm(e.target.value)} />
           </Field>
           <FormError text={delState.error} />
-          <Button type="submit" variant="outline" disabled={delState.busy || (confirm.trim() !== "LÖSCHEN" && confirm.trim() !== "SUPPRIMER")} plain={delState.busy} className="self-start border-danger text-danger hover:bg-danger hover:text-paper">
+          <Button type="submit" variant="outline" disabled={delState.busy || confirm.trim().toUpperCase() !== "LÖSCHEN"} plain={delState.busy} className="self-start border-danger text-danger hover:bg-danger hover:text-paper">
             {delState.busy ? <Spinner /> : "Endgültig löschen"}
           </Button>
         </form>

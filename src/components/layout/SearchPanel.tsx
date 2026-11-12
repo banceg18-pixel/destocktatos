@@ -112,7 +112,7 @@ export function SearchPanel({ open, onClose, categories }: { open: boolean; onCl
 
           {state === "done" && results.length === 0 && (
             <p className="text-lg">
-              Keine Produkte gefunden für « {q.trim()} ». Bitte überprüfen Sie die Schreibweise oder versuchen Sie einen anderen Begriff.
+              Keine Produkte gefunden für „{q.trim()}“. Bitte überprüfen Sie die Schreibweise oder versuchen Sie einen anderen Begriff.
             </p>
           )}
 
@@ -141,7 +141,7 @@ export function SearchPanel({ open, onClose, categories }: { open: boolean; onCl
                 ))}
               </ul>
               <Link href={`/boutique?recherche=${encodeURIComponent(q.trim())}`} onClick={onClose} className="t-eyebrow link-underline mt-10 inline-flex items-center gap-2">
-                Alle Ergebnisse für « {q.trim()} » anzeigen <Arrow />
+                Alle Ergebnisse für „{q.trim()}“ anzeigen <Arrow />
               </Link>
             </>
           )}

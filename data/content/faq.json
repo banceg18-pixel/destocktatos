@@ -1,66 +1,66 @@
 [
-  {
-    "title": "Bestellungen und Lieferung",
-    "items": [
-      {
-        "question": "Wie kann ich meine Bestellung verfolgen?",
-        "answer": "Melden Sie sich in Ihrem Kundenkonto im Bereich « Meine Bestellungen » an: Der Status jeder Bestellung wird dort in Echtzeit angezeigt. Zudem erhalten Sie bei jedem Schritt eine E-Mail (Zahlungseingang, Bearbeitung, Versand/Lieferung). Haben Sie als Gast bestellt? Sie können Ihr Konto jederzeit über den Link in Ihrer Bestätigungs-E-Mail aktivieren."
-      },
-      {
-        "question": "Wie lange dauert die Lieferung?",
-        "answer": "Die Lieferung ist in ganz Deutschland kostenfrei. Sobald Ihre Überweisung eingegangen ist, setzen wir uns telefonisch mit Ihnen in Verbindung, um den gewünschten Liefertag und das Zeitfenster abzustimmen."
-      },
-      {
-        "question": "Kann ich meine Bestellung nach Abschluss noch ändern?",
-        "answer": "Änderungen können innerhalb einer Stunde nach Bestellung über unseren Kundenservice vorgenommen werden. Sobald sich die Ware im Versandprozess befindet, ist eine nachträgliche Änderung leider nicht mehr möglich."
-      }
-    ]
-  },
-  {
-    "title": "Zahlung und Rechnungen",
-    "items": [
-      {
-        "question": "Welche Zahlungsmethoden werden akzeptiert?",
-        "answer": "Die Bezahlung erfolgt per sicherer Banküberweisung vor der Auslieferung: entweder per Direktüberweisung über Ihre deutsche Bank (Bridge Open Banking für Sparkasse, Deutsche Bank, Commerzbank, ING, Volksbanken, Postbank etc.) oder per klassischer SEPA-Banküberweisung auf unser Geschäftskonto bei der Santander Consumer Bank. Ihre Artikel bleiben währenddessen fest reserviert."
-      },
-      {
-        "question": "Wie erhalte ich meine Rechnung?",
-        "answer": "Ihre Auftragsbestätigung mit allen Zahlungsdaten erhalten Sie sofort nach der Bestellung per E-Mail. Die offizielle Rechnung mit ausgewiesener Mehrwertsteuer wird Ihnen unmittelbar nach Zahlungseingang per E-Mail zugestellt und steht auch in Ihrem Kundenkonto zur Verfügung."
-      },
-      {
-        "question": "Ist die Zahlung auf Destocktatos sicher?",
-        "answer": "Ja, absolut. Wir erfassen keinerlei sensible Bank- oder Kreditkartendaten auf unserer Plattform. Die Überweisung erfolgt verschlüsselt und direkt über Ihr eigenes Online-Banking oder Ihre gewohnte Banking-App gemäß europäischem PSD2-Standard."
-      }
-    ]
-  },
-  {
-    "title": "Rückgabe und Erstattungen",
-    "items": [
-      {
-        "question": "Wie kann ich einen Artikel zurückgeben?",
-        "answer": "Kontaktieren Sie uns bitte per E-Mail an contacts@destocktatos.com oder telefonisch unter Angabe Ihrer Bestellnummer. Wir teilen Ihnen umgehend die Rücksendeadresse unserer Filiale in Berlin mit. Die Rücksendekosten richten sich nach den gesetzlichen Bestimmungen und unseren AGB."
-      },
-      {
-        "question": "Welche Frist gilt für die Rückgabe?",
-        "answer": "Sie haben ein 14-tägiges gesetzliches Widerrufsrecht ab Erhalt der Ware, ohne Angaben von Gründen. Das Produkt muss im Originalzustand mit Zubehör und Verpackung zurückgesandt werden."
-      },
-      {
-        "question": "Wann erhalte ich meine Rückzahlung?",
-        "answer": "Die Rückerstattung des vollständigen Zahlungsbetrags inklusive Standard-Lieferkosten erfolgt spätestens 14 Tage nach Eingang des Widerrufs per Banküberweisung auf Ihr Konto."
-      }
-    ]
-  },
-  {
-    "title": "Kundenkonto und Kundenservice",
-    "items": [
-      {
-        "question": "Muss ich ein Kundenkonto anlegen?",
-        "answer": "Nein, Sie können ganz bequem als Gast mit Ihrer E-Mail-Adresse bestellen. Nach Abschluss der Bestellung können Sie auf Wunsch mit einem Klick ein Passwort festlegen, um Ihre Bestellungen und Rechnungen einzusehen."
-      },
-      {
-        "question": "Wie erreiche ich den Kundenservice der Filiale Berlin?",
-        "answer": "Unser Kundenservice in Berlin (Friedrichstraße 176-179, 10117 Berlin) ist von Montag bis Sonntag von 10:00 bis 20:00 Uhr telefonisch, per E-Mail an contacts@destocktatos.com sowie über unseren Online-Chat erreichbar."
-      }
-    ]
-  }
+ {
+  "title": "Bestellungen und Lieferung",
+  "items": [
+   {
+    "question": "Wie kann ich meine Bestellung verfolgen?",
+    "answer": "Melden Sie sich in Ihrem Kundenkonto im Bereich „Meine Bestellungen“ an: Der Status jeder Bestellung wird dort in Echtzeit angezeigt. Zudem erhalten Sie bei jedem Schritt eine E-Mail (Zahlungseingang, Bearbeitung, Versand/Lieferung). Haben Sie als Gast bestellt? Sie können Ihr Konto jederzeit über den Link in Ihrer Bestätigungs-E-Mail aktivieren."
+   },
+   {
+    "question": "Wie lange dauert die Lieferung?",
+    "answer": "Die Lieferung ist in ganz Deutschland kostenfrei. Sobald Ihre Überweisung eingegangen ist, setzen wir uns telefonisch mit Ihnen in Verbindung, um den gewünschten Liefertag und das Zeitfenster abzustimmen."
+   },
+   {
+    "question": "Kann ich meine Bestellung nach Abschluss noch ändern?",
+    "answer": "Änderungen können innerhalb einer Stunde nach Bestellung über unseren Kundenservice vorgenommen werden. Sobald sich die Ware im Versandprozess befindet, ist eine nachträgliche Änderung leider nicht mehr möglich."
+   }
+  ]
+ },
+ {
+  "title": "Zahlung und Rechnungen",
+  "items": [
+   {
+    "question": "Welche Zahlungsmethoden werden akzeptiert?",
+    "answer": "Die Bezahlung erfolgt per sicherer Banküberweisung vor der Auslieferung: entweder per Direktüberweisung über Ihre deutsche Bank (Bridge Open Banking für Sparkasse, Deutsche Bank, Commerzbank, ING, Volksbanken, Postbank etc.) oder per klassischer SEPA-Banküberweisung auf unser Geschäftskonto bei der Santander Consumer Bank. Ihre Artikel bleiben währenddessen fest reserviert."
+   },
+   {
+    "question": "Wie erhalte ich meine Rechnung?",
+    "answer": "Ihre Auftragsbestätigung mit allen Zahlungsdaten erhalten Sie sofort nach der Bestellung per E-Mail. Die offizielle Rechnung mit ausgewiesener Mehrwertsteuer wird Ihnen unmittelbar nach Zahlungseingang per E-Mail zugestellt und steht auch in Ihrem Kundenkonto zur Verfügung."
+   },
+   {
+    "question": "Ist die Zahlung auf Destocktatos sicher?",
+    "answer": "Ja, absolut. Wir erfassen keinerlei sensible Bank- oder Kreditkartendaten auf unserer Plattform. Die Überweisung erfolgt verschlüsselt und direkt über Ihr eigenes Online-Banking oder Ihre gewohnte Banking-App gemäß europäischem PSD2-Standard."
+   }
+  ]
+ },
+ {
+  "title": "Rückgabe und Erstattungen",
+  "items": [
+   {
+    "question": "Wie kann ich einen Artikel zurückgeben?",
+    "answer": "Kontaktieren Sie uns bitte per E-Mail an contacts@destocktatos.com oder telefonisch unter Angabe Ihrer Bestellnummer. Wir teilen Ihnen umgehend die Rücksendeadresse unserer Filiale in Berlin mit. Die Rücksendekosten richten sich nach den gesetzlichen Bestimmungen und unseren AGB."
+   },
+   {
+    "question": "Welche Frist gilt für die Rückgabe?",
+    "answer": "Sie haben ein 14-tägiges gesetzliches Widerrufsrecht ab Erhalt der Ware, ohne Angaben von Gründen. Das Produkt muss im Originalzustand mit Zubehör und Verpackung zurückgesandt werden."
+   },
+   {
+    "question": "Wann erhalte ich meine Rückzahlung?",
+    "answer": "Die Rückerstattung des vollständigen Zahlungsbetrags inklusive Standard-Lieferkosten erfolgt spätestens 14 Tage nach Eingang des Widerrufs per Banküberweisung auf Ihr Konto."
+   }
+  ]
+ },
+ {
+  "title": "Kundenkonto und Kundenservice",
+  "items": [
+   {
+    "question": "Muss ich ein Kundenkonto anlegen?",
+    "answer": "Nein, Sie können ganz bequem als Gast mit Ihrer E-Mail-Adresse bestellen. Nach Abschluss der Bestellung können Sie auf Wunsch mit einem Klick ein Passwort festlegen, um Ihre Bestellungen und Rechnungen einzusehen."
+   },
+   {
+    "question": "Wie erreiche ich den Kundenservice der Filiale Berlin?",
+    "answer": "Unser Kundenservice in Berlin (Friedrichstraße 176-179, 10117 Berlin) ist von Montag bis Sonntag von 10:00 bis 20:00 Uhr telefonisch, per E-Mail an contacts@destocktatos.com sowie über unseren Online-Chat erreichbar."
+   }
+  ]
+ }
 ]

@@ -1,105 +1,105 @@
 {
- "réfrigérateur": [
-  "combiné",
-  "side by side",
-  "américain",
-  "table top",
-  "cave à vin"
+ "Kühlschrank": [
+  "Kombigerät",
+  "Side-by-Side",
+  "Side-by-Side",
+  "Tischgerät",
+  "Weinkühlschrank"
  ],
- "congélateur": [
-  "coffre",
-  "armoire",
-  "table top",
-  "cave à vin"
+ "Gefrierschrank": [
+  "Truhe",
+  "Schrank",
+  "Tischgerät",
+  "Weinkühlschrank"
  ],
- "lave-linge": [
-  "hublot",
-  "ouverture dessus",
-  "séchant",
-  "compact",
-  "lave-linge séchant"
+ "Waschmaschine": [
+  "Frontlader",
+  "Toplader",
+  "Waschtrockner",
+  "Kompakt",
+  "Waschtrockner"
  ],
- "sèche-linge": [
-  "ventilation",
-  "condensation",
-  "pompe à chaleur",
-  "compact"
+ "Wäschetrockner": [
+  "Abluft",
+  "Kondensation",
+  "Wärmepumpe",
+  "Kompakt"
  ],
- "lave-vaisselle": [
-  "encastrable",
-  "libre",
-  "compact",
-  "intégrable",
+ "Geschirrspüler": [
+  "Einbaugerät",
+  "Freistehend",
+  "Kompakt",
+  "integrierbar",
   "semi-encastrable"
  ],
- "cuisinière": [
-  "électrique",
-  "gaz",
+ "Herd": [
+  "Elektro",
+  "Gas",
   "mixte",
-  "induction",
-  "vitrocéramique"
+  "Induktion",
+  "Glaskeramik"
  ],
- "four": [
-  "électrique",
-  "micro-ondes",
-  "combiné",
+ "Backofen": [
+  "Elektro",
+  "Mikrowelle",
+  "Kombigerät",
   "vapeur",
-  "grill"
+  "Grill"
  ],
- "plaque de cuisson": [
-  "induction"
+ "Kochfeld": [
+  "Induktion"
  ],
- "micro-ondes": [
+ "Mikrowelle": [
   "solo",
-  "grill",
-  "combiné",
-  "intégrable",
-  "encastrable"
+  "Grill",
+  "Kombigerät",
+  "integrierbar",
+  "Einbaugerät"
  ],
- "hotte": [
+ "Dunstabzugshaube": [
   "extraction",
   "recyclage",
-  "décorative",
-  "télescopique",
+  "dekorativ",
+  "teleskopisch",
   "domino"
  ],
- "aspirateur": [
+ "Staubsauger": [
   "traîneau",
-  "balai",
-  "robot",
-  "centralisé",
+  "Besen",
+  "Roboter",
+  "zentral",
   "sans sac"
  ],
- "climatiseur": [
+ "Klimagerät": [
   "split",
   "monobloc",
   "cassette",
   "console",
   "mobile"
  ],
- "autres": [
-  "air fryer",
-  "centrale vapeur",
+ "Weitere": [
+  "Airfryer",
+  "Dampfbügelstation",
   "cuiseur de riz",
   "cuisine",
-  "friteuse",
+  "Fritteuse",
   "friteuse sans huile",
   "grille‑pain",
   "machine a glacons",
   "ventilateur colonne"
  ],
- "robot de cuisine": [
-  "planétaire",
+ "Küchenmaschine": [
+  "Planetenrühwerk",
   "blender",
   "mixeur",
-  "multifonction",
+  "Multifunktion",
   "hachoir"
  ],
- "plaque à gaz": [
-  "induction",
-  "encastrable"
+ "Gaskochfeld": [
+  "Induktion",
+  "Einbaugerät"
  ],
- "télévision": [
+ "Fernseher": [
   "4k",
   "oled"
  ]

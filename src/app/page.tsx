@@ -19,12 +19,12 @@ import type { HomeContent, ServiceIcon } from "@/types/home";
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPage<HomeContent>("accueil");
-  const title = page?.metaTitle ?? "Destocktatos | Électroménager livré, installé et garanti";
+  const title = page?.metaTitle ?? "Destocktatos | Haushaltsgeräte geliefert, installiert und garantiert";
   const description = page?.metaDescription;
   return {
     title: { absolute: title },
     description,
-    openGraph: { title, description, url: "/", siteName: "Destocktatos", locale: "fr_FR", type: "website", images: OG_IMAGES },
+    openGraph: { title, description, url: "/", siteName: "Destocktatos", locale: "de_DE", type: "website", images: OG_IMAGES },
     twitter: { card: TWITTER_CARD, title, description, images: [OG_IMAGES[0].url] },
   };
 }
@@ -60,13 +60,13 @@ export default async function HomePage() {
               intro={c.categories.intro}
               action={
                 <ButtonLink href="/boutique" variant="outline" icon={<Arrow />}>
-                  Tout le catalogue
+                  Das gesamte Sortiment
                 </ButtonLink>
               }
             />
           </Reveal>
           <Reveal delay={120}>
-            <Rail label="Rayons" className="mt-14">
+            <Rail label="Kategorien" className="mt-14">
               {shelves.map((cat) => (
                 <li key={cat.slug} className="w-[72vw] shrink-0 sm:w-[44vw] md:w-[31vw] lg:w-[23%]">
                   <Link href={`/categorie/${cat.slug}`} className="group block">
@@ -78,12 +78,12 @@ export default async function HomePage() {
                         sizes="(min-width: 1024px) 23vw, (min-width: 640px) 44vw, 72vw"
                         className="size-full object-contain p-[14%] mix-blend-multiply transition-transform duration-700 ease-[var(--ease-out-expo)] group-hover:scale-105"
                       />
-                      <span className="t-spec absolute left-4 top-4 text-graphite">{cat.count} produits</span>
+                      <span className="t-spec absolute left-4 top-4 text-graphite">{cat.count} Produkte</span>
                     </div>
                     <div className="flex items-end justify-between gap-3 pt-4">
                       <div>
                         <h3 className="t-h3">{capitalize(cat.nom)}</h3>
-                        {cat.prixMin != null && <p className="t-spec mt-1.5 text-graphite">Dès {formatEuros(cat.prixMin)}</p>}
+                        {cat.prixMin != null && <p className="t-spec mt-1.5 text-graphite">Ab {formatEuros(cat.prixMin)}</p>}
                       </div>
                       <span className="mb-1 flex size-9 shrink-0 items-center justify-center rounded-full border border-line transition-colors duration-300 group-hover:border-ink group-hover:bg-ink group-hover:text-paper">
                         <Arrow />
@@ -152,10 +152,10 @@ export default async function HomePage() {
           <div className="on-dark flex min-w-0 flex-col justify-between gap-12 bg-ink p-8 text-paper lg:p-12">
             <Reveal>
               <h2 id="promos" className="t-display">
-                Jusqu&apos;à <span className="text-promo-light">−{maxPct} %</span>
+                Bis zu <span className="text-promo-light">−{maxPct} %</span>
               </h2>
               <p className="t-lead mt-6 max-w-md !text-white/75">
-                {promos.length} appareils à prix réduit, livrés gratuitement partout en France, dans la limite des stocks.
+                {promos.length} reduzierte Geräte, deutschlandweit kostenlos geliefert, solange der Vorrat reicht.
               </p>
               <div className="mt-10">
                 <ButtonLink href="/promotions" variant="light" size="lg" icon={<Arrow />}>

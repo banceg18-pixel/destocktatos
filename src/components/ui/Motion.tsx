@@ -73,10 +73,10 @@ export function Counter({ value, suffix = "", prefix = "", duration = 1600, clas
     return () => cancelAnimationFrame(raf);
   }, [visible, value, duration]);
   return (
-    <span ref={ref} className={cn("t-price", className)} aria-label={`${prefix}${value.toLocaleString("fr-FR")}${suffix}`}>
+    <span ref={ref} className={cn("t-price", className)} aria-label={`${prefix}${value.toLocaleString("de-DE")}${suffix}`}>
       <span aria-hidden="true">
         {prefix}
-        {shown.toLocaleString("fr-FR")}
+        {shown.toLocaleString("de-DE")}
         {suffix}
       </span>
     </span>

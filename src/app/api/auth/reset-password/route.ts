@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { ApiError, json, limitByIp, parseBody, route } from "@/lib/server/api";
 import { passwordSchema } from "@/lib/validation";
 
-const schema = z.object({ token: z.string().regex(/^[a-f0-9]{64}$/, "Lien de réinitialisation invalide"), mdp: passwordSchema });
+const schema = z.object({ token: z.string().regex(/^[a-f0-9]{64}$/, "Ungültiger Link zum Zurücksetzen"), mdp: passwordSchema });
 
 /** POST /api/auth/reset-password — consomme un jeton (usage unique) et remplace le mot de passe. */
 export const POST = route("POST /api/auth/reset-password", async (req: Request) => {
@@ -14,7 +14,7 @@ export const POST = route("POST /api/auth/reset-password", async (req: Request) 
   const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
   const row = await prisma.passwordResetToken.findUnique({ where: { tokenHash } });
   if (!row || row.usedAt || row.expiresAt < new Date()) {
-    throw new ApiError(400, "Ce lien de réinitialisation est invalide ou a expiré. Faites une nouvelle demande.");
+    throw new ApiError(400, "Dieser Link zum Zurücksetzen ist ungültig oder abgelaufen. Stellen Sie eine neue Anfrage.");
   }
   const passwordHash = await bcrypt.hash(mdp, 12);
   await prisma.$transaction([
@@ -23,5 +23,5 @@ export const POST = route("POST /api/auth/reset-password", async (req: Request) 
     // Invalide les autres liens encore actifs du même compte.
     prisma.passwordResetToken.updateMany({ where: { userId: row.userId, usedAt: null, id: { not: row.id } }, data: { usedAt: new Date() } }),
   ]);
-  return json({ message: "Mot de passe modifié" });
+  return json({ message: "Passwort geändert" });
 });

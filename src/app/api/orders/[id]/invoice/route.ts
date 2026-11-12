@@ -17,7 +17,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
     const params = new URL(req.url).searchParams;
     const kind = params.get("type") === "devis" ? "devis" : "facture";
     if (kind === "devis" ? !quoteAvailable(order) : !invoiceAvailable(order)) {
-      throw new ApiError(409, kind === "devis" ? "Le devis est disponible une fois la commande confirmée" : "La facture est disponible une fois le paiement reçu");
+      throw new ApiError(409, kind === "devis" ? "Das Angebot ist nach Bestellbestätigung verfügbar" : "Die Rechnung ist nach Zahlungseingang verfügbar");
     }
     const [user, s] = await Promise.all([prisma.user.findUniqueOrThrow({ where: { id: order.userId } }), getSiteSettings()]);
     const pdf = buildInvoicePdf(order, user, invoiceStore(s), bankDetailsOf(s), kind);

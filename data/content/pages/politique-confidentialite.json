@@ -1,120 +1,120 @@
 {
-  "slug": "politique-confidentialite",
-  "title": "Politique de Confidentialité",
-  "metaTitle": "Politique de Confidentialité",
-  "metaDescription": "Politique de confidentialité et traitement des données personnelles de Destocktatos, conforme au RGPD.",
-  "data": {
-    "titlePrefix": "Politique de",
-    "titleHighlight": "Confidentialité"
-  },
-  "sections": [
+ "slug": "politique-confidentialite",
+ "title": "Datenschutzerklärung",
+ "metaTitle": "Datenschutzerklärung",
+ "metaDescription": "Datenschutzerklärung und Verarbeitung personenbezogener Daten der Destocktatos GmbH, konform zur DSGVO.",
+ "data": {
+  "titlePrefix": "Daten",
+  "titleHighlight": "schutz"
+ },
+ "sections": [
+  {
+   "title": "Einleitung",
+   "blocks": [
     {
-      "title": "Introduction",
-      "blocks": [
-        {
-          "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">La présente politique de confidentialité décrit les pratiques de Destocktatos concernant la collecte, l'utilisation et la divulgation de vos informations à travers notre site web (ci-après, le \"Site\").                        </p><p class=\"text-[color:var(--text-main)] opacity-90\">Cette politique a été élaborée conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi Informatique et Libertés modifiée.</p>"
-        }
-      ]
-    },
-    {
-      "title": "1. Verantwortlicher für die Datenverarbeitung",
-      "blocks": [
-        {
-          "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Verantwortliche Stelle für die Erhebung und Verarbeitung personenbezogener Daten auf dieser Website ist:</p><p class=\"text-[color:var(--text-main)] opacity-90\">Destocktatos GmbH<br/>USt-IdNr.: DE310108339<br/>Geschäftstätigkeit: Groß- und Einzelhandel mit Haushaltsgeräten<br/>Friedrichstraße 176-179, 10117 Berlin, Deutschland<br/>Vertreten durch: Bernard Alexis Chabaud<br/>Finanzabteilung: Finanzabteilung<br/>E-Mail: contacts@destocktatos.com<br/>Telefon: +49 30 12345678</p>"
-        }
-      ]
-    },
-    {
-      "title": "2. Délégué à la protection des données (DPO)",
-      "blocks": [
-        {
-          "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90\">Nous avons désigné un délégué à la protection des données que vous pouvez contacter pour toute question relative à la protection de vos données personnelles à l'adresse suivante : contacts@destocktatos.com ou par courrier à l'adresse postale mentionnée ci-dessus.</p>"
-        }
-      ]
-    },
-    {
-      "title": "3. Données collectées",
-      "blocks": [
-        {
-          "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Nous collectons les données suivantes vous concernant :</p><ul class=\"list-disc list-inside space-y-2 text-[color:var(--text-main)] opacity-90\"><li><strong>Données d'identification</strong> : nom, prénom, adresse email, numéro de téléphone.</li><li><strong>Données de livraison</strong> : adresse postale, instructions de livraison.</li><li><strong>Données de paiement</strong> : nous ne stockons pas vos données bancaires complètes. Ces informations sont traitées directement par nos prestataires de paiement sécurisés.</li><li><strong>Données de connexion</strong> : adresse IP, type de navigateur, pages visitées, date et heure de connexion.</li><li><strong>Données relatives aux commandes</strong> : produits achetés, historique des achats, préférences.</li><li><strong>Données issues des communications</strong> : lorsque vous nous contactez par email ou via un formulaire, nous conservons ces échanges.</li></ul>"
-        }
-      ]
-    },
-    {
-      "title": "4. Finalités et bases légales du traitement",
-      "blocks": [
-        {
-          "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-4\">Nous traitons vos données personnelles pour les finalités suivantes :</p><div class=\"mb-3\"><h3 class=\"text-lg font-medium text-[color:var(--text-main)] mb-2\">Sur la base de l'exécution du contrat :</h3><ul class=\"list-disc list-inside space-y-1 text-[color:var(--text-main)] opacity-90 ml-4\"><li>Gestion de votre compte client</li><li>Traitement et suivi de vos commandes</li><li>Organisation de la livraison des produits</li><li>Service après-vente et gestion des garanties</li><li>Réponse à vos demandes et réclamations</li></ul></div><div class=\"mb-3\"><h3 class=\"text-lg font-medium text-[color:var(--text-main)] mb-2\">Sur la base de notre intérêt légitime :</h3><ul class=\"list-disc list-inside space-y-1 text-[color:var(--text-main)] opacity-90 ml-4\"><li>Amélioration de nos produits et services</li><li>Prévention de la fraude</li><li>Sécurité de notre site web et de nos systèmes d'information</li><li>Études statistiques et analyses de données anonymisées</li></ul></div><div class=\"mb-3\"><h3 class=\"text-lg font-medium text-[color:var(--text-main)] mb-2\">Sur la base de votre consentement :</h3><ul class=\"list-disc list-inside space-y-1 text-[color:var(--text-main)] opacity-90 ml-4\"><li>Envoi de newsletters et communications marketing</li><li>Personnalisation de votre expérience sur notre site</li><li>Utilisation de cookies non essentiels à la navigation</li></ul></div><div><h3 class=\"text-lg font-medium text-[color:var(--text-main)] mb-2\">Sur la base d'obligations légales :</h3><ul class=\"list-disc list-inside space-y-1 text-[color:var(--text-main)] opacity-90 ml-4\"><li>Conservation des factures et documents comptables</li><li>Réponse aux demandes des autorités compétentes</li></ul></div>"
-        }
-      ]
-    },
-    {
-      "title": "5. Destinataires des données",
-      "blocks": [
-        {
-          "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Dans la limite des finalités définies ci-dessus, vos données peuvent être transmises :</p><ul class=\"list-disc list-inside space-y-2 text-[color:var(--text-main)] opacity-90\"><li>À notre personnel autorisé</li><li>À nos sous-traitants : prestataires de services de paiement, transporteurs pour la livraison, prestataires de service après-vente, fournisseurs d'hébergement et de maintenance informatique</li><li>Aux autorités administratives ou judiciaires lorsque la loi l'exige</li></ul><p class=\"text-[color:var(--text-main)] opacity-90 mt-3\">Nous veillons à ce que tous nos sous-traitants présentent des garanties suffisantes quant à la protection de vos données et respectent la réglementation applicable.</p>"
-        }
-      ]
-    },
-    {
-      "title": "6. Transferts de données hors UE",
-      "blocks": [
-        {
-          "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90\">En principe, vos données personnelles sont traitées au sein de l'Union Européenne. Toutefois, certains de nos prestataires peuvent être situés en dehors de l'UE. Dans ce cas, nous nous assurons qu'ils offrent des garanties appropriées conformément au RGPD, par exemple en utilisant les clauses contractuelles types approuvées par la Commission européenne ou en nous appuyant sur d'autres mécanismes de transfert appropriés.</p>"
-        }
-      ]
-    },
-    {
-      "title": "7. Durée de conservation des données",
-      "blocks": [
-        {
-          "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Nous conservons vos données personnelles uniquement pendant la durée nécessaire à la réalisation des finalités pour lesquelles elles ont été collectées :</p><ul class=\"list-disc list-inside space-y-2 text-[color:var(--text-main)] opacity-90\"><li>Données de compte client : pendant toute la durée de votre inscription, puis 3 ans après votre dernière activité</li><li>Données de commande : 10 ans pour les documents fiscaux et comptables (factures)</li><li>Données de paiement : supprimées immédiatement après le paiement</li><li>Cookies : 13 mois maximum</li><li>Données de prospection commerciale : 3 ans à compter du dernier contact</li></ul>"
-        }
-      ]
-    },
-    {
-      "title": "8. Vos droits",
-      "blocks": [
-        {
-          "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Conformément à la réglementation applicable en matière de protection des données personnelles, vous disposez des droits suivants :</p><ul class=\"list-disc list-inside space-y-2 text-[color:var(--text-main)] opacity-90\"><li><strong>Droit d'accès</strong> : vous pouvez obtenir une copie de vos données personnelles</li><li><strong>Droit de rectification</strong> : vous pouvez demander la correction des données inexactes</li><li><strong>Droit à l'effacement</strong> : vous pouvez demander la suppression de vos données (sous certaines conditions)</li><li><strong>Droit à la limitation du traitement</strong> : vous pouvez demander la suspension temporaire du traitement</li><li><strong>Droit à la portabilité</strong> : vous pouvez récupérer vos données dans un format structuré</li><li><strong>Droit d'opposition</strong> : vous pouvez vous opposer au traitement de vos données, notamment à des fins de prospection</li><li><strong>Droit de retirer votre consentement</strong> à tout moment lorsque le traitement est fondé sur celui-ci</li><li><strong>Droit de définir des directives</strong> relatives au sort de vos données après votre décès</li></ul><p class=\"text-[color:var(--text-main)] opacity-90 mt-3\">Zur Ausübung dieser Rechte können Sie uns per E-Mail kontaktieren: contacts@destocktatos.com oder postalisch an: Destocktatos GmbH - Datenschutz, Friedrichstraße 176-179, 10117 Berlin, Deutschland.</p><p class=\"text-[color:var(--text-main)] opacity-90 mt-3\">Sie haben zudem das Recht, sich bei einer Datenschutz-Aufsichtsbehörde über die Verarbeitung Ihrer personenbezogenen Daten durch uns zu beschweren (z. B. Berliner Beauftragte für Datenschutz und Informationsfreiheit oder Bundesbeauftragter für den Datenschutz und die Informationsfreiheit - BfDI).</p>"
-        }
-      ]
-    },
-    {
-      "title": "9. Cookies et technologies similaires",
-      "blocks": [
-        {
-          "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Notre site utilise des cookies et technologies similaires pour diverses finalités, notamment :</p><ul class=\"list-disc list-inside space-y-2 text-[color:var(--text-main)] opacity-90\"><li><strong>Cookies essentiels</strong> : nécessaires au fonctionnement du site</li><li><strong>Cookies fonctionnels</strong> : permettent de mémoriser vos préférences</li><li><strong>Cookies de performance</strong> : nous aident à comprendre comment vous utilisez notre site</li><li><strong>Cookies publicitaires</strong> : permettent de vous proposer des publicités pertinentes</li></ul><p class=\"text-[color:var(--text-main)] opacity-90 mt-3\">Lors de votre première visite sur notre site, un bandeau vous informe de l'utilisation de ces cookies et vous permet de les accepter ou de les refuser. Vous pouvez à tout moment modifier vos préférences via notre outil de gestion des cookies accessible sur notre site.</p>"
-        }
-      ]
-    },
-    {
-      "title": "10. Sécurité des données",
-      "blocks": [
-        {
-          "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90\">Nous mettons en œuvre des mesures techniques et organisationnelles appropriées pour protéger vos données personnelles contre la destruction accidentelle ou illicite, la perte, l'altération, la divulgation non autorisée ou l'accès non autorisé. Ces mesures incluent notamment le chiffrement des données, des contrôles d'accès stricts, des audits de sécurité réguliers et la formation de notre personnel à la protection des données.</p>"
-        }
-      ]
-    },
-    {
-      "title": "11. Modification de la politique de confidentialité",
-      "blocks": [
-        {
-          "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90\">Nous nous réservons le droit de modifier la présente politique de confidentialité à tout moment. Toute modification sera publiée sur cette page avec une date de mise à jour. Nous vous encourageons à consulter régulièrement cette politique pour rester informé de nos pratiques en matière de protection des données personnelles.</p>"
-        }
-      ]
+     "type": "html",
+     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Die vorliegende Datenschutzerklärung beschreibt die Praktiken von Destocktatos hinsichtlich der Erhebung, Nutzung und Offenlegung Ihrer Informationen auf unserer Website (im Folgenden „Website“).</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Diese Erklärung wurde gemäß der Datenschutz-Grundverordnung (DSGVO) und dem Bundesdatenschutzgesetz (BDSG) erstellt.</p>"
     }
-  ]
+   ]
+  },
+  {
+   "title": "1. Verantwortlicher für die Datenverarbeitung",
+   "blocks": [
+    {
+     "type": "html",
+     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Verantwortliche Stelle für die Erhebung und Verarbeitung personenbezogener Daten auf dieser Website ist:</p><p class=\"text-[color:var(--text-main)] opacity-90\">Destocktatos GmbH<br/>USt-IdNr.: DE310108339<br/>Geschäftstätigkeit: Groß- und Einzelhandel mit Haushaltsgeräten<br/>Friedrichstraße 176-179, 10117 Berlin, Deutschland<br/>Vertreten durch: Bernard Alexis Chabaud<br/>Finanzabteilung: Finanzabteilung<br/>E-Mail: contacts@destocktatos.com<br/>Telefon: +49 30 12345678</p>"
+    }
+   ]
+  },
+  {
+   "title": "2. Datenschutzbeauftragter",
+   "blocks": [
+    {
+     "type": "html",
+     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Wir haben einen Datenschutzbeauftragten benannt, den Sie bei allen Fragen zum Schutz Ihrer personenbezogenen Daten unter <strong>contacts@destocktatos.com</strong> oder per Post an die oben genannte Anschrift erreichen.</p>"
+    }
+   ]
+  },
+  {
+   "title": "3. Erhobene Daten",
+   "blocks": [
+    {
+     "type": "html",
+     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Wir erheben die folgenden Daten zu Ihnen:</p><ul class=\"list-disc list-inside space-y-2 text-[color:var(--text-main)] opacity-90\"><li><strong>Identifikationsdaten</strong>: Name, Vorname, E-Mail-Adresse, Telefonnummer.</li><li><strong>Lieferdaten</strong>: Postanschrift, Lieferhinweise.</li><li><strong>Zahlungsdaten</strong>: wir speichern keine vollständigen Bankdaten. Diese werden direkt über Ihr Online-Banking (SEPA-Überweisung) abgewickelt.</li><li><strong>Verbindungsdaten</strong>: IP-Adresse, Browsertyp, besuchte Seiten, Datum und Uhrzeit.</li><li><strong>Bestelldaten</strong>: gekaufte Produkte, Kaufhistorie, Präferenzen.</li><li><strong>Kommunikationsdaten</strong>: wenn Sie uns per E-Mail oder über ein Formular kontaktieren, behalten wir diese Nachrichten.</li></ul>"
+    }
+   ]
+  },
+  {
+   "title": "4. Zwecke und Rechtsgrundlagen der Verarbeitung",
+   "blocks": [
+    {
+     "type": "html",
+     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Wir verarbeiten Ihre personenbezogenen Daten zu den folgenden Zwecken:</p><div class=\"mb-3\"><h3 class=\"text-lg font-medium text-[color:var(--text-main)] mb-2\">Auf Grundlage der Vertragserfüllung:</h3><ul class=\"list-disc list-inside space-y-2 text-[color:var(--text-main)] opacity-90\"><li>Verwaltung Ihres Kundenkontos</li><li>Abwicklung und Verfolgung Ihrer Bestellungen</li><li>Organisation der Auslieferung der Produkte</li><li>Kundendienst und Garantieabwicklung</li><li>Beantwortung Ihrer Anfragen und Beanstandungen</li></ul></div><div class=\"mb-3\"><h3 class=\"text-lg font-medium text-[color:var(--text-main)] mb-2\">Auf Grundlage unseres berechtigten Interesses:</h3><ul class=\"list-disc list-inside space-y-2 text-[color:var(--text-main)] opacity-90\"><li>Verbesserung unserer Produkte und Dienstleistungen</li><li>Betrugsprävention</li><li>Sicherheit unserer Website und unserer IT-Systeme</li><li>Statistische Auswertungen anonymisierter Daten</li></ul></div><div class=\"mb-3\"><h3 class=\"text-lg font-medium text-[color:var(--text-main)] mb-2\">Auf Grundlage Ihrer Einwilligung:</h3><ul class=\"list-disc list-inside space-y-2 text-[color:var(--text-main)] opacity-90\"><li>Versand von Newslettern und Marketingmitteilungen</li><li>Personalisierung Ihres Erlebnisses auf unserer Website</li><li>Verwendung nicht für die Navigation erforderlicher Cookies</li></ul></div><div><div class=\"mb-3\"><h3 class=\"text-lg font-medium text-[color:var(--text-main)] mb-2\">Auf Grundlage rechtlicher Pflichten:</h3><ul class=\"list-disc list-inside space-y-2 text-[color:var(--text-main)] opacity-90\"><li>Aufbewahrung von Rechnungen und Buchungsbelegen</li><li>Bearbeitung von Auskunftsersuchen zuständiger Behörden</li></ul></div></div>"
+    }
+   ]
+  },
+  {
+   "title": "5. Empfänger der Daten",
+   "blocks": [
+    {
+     "type": "html",
+     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Ihre Daten werden nur an die folgenden Empfänger weitergegeben, soweit dies für die Ausführung Ihrer Bestellung oder die Erfüllung gesetzlicher Pflichten erforderlich ist:</p><ul class=\"list-disc list-inside space-y-2 text-[color:var(--text-main)] opacity-90\"><li>Zustelldienste und Speditionspartner für die Auslieferung.</li><li>Zahlungsdienstleister (Ihre Bank und die kontoführende Bank des Shops – SEPA).</li><li>Dienstleister für Hosting und Versand transactioneller E-Mails.</li><li>Zuständige Verwaltungsbehörden auf deren rechtmäßige Anfrage.</li></ul><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Ihre Daten werden nie verkauft oder für Werbezwecke an Dritte weitergegeben.</p>"
+    }
+   ]
+  },
+  {
+   "title": "6. Datenübertragungen außerhalb der EU",
+   "blocks": [
+    {
+     "type": "html",
+     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Soweit Daten über den Europäischen Wirtschaftsraum hinaus übermittelt werden, achten wir darauf, dass angemessene Garantien bestehen (Standardvertragsklauseln der EU-Kommission oder Angemessenheitsbeschluss). Die Dienstanbieter werden regelmäßig geprüft.</p>"
+    }
+   ]
+  },
+  {
+   "title": "7. Dauer der Datenspeicherung",
+   "blocks": [
+    {
+     "type": "html",
+     "html": "<ul class=\"list-disc list-inside space-y-2 text-[color:var(--text-main)] opacity-90\"><li>Konto- und Bestelldaten: für die Dauer der handels- und steuerrechtlichen Aufbewahrungspflichten (10 Jahre für Rechnungen).</li><li>Zahlungsdaten: nur so lange für die Abwicklung nötig; keine Bankdaten des Käufers werden über die Website gespeichert.</li><li>Newsletter: bis zur Abmeldung.</li><li>Cookies: maximal 12 Monate.</li></ul>"
+    }
+   ]
+  },
+  {
+   "title": "8. Ihre Rechte",
+   "blocks": [
+    {
+     "type": "html",
+     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Gemäß der geltenden Datenschutzregelung haben Sie die folgenden Rechte:</p><ul class=\"list-disc list-inside space-y-2 text-[color:var(--text-main)] opacity-90\"><li><strong>Auskunftsrecht</strong>: Sie erhalten eine Kopie Ihrer personenbezogenen Daten.</li><li><strong>Recht auf Berichtigung</strong>: Sie können die Korrektur unrichtiger Daten verlangen.</li><li><strong>Recht auf Löschung</strong>: Sie können die Löschung Ihrer Daten verlangen (unter bestimmten Bedingungen).</li><li><strong>Recht auf Einschränkung der Verarbeitung</strong>: Sie können die vorübergehende Aussetzung verlangen.</li><li><strong>Recht auf Datenübertragbarkeit</strong>: Sie können Ihre Daten in einem strukturierten Format abrufen.</li><li><strong>Widerspruchsrecht</strong>: Sie können der Verarbeitung widersprechen (insbesondere Direktwerbung).</li><li><strong>Recht auf Widerruf der Einwilligung</strong>: jederzeit, ohne Angabe von Gründen.</li></ul><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Um diese Rechte auszuüben, schreiben Sie uns an contacts@destocktatos.com oder per Post an die im Impressum genannte Adresse. Sie können auch Beschwerde bei der zuständigen Datenschutzaufsichtsbehörde einlegen (Deutschland: Bundesbeauftragte für den Datenschutz und die Informationsfreiheit).</p>"
+    }
+   ]
+  },
+  {
+   "title": "9. Cookies und ähnliche Technologien",
+   "blocks": [
+    {
+     "type": "html",
+     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Unsere Website verwendet:</p><ul class=\"list-disc list-inside space-y-2 text-[color:var(--text-main)] opacity-90\"><li><strong>Unbedingt erforderliche Cookies</strong>: Warenkorb, sichere Anmeldesitzung, Zahlungsvorgang. Ihr Warenkorb wird in jedem Fall auf Ihrem Gerät gespeichert – dies ist für den von Ihnen angeforderten Dienst erforderlich.</li><li><strong>Zustimmungsabhängige Mess-Cookies</strong>: anonyme Statistiken zur Verbesserung des Angebots, nur mit Ihrer ausdrücklichen Zustimmung.</li></ul><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Sie können Ihre Präferenzen jederzeit über die Cookie-Einstellungen (Fußzeile) ändern.</p>"
+    }
+   ]
+  },
+  {
+   "title": "10. Sicherheit der Daten",
+   "blocks": [
+    {
+     "type": "html",
+     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Wir treffen angemessene technische und organisatorische Maßnahmen, um Ihre Daten vor Vernichtung, Verlust, Verfälschung, Offenlegung, unbefugtem Zugriff oder sonstigem Missbrauch zu schützen: verschlüsselte Verbindung (HTTPS), gehashte Passwörter, beschränkte Zugriffsrechte, Protokollierung.</p>"
+    }
+   ]
+  },
+  {
+   "title": "11. Änderung der Datenschutzerklärung",
+   "blocks": [
+    {
+     "type": "html",
+     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Diese Erklärung kann jederzeit aktualisiert werden; die aktuelle Version ist stets auf dieser Seite abrufbar. Bei wesentlichen Änderungen informieren wir Sie auf der Website oder per E-Mail.</p>"
+    }
+   ]
+  }
+ ]
 }

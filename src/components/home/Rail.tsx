@@ -42,10 +42,10 @@ export function Rail({ children, label, className, controlsClassName }: { childr
         {children}
       </ul>
       <div className={cn("mt-6 flex justify-end gap-2", edges.start && edges.end && "hidden", controlsClassName)}>
-        <IconButton label="Précédent" onClick={() => scroll(-1)} disabled={edges.start}>
+        <IconButton label="Zurück" onClick={() => scroll(-1)} disabled={edges.start}>
           <Arrow direction="left" />
         </IconButton>
-        <IconButton label="Suivant" onClick={() => scroll(1)} disabled={edges.end}>
+        <IconButton label="Weiter" onClick={() => scroll(1)} disabled={edges.end}>
           <Arrow />
         </IconButton>
       </div>

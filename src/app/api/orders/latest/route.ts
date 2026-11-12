@@ -16,7 +16,7 @@ export const GET = route("GET /api/orders/latest", async () => {
         where: { id: buyer.guestOrderId!, status: "EN_ATTENTE_PAIEMENT" },
         include: { items: { include: { product: { select: { prixCents: true, slug: true } } } }, user: { select: { email: true } } },
       });
-  if (!order) throw new ApiError(404, "Aucune commande en cours");
+  if (!order) throw new ApiError(404, "Keine laufende Bestellung");
   const customerEmail = buyer.email ?? ("user" in order ? (order.user as { email: string }).email : null);
   return json({ ...toOrderDTO(order), customerEmail });
 });

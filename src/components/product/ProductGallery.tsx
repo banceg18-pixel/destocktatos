@@ -85,7 +85,7 @@ export function ProductGallery({ images, title }: { images: ImageRef[]; title: s
         ))}
       </div>
 
-      <Drawer open={viewer != null} onClose={() => setViewer(null)} side="right" title={`Photos — ${title}`} closeLabel="Fermer les photos" className="!max-w-none">
+      <Drawer open={viewer != null} onClose={() => setViewer(null)} side="right" title={`Fotos — ${title}`} closeLabel="Fotos schließen" className="!max-w-none">
         {viewer != null && (
           <div className="flex h-full flex-col gap-4 px-4 pb-6 sm:px-8">
             <div className="relative min-h-0 flex-1">

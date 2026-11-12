@@ -1,120 +1,120 @@
 {
-  "slug": "cgv",
-  "title": "Conditions Générales de Vente",
-  "metaTitle": "Conditions Générales de Vente",
-  "metaDescription": "Les conditions générales de vente de Destocktatos, votre spécialiste en électroménager de qualité.",
-  "data": {
-    "titlePrefix": "Conditions Générales de",
-    "titleHighlight": "Vente"
-  },
-  "sections": [
+ "slug": "cgv",
+ "title": "Allgemeine Geschäftsbedingungen (AGB)",
+ "metaTitle": "AGB – Destocktatos",
+ "metaDescription": "Die Allgemeinen Geschäftsbedingungen von Destocktatos, Ihrem Fachhändler für Qualitäts-Haushaltsgeräte in Berlin.",
+ "data": {
+  "titlePrefix": "Allgemeine",
+  "titleHighlight": "Geschäftsbedingungen"
+ },
+ "sections": [
+  {
+   "title": "Präambel",
+   "blocks": [
     {
-      "title": "Préambule",
-      "blocks": [
-        {
-          "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Die vorliegenden Allgemeinen Geschäftsbedingungen gelten für alle Verkäufe über den Online-Shop Destocktatos zwischen:</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Einerseits der Destocktatos GmbH mit Sitz in Friedrichstraße 176-179, 10117 Berlin, Deutschland, USt-IdNr.: DE310108339, Vertretungsberechtigter: Bernard Alexis Chabaud, nachfolgend \"Destocktatos\" oder \"Verkäufer\" genannt.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Und andererseits natürlichen oder juristischen Personen, die über die Website von Destocktatos Waren bestellen, nachfolgend \"Käufer\" oder \"Kunde\" genannt.</p>"
-        }
-      ]
-    },
-    {
-      "title": "Article 1 - Objet et champ d'application",
-      "blocks": [
-        {
-          "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Les présentes conditions générales de vente déterminent les droits et obligations des parties dans le cadre de la vente en ligne de produits électroménagers proposés par Destocktatos.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Elles s'appliquent, sans restriction ni réserve, à l'ensemble des ventes des produits proposés par Destocktatos sur son site Internet.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Ces conditions s'appliquent à l'exclusion de toutes autres conditions, notamment celles applicables pour les ventes en magasin ou au moyen d'autres circuits de distribution et de commercialisation.</p>"
-        }
-      ]
-    },
-    {
-      "title": "Article 2 - Prix",
-      "blocks": [
-        {
-          "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Les prix des produits vendus sur le site Internet sont indiqués en euros toutes taxes comprises (TTC) et précisément déterminés sur les pages de descriptifs des produits. Ils sont également indiqués en euros TTC sur la page de commande des produits.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Les frais de livraison sont indiqués avant la validation de la commande et sont compris dans le prix total affiché.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Destocktatos se réserve le droit de modifier ses prix à tout moment, étant entendu que le prix figurant sur le site le jour de la commande sera le seul applicable à l'acheteur.</p>"
-        }
-      ]
-    },
-    {
-      "title": "Article 3 - Commandes",
-      "blocks": [
-        {
-          "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">L'Acheteur qui souhaite acheter un produit doit obligatoirement :</p><ul class=\"list-disc list-inside space-y-2 text-[color:var(--text-main)] opacity-90 mb-3\"><li>Remplir la fiche d'identification ou indiquer son numéro de client s'il en a un</li><li>Remplir le bon de commande en ligne en donnant toutes les références des produits choisis</li><li>Valider sa commande après l'avoir vérifiée</li><li>Effectuer le paiement dans les conditions prévues</li><li>Confirmer sa commande et son règlement</li></ul><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">La confirmation de la commande entraîne acceptation des présentes conditions de vente, la reconnaissance d'en avoir parfaite connaissance et la renonciation à se prévaloir de ses propres conditions d'achat.</p><p class=\"text-[color:var(--text-main)] opacity-90\">L'ensemble des données fournies et la confirmation enregistrée vaudront preuve de la transaction. Destocktatos communiquera par e-mail la confirmation de la commande enregistrée.</p>"
-        }
-      ]
-    },
-    {
-      "title": "Article 4 - Paiement",
-      "blocks": [
-        {
-          "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Le paiement est exigible à la commande, y compris pour les produits en précommande ou en cours de réapprovisionnement. Il s'effectue par virement bancaire sécurisé (Direktüberweisung via Bridge oder Standard SEPA-Überweisung), avant la livraison : ni carte bancaire, ni PayPal.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Dès la validation de sa commande, l'Acheteur reçoit par email le devis correspondant, qui indique le montant à régler et les coordonnées bancaires de Destocktatos Filiale Berlin. Ces informations s'affichent également à l'écran à la confirmation de la commande. La facture est adressée par email dès réception du paiement.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-2 font-medium\">Coordonnées bancaires (Deutsche Bankverbindung) :</p><ul class=\"list-disc list-inside space-y-1 text-[color:var(--text-main)] opacity-90 mb-3\"><li>Service responsable : Finanzabteilung</li><li>Titulaire (Inhaber) : Bernard Alexis Chabaud</li><li>Banque : Santander Consumer Bank</li><li>IBAN : DE53 3101 0833 9914 0820 74</li><li>BIC : SCFBDE33XXX</li></ul><p class=\"text-[color:var(--text-main)] opacity-90\">Les articles commandés sont réservés dans l'attente du virement. La commande est préparée puis livrée après réception du paiement. Aucune donnée bancaire de l'Acheteur n'est saisie ni conservée sur le site.</p>"
-        }
-      ]
-    },
-    {
-      "title": "Article 5 - Livraison",
-      "blocks": [
-        {
-          "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Les livraisons sont effectuées à l'adresse indiquée par l'Acheteur sur le bon de commande. Le délai de livraison indiqué lors de l'enregistrement de la commande n'est donné qu'à titre indicatif et n'est aucunement garanti.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Les retards de livraison ne peuvent donner lieu à aucune pénalité ou indemnité, ni motiver l'annulation de la commande.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Le risque du transport est supporté en totalité par l'Acheteur. En cas de marchandises manquantes ou détériorées lors du transport, l'Acheteur devra formuler toutes les réserves nécessaires à réception desdites marchandises. Ces réserves devront être, en outre, confirmées par écrit dans les cinq jours suivant la livraison, par courrier recommandé avec accusé de réception.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Pour les produits volumineux nécessitant une installation, Destocktatos propose un service de livraison avec installation à domicile moyennant un supplément clairement indiqué lors de la commande.</p>"
-        }
-      ]
-    },
-    {
-      "title": "Article 6 - Droit de rétractation",
-      "blocks": [
-        {
-          "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Conformément aux dispositions légales en vigueur, l'Acheteur dispose d'un délai de quatorze (14) jours à compter de la réception des produits pour exercer son droit de rétractation sans avoir à justifier de motifs ni à payer de pénalités.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">En cas d'exercice du droit de rétractation, Destocktatos remboursera l'Acheteur de la totalité des sommes versées, y compris les frais de livraison, au plus tard dans les quatorze (14) jours suivant la date à laquelle Destocktatos est informé de la décision de l'Acheteur de se rétracter.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Le remboursement sera effectué en utilisant le même moyen de paiement que celui utilisé par l'Acheteur pour la transaction initiale, sauf accord exprès de l'Acheteur pour un autre moyen de remboursement.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Les frais de retour sont à la charge de l'Acheteur. Pour les produits volumineux, Destocktatos peut proposer un service de récupération à domicile dont le coût sera précisé à l'Acheteur.</p>"
-        }
-      ]
-    },
-    {
-      "title": "Article 7 - Garanties & Gewährleistung",
-      "blocks": [
-        {
-          "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Es gelten die gesetzlichen Gewährleistungsrechte nach dem Bürgerlichen Gesetzbuch (BGB, §§ 434 ff., 437 ff.).</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Reklamationen oder Rückfragen können schriftlich an Destocktatos GmbH, Friedrichstraße 176-179, 10117 Berlin oder per E-Mail an contacts@destocktatos.com gerichtet werden.</p><p class=\"text-[color:var(--text-main)] opacity-90\">Einige Produkte verfügen zusätzlich über eine Herstellergarantie, deren Bedingungen den jeweiligen Produktunterlagen beiliegen.</p>"
-        }
-      ]
-    },
-    {
-      "title": "Article 8 - Service & Kundenservice",
-      "blocks": [
-        {
-          "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Unser Kundendienst steht Ihnen von Montag bis Samstag von 9:00 bis 19:00 Uhr telefonisch unter +49 30 12345678 oder per E-Mail an contacts@destocktatos.com zur Verfügung.</p>"
-        }
-      ]
-    },
-    {
-      "title": "Article 9 - Haftung",
-      "blocks": [
-        {
-          "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Die angebotenen Produkte entsprechen den geltenden gesetzlichen Vorschriften in Deutschland und der Europäischen Union.</p>"
-        }
-      ]
-    },
-    {
-      "title": "Article 10 - Streitbeilegung",
-      "blocks": [
-        {
-          "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90\">Im Falle von Beanstandungen steht Ihnen unser Kundenservice zur Verfügung. Zur Teilnahme an einem Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle sind wir nicht verpflichtet und nicht bereit.</p>"
-        }
-      ]
-    },
-    {
-      "title": "Article 11 - Anwendbares Recht & Gerichtsstand",
-      "blocks": [
-        {
-          "type": "html",
-          "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Es gilt das Recht der Bundesrepublik Deutschland unter Ausschluss des UN-Kaufrechts (CISG).</p><p class=\"text-[color:var(--text-main)] opacity-90\">Sofern gesetzlich zulässig, ist Gerichtsstand Berlin.</p>"
-        }
-      ]
+     "type": "html",
+     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Die vorliegenden Allgemeinen Geschäftsbedingungen gelten für alle Verkäufe über den Online-Shop Destocktatos zwischen:</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Einerseits der Destocktatos GmbH mit Sitz in Friedrichstraße 176-179, 10117 Berlin, Deutschland, USt-IdNr.: DE310108339, Vertretungsberechtigter: Bernard Alexis Chabaud, nachfolgend \"Destocktatos\" oder \"Verkäufer\" genannt.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Und andererseits natürlichen oder juristischen Personen, die über die Website von Destocktatos Waren bestellen, nachfolgend \"Käufer\" oder \"Kunde\" genannt.</p>"
     }
-  ]
+   ]
+  },
+  {
+   "title": "Artikel 1 – Zweck und Geltungsbereich",
+   "blocks": [
+    {
+     "type": "html",
+     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Die vorliegenden Allgemeinen Geschäftsbedingungen bestimmen die Rechte und Pflichten der Parteien im Rahmen des Onlineverkaufs von Haushaltsgeräten, welche Destocktatos anbietet.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Sie gelten ohne Einschränkung oder Vorbehalt für alle Verkäufe der von Destocktatos auf seiner Website angebotenen Produkte.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Diese Bedingungen schließen alle anderen Bedingungen aus, insbesondere solche für Verkäufe im Geschäft oder auf anderen Vertriebswegen.</p>"
+    }
+   ]
+  },
+  {
+   "title": "Artikel 2 – Preise",
+   "blocks": [
+    {
+     "type": "html",
+     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Die Preise der auf der Website verkauften Produkte sind in Euro inklusive Mehrwertsteuer angegeben und auf den Produktbeschreibungsseiten genau bestimmt. Sie sind ebenfalls in Euro inkl. MwSt. auf der Bestellseite angegeben.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Die Versandkosten werden vor Bestellbestätigung angezeigt und sind im angezeigten Gesamtbetrag enthalten.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Destocktatos behält sich das Recht vor, seine Preise jederzeit zu ändern; maßgeblich ist der am Tag der Bestellung auf der Website ausgewiesene Preis.</p>"
+    }
+   ]
+  },
+  {
+   "title": "Artikel 3 – Bestellungen",
+   "blocks": [
+    {
+     "type": "html",
+     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Der Käufer, der ein Produkt erwerben möchte, muss:</p><ul class=\"list-disc list-inside space-y-2 text-[color:var(--text-main)] opacity-90\"><li>das Bestellformular ausfüllen oder seine Kundennummer angeben, sofern vorhanden</li><li>den Online-Bestellschein mit allen Referenzen der gewählten Produkte ausfüllen</li><li>die Bestellung nach Prüfung bestätigen</li><li>die Zahlung gemäß den festgelegten Bedingungen leisten</li><li>die Bestellung und deren Bezahlung bestätigen</li></ul><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Die Bestellbestätigung setzt die Annahme dieser Verkaufsbedingungen voraus und beinhaltet die Kenntnisnahme sowie den Verzicht, die eigenen Kaufbedingungen geltend zu machen.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Die übermittelten Daten und die gespeicherte Bestätigung gelten als Nachweis der Transaktion. Destocktatos übermittelt die Bestellbestätigung per E-Mail.</p>"
+    }
+   ]
+  },
+  {
+   "title": "Artikel 4 – Zahlung",
+   "blocks": [
+    {
+     "type": "html",
+     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Die Zahlung ist bei der Bestellung fällig, auch für vorbestellte oder nachzuliefernde Artikel. Die Bezahlung erfolgt ausschließlich per Banküberweisung vor der Lieferung (Direktüberweisung via Bridge oder Standard-SEPA-Überweisung): weder Kreditkarte noch PayPal.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-2 font-medium\">Sobald die Bestellung bestätigt ist, erhält der Käufer per E-Mail das entsprechende Angebot (Proforma-Rechnung) mit dem zu zahlenden Betrag und den Bankdaten der Filiale Destocktatos Berlin. Diese Informationen werden auch am Bildschirm bei der Bestellbestätigung angezeigt. Die quittierte Rechnung wird unmittelbar nach Zahlungseingang per E-Mail versendet.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-2 font-medium\"><span class=\"font-medium\">Bankverbindung:</span></p><ul class=\"list-disc list-inside space-y-2 text-[color:var(--text-main)] opacity-90\"><li>Zuständige Abteilung: Finanzabteilung</li><li>Kontoinhaber: Bernard Alexis Chabaud</li><li>Bank: Santander Consumer Bank</li><li>IBAN: DE53 3101 0833 9914 0820 74</li><li>BIC: SCFBDE33XXX</li></ul><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Die bestellten Artikel werden bis zum Zahlungseingang reserviert. Die Bestellung wird nach Zahlungseingang vorbereitet und ausgeliefert. Keine Bankdaten des Käufers werden auf der Website erfasst oder gespeichert.</p>"
+    }
+   ]
+  },
+  {
+   "title": "Artikel 5 – Lieferung",
+   "blocks": [
+    {
+     "type": "html",
+     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Die Auslieferungen erfolgen an die vom Käufer auf dem Bestellschein angegebene Adresse. Der bei der Bestellung angegebene Liefertermin dient nur zur Orientierung und ist in keiner Weise garantiert.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Für Lieferverzüge besteht kein Anspruch auf Vertragsstrafen oder Schadensersatz; sie berechtigen nicht zur Aufhebung der Bestellung.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Das Transportrisiko trägt vollständig der Käufer. Bei fehlender oder beschädigter Ware hat der Käufer bei Empfang alle nötigen Vorbehalte anzuzeigen; diese müssen innerhalb von fünf Tagen nach Lieferung schriftlich per Einschreiben mit Rückschein bestätigt werden.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Für sperrige Produkte, die eine Installation erfordern, bietet Destocktatos einen Lieferdienst mit Installation zu Hause an – ohne Aufpreis; die Lieferung ist kostenlos.</p>"
+    }
+   ]
+  },
+  {
+   "title": "Artikel 6 – Widerrufsrecht",
+   "blocks": [
+    {
+     "type": "html",
+     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Gemäß den geltenden gesetzlichen Bestimmungen hat der Käufer ein Widerrufsrecht von vierzehn (14) Tagen ab Erhalt der Produkte, ohne Gründe angeben oder Vertragsstrafen zahlen zu müssen.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Bei Ausübung des Widerrufsrechts erstattet Destocktatos dem Käufer alle geleisteten Zahlungen einschließlich Lieferkosten, spätestens vierzehn (14) Tage nach dem Tag, an dem Destocktatos über die Widerrufsentscheidung informiert wurde.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Die Erstattung erfolgt auf demselben Zahlungsweg wie bei der ursprünglichen Transaktion (SEPA-Rücküberweisung), sofern kein anderes Rückzahlungsverfahren ausdrücklich vereinbart wurde.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Die Rücksendekosten trägt der Käufer. Für sperrige Produkte kann Destocktatos eine Abholung zu Hause anbieten.</p>"
+    }
+   ]
+  },
+  {
+   "title": "Artikel 7 – Garantien (Gewährleistung)",
+   "blocks": [
+    {
+     "type": "html",
+     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Es gelten die gesetzlichen Gewährleistungsrechte nach dem Bürgerlichen Gesetzbuch (BGB, §§ 434 ff., 437 ff.).</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Reklamationen oder Rückfragen können schriftlich an Destocktatos GmbH, Friedrichstraße 176-179, 10117 Berlin oder per E-Mail an contacts@destocktatos.com gerichtet werden.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Einige Produkte verfügen zusätzlich über eine Herstellergarantie, deren Bedingungen den jeweiligen Produktunterlagen beiliegen.</p>"
+    }
+   ]
+  },
+  {
+   "title": "Artikel 8 – Kundendienst",
+   "blocks": [
+    {
+     "type": "html",
+     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Unser Kundendienst steht Ihnen von Montag bis Sonntag von 10:00 bis 20:00 Uhr telefonisch unter +49 30 12345678 oder per E-Mail an contacts@destocktatos.com zur Verfügung.</p>"
+    }
+   ]
+  },
+  {
+   "title": "Artikel 9 – Produkthaftung",
+   "blocks": [
+    {
+     "type": "html",
+     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Die angebotenen Produkte entsprechen den geltenden gesetzlichen Vorschriften in Deutschland und der Europäischen Union.</p>"
+    }
+   ]
+  },
+  {
+   "title": "Artikel 10 – Streitbeilegung",
+   "blocks": [
+    {
+     "type": "html",
+     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit, die Sie unter <a href=\"https://ec.europa.eu/consumers/odr/\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"underline\">https://ec.europa.eu/consumers/odr/</a> finden.</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Im Falle von Beanstandungen steht Ihnen unser Kundenservice zur Verfügung. Zur Teilnahme an einem Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle sind wir nicht verpflichtet und nicht bereit.</p>"
+    }
+   ]
+  },
+  {
+   "title": "Artikel 11 – Anwendbares Recht und Gerichtsstand",
+   "blocks": [
+    {
+     "type": "html",
+     "html": "<p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Es gilt das Recht der Bundesrepublik Deutschland unter Ausschluss des UN-Kaufrechts (CISG).</p><p class=\"text-[color:var(--text-main)] opacity-90 mb-3\">Sofern gesetzlich zulässig, ist Gerichtsstand Berlin.</p>"
+    }
+   ]
+  }
+ ]
 }

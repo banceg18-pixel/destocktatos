@@ -11,8 +11,8 @@ export const POST = route("POST /api/newsletter/subscribe", async (req: Request)
   limitByIp(req, "newsletter", 10);
   const { email } = await parseBody(req, schema);
   const existing = await prisma.newsletterSubscriber.findUnique({ where: { email } });
-  if (existing) throw new ApiError(409, "Cette adresse est déjà inscrite à la newsletter");
+  if (existing) throw new ApiError(409, "Diese Adresse ist bereits für den Newsletter angemeldet");
   await prisma.newsletterSubscriber.create({ data: { email, source: "site" } });
   notifyNewsletterWelcome(email);
-  return json({ message: "Inscription réussie ! Vous recevrez nos offres exclusives." }, 201);
+  return json({ message: "Anmeldung erfolgreich! Sie erhalten unsere exklusiven Angebote." }, 201);
 });

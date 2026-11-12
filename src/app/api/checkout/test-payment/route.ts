@@ -18,12 +18,12 @@ export const POST = route("POST /api/checkout/test-payment", async (req: Request
   const user = await requireUser();
   const { orderId, outcome, billingAddress } = await parseBody(req, schema);
   const order = await getUserOrder(user.id, orderId);
-  if (order.status !== "EN_ATTENTE_PAIEMENT") throw new ApiError(409, "Cette commande n'est plus en attente de paiement");
+  if (order.status !== "EN_ATTENTE_PAIEMENT") throw new ApiError(409, "Diese Bestellung wartet nicht mehr auf Zahlung");
   await prisma.order.update({ where: { id: order.id }, data: { billingAddress } });
   const ref = `test_${crypto.randomUUID()}`;
   if (outcome === "failure") {
     await recordPaymentFailure(order.id, { provider: "test", mode: "test", providerRef: ref, reason: "simulation_refus" });
-    throw new ApiError(402, "Paiement refusé. Aucun montant n'a été débité.");
+    throw new ApiError(402, "Zahlung abgelehnt. Es wurde kein Betrag abgebucht.");
   }
   const paid = await markOrderPaid(order.id, { provider: "test", mode: "test", providerRef: ref, details: { simulated: true } });
   return json({ status: "succeeded", orderId: paid.id, number: paid.number, paymentId: ref, mode: "test" });

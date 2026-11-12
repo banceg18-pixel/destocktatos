@@ -15,7 +15,7 @@ export const POST = route("POST /api/checkout/create-payment-intent", async () =
   const order = buyer.userId
     ? await getLatestPendingOrder(buyer.userId)
     : await prisma.order.findFirst({ where: { id: buyer.guestOrderId!, status: "EN_ATTENTE_PAIEMENT" }, include: { user: { select: { email: true } } } });
-  if (!order) throw new ApiError(404, "Aucune commande en attente de paiement");
+  if (!order) throw new ApiError(404, "Keine Bestellung in Wartestellung auf Zahlung");
   const provider = getPaymentProvider();
   const { clientSecret, providerRef } = await provider.createIntent(order, buyer.email ?? ("user" in order ? order.user.email : null));
   await prisma.payment.upsert({

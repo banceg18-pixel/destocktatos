@@ -30,7 +30,7 @@ export async function suggestAddresses(q: string) {
 export async function validateAddress(address: string, postalCode: string, city: string) {
   const features = await ban(`/search/?q=${encodeURIComponent(`${address} ${postalCode} ${city}`)}&limit=3&postcode=${encodeURIComponent(postalCode)}`);
   const best = features.find((f) => f.properties.score >= 0.4);
-  if (!best) return { valid: false as const, error: "Adresse introuvable. Vérifiez l'adresse, le code postal et la ville." };
+  if (!best) return { valid: false as const, error: "Adresse nicht gefunden. Überprüfen Sie Adresse, Postleitzahl und Stadt." };
   return {
     valid: true as const,
     normalizedAddress: {

@@ -25,19 +25,19 @@ export const POST = route("POST /api/tickets/images", async (req: Request) => {
   try {
     form = await req.formData();
   } catch {
-    throw new ApiError(400, "Formulaire d'envoi invalide");
+    throw new ApiError(400, "Ungültiges Upload-Formular");
   }
   const files = [...form.getAll("images"), ...form.getAll("captureEcran")].filter((f): f is File => f instanceof File);
-  if (files.length === 0) throw new ApiError(400, "Aucune image reçue");
+  if (files.length === 0) throw new ApiError(400, "Keine Bilder erhalten");
   if (files.length > 3) throw new ApiError(400, "3 images maximum");
   const dir = path.resolve(process.env.UPLOAD_DIR || "./uploads", "tickets");
   await fs.mkdir(dir, { recursive: true });
   const saved: { url: string; name: string }[] = [];
   for (const f of files) {
-    if (f.size > MAX_BYTES) throw new ApiError(413, "Le fichier est trop volumineux. Maximum 5MB autorisé.");
+    if (f.size > MAX_BYTES) throw new ApiError(413, "Die Datei ist zu groß. Maximal 5 MB erlaubt.");
     const buf = Buffer.from(await f.arrayBuffer());
     const type = sniff(buf);
-    if (!type || !ALLOWED[type]) throw new ApiError(415, "Format d'image non pris en charge (JPG, PNG, GIF, WEBP).");
+    if (!type || !ALLOWED[type]) throw new ApiError(415, "Bildformat nicht unterstützt (JPG, PNG, GIF, WEBP).");
     const name = `${crypto.randomUUID()}.${ALLOWED[type]}`;
     await fs.writeFile(path.join(dir, name), buf);
     saved.push({ url: `tickets/${name}`, name: f.name.slice(0, 120) });

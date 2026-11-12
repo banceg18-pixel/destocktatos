@@ -17,7 +17,7 @@ function Toast({ kind, text, onClose }: { kind: "info" | "error"; text: string; 
     >
       <span className={kind === "error" ? "mt-0.5 text-[#ff9b8f]" : "mt-0.5 text-[#8fd6a8]"}>{kind === "error" ? <IconAlert /> : <IconCheck />}</span>
       <p className="flex-1 leading-relaxed">{text}</p>
-      <button type="button" onClick={onClose} aria-label="Fermer la notification" className="rounded-full p-1 text-white/60 transition-colors hover:text-paper">
+      <button type="button" onClick={onClose} aria-label="Benachrichtigung schließen" className="rounded-full p-1 text-white/60 transition-colors hover:text-paper">
         <IconClose size={16} />
       </button>
     </div>

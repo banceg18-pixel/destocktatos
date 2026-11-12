@@ -139,12 +139,12 @@ describe("API d'administration (espace WordPress)", () => {
     await confirmBankTransfer(order.id);
     const pending = await prisma.order.findUniqueOrThrow({ where: { id: order.id } });
     expect([pending.status, pending.paymentProvider, pending.paidAt]).toEqual(["EN_ATTENTE_VIREMENT", "virement", null]);
-    await expect(confirmBankTransfer(order.id)).rejects.toThrow(/déjà confirmée/);
+    await expect(confirmBankTransfer(order.id)).rejects.toThrow(/bereits bestätigt/);
 
     const [file] = await waitForMails("commande-confirmation", 1);
     const mail = JSON.parse(fs.readFileSync(`${outbox}/${file}`, "utf8"));
     expect(mail.subject).toContain("Bestellung TAT-TEST-VIR001");
-    expect(mail.text).toContain("Numéro de commande: TAT-TEST-VIR001");
+    expect(mail.text).toContain("Bestellnummer: TAT-TEST-VIR001");
     expect(mail.text).toContain("IBAN: DE53 3101 0833 9914 0820 74");
     // Email mis en forme (gabarit du site) avec facture et devis joints.
     expect(mail.html).toContain("Banküberweisung / Zahlungsdaten");
@@ -235,11 +235,11 @@ describe("espace client : profil", () => {
     auth.user = { id: user.id, role: "CUSTOMER" };
     expect((await me.DELETE(json("DELETE", { confirm: "oui" }))).status).toBe(400);
     // Commande payée non livrée : suppression refusée tant que la livraison n'est pas faite.
-    expect((await me.DELETE(json("DELETE", { confirm: "SUPPRIMER" }))).status).toBe(409);
+    expect((await me.DELETE(json("DELETE", { confirm: "LOESCHEN" }))).status).toBe(409);
     await prisma.order.update({ where: { id: order.id }, data: { status: "LIVREE" } });
-    expect((await me.DELETE(json("DELETE", { confirm: "SUPPRIMER" }))).status).toBe(200);
+    expect((await me.DELETE(json("DELETE", { confirm: "LOESCHEN" }))).status).toBe(200);
     const after = await prisma.user.findUniqueOrThrow({ where: { id: user.id } });
-    expect(after.email).toMatch(/@compte-supprime\.invalid$/);
+    expect(after.email).toMatch(/@konto-geloescht\.invalid$/);
     expect(after.passwordHash).toBeNull();
     expect(await prisma.order.count({ where: { userId: user.id } })).toBe(1);
   });

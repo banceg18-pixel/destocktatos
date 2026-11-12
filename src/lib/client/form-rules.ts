@@ -11,7 +11,7 @@ export const rules = {
   email: (v: string) => {
     const s = v.trim();
     if (!s) return "Bitte geben Sie Ihre E-Mail-Adresse ein.";
-    if (!s.includes("@")) return "Das « @ »-Zeichen fehlt: Die Adresse muss wie name@beispiel.de aussehen.";
+    if (!s.includes("@")) return "Das „@“-Zeichen fehlt: Die Adresse muss wie name@beispiel.de aussehen.";
     if (!EMAIL.test(s)) return "Unvollständige E-Mail-Adresse: sie muss wie name@beispiel.de aussehen.";
     return null;
   },

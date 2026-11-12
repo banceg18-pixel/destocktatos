@@ -173,7 +173,7 @@ function Pagination({ basePath, query, totalPages }: { basePath: string; query: 
 export function CatalogView(props: Props) {
   const { basePath, query: q, products, total, totalPages, lockedCategory } = props;
   const chips: { label: string; href: string }[] = [];
-  if (q.recherche) chips.push({ label: `« ${q.recherche} »`, href: catalogHref(basePath, q, { recherche: "" }) });
+  if (q.recherche) chips.push({ label: `„${q.recherche}“`, href: catalogHref(basePath, q, { recherche: "" }) });
   if (q.categorie && !lockedCategory) chips.push({ label: capitalize(q.categorie), href: catalogHref(basePath, q, { categorie: "", sousCategorie: "" }) });
   if (q.sousCategorie) chips.push({ label: capitalize(q.sousCategorie), href: catalogHref(basePath, q, { sousCategorie: "" }) });
   if (q.prixMin > 0 || q.prixMax < PRICE_MAX_DEFAULT)

@@ -44,13 +44,13 @@ export function bankDetailsOf(s: BankSettings | null | undefined): BankDetails {
  */
 export function transferLines(amount: string, orderNumber: string, bank: BankDetails | null): { rows: [string, string, boolean?][]; note: string } {
   const rows: [string, string, boolean?][] = [
-    ["Montant", amount],
-    ...(bank?.reference ? ([["Communication à indiquer", bank.reference, true]] as [string, string, boolean?][]) : []),
-    ["Numéro de commande", orderNumber, true],
+    ["Betrag", amount],
+    ...(bank?.reference ? ([["Verwendungszweck", bank.reference, true]] as [string, string, boolean?][]) : []),
+    ["Bestellnummer", orderNumber, true],
     ...(bank
       ? ([
-          ["Titulaire / Empfänger", bank.holder],
-          ...(bank.bank ? [["Banque", bank.bank]] : []),
+          ["Empfänger (Inhaber)", bank.holder],
+          ...(bank.bank ? [["Bank", bank.bank]] : []),
           ["IBAN", bank.iban, true],
           ...(bank.bic ? [["BIC", bank.bic, true]] : []),
         ] as [string, string, boolean?][])

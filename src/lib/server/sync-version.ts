@@ -59,6 +59,6 @@ export async function bumpVersion(key: SyncKey) {
   try {
     await prisma.siteState.upsert({ where: { key }, update: { value }, create: { key, value } });
   } catch (e) {
-    console.error(`[sync] version « ${key} » non enregistrée :`, (e as Error).message);
+    console.error(`[sync] version „${key}“ non enregistrée :`, (e as Error).message);
   }
 }

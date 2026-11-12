@@ -13,7 +13,7 @@ function encodeText(s: string): string {
   for (const ch of s.normalize("NFC")) {
     let code = WIN_ANSI_EXTRA[ch] ?? ch.charCodeAt(0);
     if (ch === " " || ch === " ") code = 0x20; // espaces insécables (toLocaleString fr-FR)
-    if (code > 0xff) code = 0x3f; // « ? » pour les caractères hors WinAnsi
+    if (code > 0xff) code = 0x3f; // „?“ pour les caractères hors WinAnsi
     const c = String.fromCharCode(code);
     out += c === "(" || c === ")" || c === "\\" ? `\\${c}` : c;
   }

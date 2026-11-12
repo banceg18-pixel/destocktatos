@@ -11,11 +11,11 @@ export const GET = route("GET /api/users/me", async () => {
     where: { id: session.id },
     select: { id: true, name: true, email: true, image: true, role: true, createdAt: true, passwordHash: true },
   });
-  if (!user) throw new ApiError(404, "Utilisateur introuvable");
+  if (!user) throw new ApiError(404, "Konto nicht gefunden");
   return json({ _id: user.id, name: user.name, email: user.email, image: user.image, role: user.role, createdAt: user.createdAt, hasPassword: !!user.passwordHash });
 });
 
-const profileSchema = z.object({ name: z.string().trim().min(2, "Indiquez votre nom (2 caractères au moins).").max(80, "Nom trop long (80 caractères au plus).") });
+const profileSchema = z.object({ name: z.string().trim().min(2, "Geben Sie Ihren Namen an (mindestens 2 Zeichen).").max(80, "Name zu lang (höchstens 80 Zeichen).") });
 
 /** PATCH /api/users/me — modification du nom affiché (factures, emails, avis). */
 export const PATCH = route("PATCH /api/users/me", async (req: Request) => {
@@ -25,7 +25,7 @@ export const PATCH = route("PATCH /api/users/me", async (req: Request) => {
   return json({ name: user.name });
 });
 
-const deleteSchema = z.object({ confirm: z.literal("SUPPRIMER", { errorMap: () => ({ message: "Tapez SUPPRIMER pour confirmer." }) }) });
+const deleteSchema = z.object({ confirm: z.union([z.literal("LOESCHEN"), z.literal("LÖSCHEN")], { errorMap: () => ({ message: "Tippen Sie LÖSCHEN zur Bestätigung." }) }) });
 
 /**
  * DELETE /api/users/me — suppression du compte (RGPD). Les commandes et factures sont conservées
@@ -35,7 +35,7 @@ export const DELETE = route("DELETE /api/users/me", async (req: Request) => {
   const session = await requireUser();
   await parseBody(req, deleteSchema);
   const pending = await prisma.order.count({ where: { userId: session.id, status: { in: ["EN_ATTENTE_VIREMENT", "PAYEE", "EN_PREPARATION", "EXPEDIEE"] } } });
-  if (pending) throw new ApiError(409, "Une commande est encore en cours : le compte pourra être supprimé une fois la livraison effectuée.");
+  if (pending) throw new ApiError(409, "Eine Bestellung ist noch unterwegs: Das Konto kann gelöscht werden, sobald die Lieferung erfolgt ist.");
   // Commandes non payées : annulées et leur stock réservé remis en vente.
   for (const o of await prisma.order.findMany({ where: { userId: session.id, status: "EN_ATTENTE_PAIEMENT" }, select: { id: true } })) {
     await cancelPendingOrder(session.id, o.id).catch(() => {});
@@ -46,7 +46,7 @@ export const DELETE = route("DELETE /api/users/me", async (req: Request) => {
     prisma.passwordResetToken.deleteMany({ where: { userId: session.id } }),
     prisma.user.update({
       where: { id: session.id },
-      data: { name: "Compte supprimé", email: `supprime-${session.id}@compte-supprime.invalid`, passwordHash: null, image: null },
+      data: { name: "Konto gelöscht", email: `geloescht-${session.id}@konto-geloescht.invalid`, passwordHash: null, image: null },
     }),
   ]);
   invalidateCatalog(); // notes moyennes recalculées sans ses avis

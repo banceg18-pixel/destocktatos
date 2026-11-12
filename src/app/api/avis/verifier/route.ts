@@ -7,7 +7,7 @@ import { objectId } from "@/lib/validation";
 export const GET = route("GET /api/avis/verifier", async (req: Request) => {
   const produit = objectId.parse(new URL(req.url).searchParams.get("produit") ?? "");
   const session = await getSession();
-  if (!session?.user?.id) return json({ peutCommenter: false, raison: "Non connecté" });
+  if (!session?.user?.id) return json({ peutCommenter: false, raison: "Nicht angemeldet" });
   const r = await canUserReview(session.user.id, produit);
   return json({ peutCommenter: r.ok, raison: r.raison });
 });

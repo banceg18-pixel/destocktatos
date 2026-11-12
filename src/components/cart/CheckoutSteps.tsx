@@ -5,7 +5,7 @@ const STEPS = ["Warenkorb", "Lieferung", "Zahlung", "Bestätigung"] as const;
 /** Étapes de la commande (ordre réel du parcours) ; l'étape courante est annoncée aux lecteurs d'écran. */
 export function CheckoutSteps({ current }: { current: 0 | 1 | 2 | 3 }) {
   return (
-    <nav aria-label="Étapes de la commande">
+    <nav aria-label="Bestellschritte">
       <ol className="flex flex-wrap items-center gap-x-3 gap-y-2">
         {STEPS.map((label, i) => (
           <li key={label} aria-current={i === current ? "step" : undefined} className="flex items-center gap-3">

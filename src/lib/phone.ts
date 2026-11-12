@@ -1,10 +1,10 @@
 /**
  * Telefonnummern: deutsche Nummern, eingegeben ohne Vorwahl (030 123456789 oder +49 30 123456789).
  * Eine mit +49 oder 0049 eingegebene Nummer wird akzeptiert und in das deutsche Format umgewandelt.
+ * Alte französische Nummern (06 12 34 56 78, +33…), die vor der Umstellung erfasst wurden,
+ * bleiben als solche erkennbar (normalisiert), damit bestehende Kundenkonten weiter funktionieren.
  */
 export const DE_PHONE_HINT = "Deutsche Telefonnummer (z.B. 030 12345678 oder +49 30 12345678).";
-
-export const FR_PHONE_HINT = "Numéro de téléphone valide (ex. 06 12 34 56 78 ou numéro allemand).";
 
 export function normalizeFrPhone(value: string) {
   let s = value.replace(/[\s.\-()]/g, "");
@@ -21,6 +21,7 @@ export function normalizeDePhone(value: string) {
   return s;
 }
 
+/** Alte (französische) Nummer? Nur für bestehende Konten relevant. */
 export function isFrPhone(value: string) {
   const norm = normalizeFrPhone(value);
   return /^0[1-9](?: \d{2}){4}$/.test(norm) || isDePhone(value);

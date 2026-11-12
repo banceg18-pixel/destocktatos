@@ -120,7 +120,7 @@ export default async function ConfirmationPage({ searchParams }: { searchParams:
                 </p>
               )}
               <p className="mt-4 max-w-xl text-sm text-graphite" data-testid="spam-hint">
-                E-Mail nicht gefunden? Bitte prüfen Sie Ihren Spam-Ordner und markieren Sie unsere E-Mail als « Kein Spam ».
+                E-Mail nicht gefunden? Bitte prüfen Sie Ihren Spam-Ordner und markieren Sie unsere E-Mail als „Kein Spam“.
               </p>
               {/* Commande passée sans être connecté : création du compte (ou connexion) pour retrouver ses factures. */}
               {!session?.user?.id && customer && <AccountInvite email={customer.email} hasPassword={!!customer.passwordHash} />}
@@ -129,7 +129,7 @@ export default async function ConfirmationPage({ searchParams }: { searchParams:
             <>
               <h1 className="t-display mt-8">Zahlung wird geprüft</h1>
               <p className="t-lead mt-6 max-w-xl text-graphite">
-                Wir warten noch auf die Bestätigung Ihrer Bank. Der Status wird in « Meine Bestellungen » automatisch aktualisiert.
+                Wir warten noch auf die Bestätigung Ihrer Bank. Der Status wird in „Meine Bestellungen“ automatisch aktualisiert.
               </p>
             </>
           )}

@@ -90,7 +90,7 @@ export const POST = route("POST /api/checkout/bridge-init", async (req: Request)
       orderId: order.id,
     });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Virement impossible à initialiser";
+    const message = err instanceof Error ? err.message : "Überweisung konnte nicht initialisiert werden";
     throw new ApiError(502, `Die Banküberweisung konnte nicht gestartet werden: ${message}`);
   }
 });

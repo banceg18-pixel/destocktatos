@@ -2,7 +2,7 @@
 export const toCents = (euros: number) => Math.round(euros * 100);
 export const toEuros = (cents: number) => Math.round(cents) / 100;
 
-const EUR = new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const EUR = new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 /** Format unique des prix sur tout le site (panier, paiement, factures…) : « 1 299,00 € ». */
 export const formatEuros = (euros: number) => EUR.format(euros);

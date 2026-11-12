@@ -10,7 +10,7 @@ const schema = z.object({ email: emailSchema, token: z.string().trim().max(64) }
 export const POST = route("POST /api/newsletter/unsubscribe", async (req: Request) => {
   limitByIp(req, "newsletter-unsubscribe", 20);
   const { email, token } = await parseBody(req, schema);
-  if (!checkUnsubscribeToken(email, token)) throw new ApiError(400, "Ce lien de désinscription n'est pas valide. Utilisez le lien reçu dans le dernier email.");
+  if (!checkUnsubscribeToken(email, token)) throw new ApiError(400, "Dieser Abmeldelink ist nicht gültig. Verwenden Sie den Link aus der letzten E-Mail.");
   await prisma.newsletterSubscriber.deleteMany({ where: { email } });
-  return json({ message: "Vous êtes désinscrit de la newsletter." });
+  return json({ message: "Sie sind vom Newsletter abgemeldet." });
 });

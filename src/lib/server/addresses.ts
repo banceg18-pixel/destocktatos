@@ -48,7 +48,7 @@ export async function getAddress(userId: string, id: string) {
 export async function createAddress(userId: string, input: AddressInput) {
   return prisma.$transaction(async (tx) => {
     const count = await tx.address.count({ where: { userId } });
-    if (count >= MAX_ADDRESSES) throw new ApiError(400, `Vous ne pouvez pas enregistrer plus de ${MAX_ADDRESSES} adresses`);
+    if (count >= MAX_ADDRESSES) throw new ApiError(400, `Sie können nicht mehr als ${MAX_ADDRESSES} Adressen speichern`);
     const makeDefault = input.isDefault || count === 0;
     if (makeDefault) await tx.address.updateMany({ where: { userId }, data: { isDefault: false } });
     const a = await tx.address.create({ data: { ...input, isDefault: makeDefault, userId } });

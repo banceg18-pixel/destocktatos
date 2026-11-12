@@ -12,7 +12,6 @@ import { STORE_COORDINATES, calculateDistance } from "@/lib/delivery";
 import { cn } from "@/lib/client/cn";
 import { Field, Input, NativeSelect, Spinner, Textarea } from "@/components/ui/Primitives";
 import { IconAlert, IconCheck, IconPin, IconTruck } from "@/components/ui/Icons";
-import { rules } from "@/lib/client/form-rules";
 
 const EMPTY: ShippingAddress = { _id: "", fullName: "", address: "", city: "", postalCode: "", phone: "", additionalInfo: "", isDefault: false, floor: 0 };
 
@@ -296,7 +295,7 @@ export function ShippingAddressForm() {
               <Field label="Stadt / Ort" htmlFor="ship-city" required error={errors.city}>
                 <Input id="ship-city" name="city" value={form.city} onChange={onInput} onBlur={() => touch("city")} invalid={!!errors.city} placeholder="Berlin" autoComplete="address-level2" />
               </Field>
-              <Field label="Etage" htmlFor="ship-floor" hint="Zur optimalen Vorbereitung der Anlieferung (kostenlos).">
+              <Field label="Etage" htmlFor="ship-floor" hint="Für die optimale Vorbereitung der Lieferung (kostenlos).">
                 <NativeSelect id="ship-floor" name="floor" value={form.floor} onChange={onInput}>
                   {FLOOR_OPTIONS.map((o) => (
                     <option value={o.value} key={o.value}>

@@ -6,5 +6,5 @@ import { objectId } from "@/lib/validation";
 export const PUT = route("PUT /api/user/addresses/:id/default", async (_req: Request, ctx: { params: Promise<{ id: string }> }) => {
   const user = await requireUser();
   await setDefaultAddress(user.id, objectId.parse((await ctx.params).id));
-  return json({ message: "Adresse définie par défaut" });
+  return json({ message: "Adresse als Standard festgelegt" });
 });

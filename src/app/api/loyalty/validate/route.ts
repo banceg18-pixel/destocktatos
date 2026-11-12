@@ -4,7 +4,7 @@ import { json, limitByIp, parseBody, requireUser, route } from "@/lib/server/api
 import { evaluateCoupon } from "@/lib/server/coupons";
 import { toEuros } from "@/lib/money";
 
-const schema = z.object({ couponCode: z.string().trim().min(1, "Veuillez saisir un code de coupon").max(50), orderTotal: z.coerce.number().min(0).max(1_000_000) });
+const schema = z.object({ couponCode: z.string().trim().min(1, "Bitte geben Sie einen Gutscheincode ein").max(50), orderTotal: z.coerce.number().min(0).max(1_000_000) });
 
 /** POST /api/loyalty/validate — vérifie un coupon fidélité (connexion requise, plafond 10 %). */
 export const POST = route("POST /api/loyalty/validate", async (req: Request) => {

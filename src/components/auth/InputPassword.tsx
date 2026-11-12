@@ -47,7 +47,7 @@ export function InputPassword({
       }
     },
   });
-  const label = type === "password" ? "Afficher le mot de passe" : "Masquer le mot de passe";
+  const label = type === "password" ? "Passwort anzeigen" : "Passwort verbergen";
   return (
     <div className="relative">
       <input

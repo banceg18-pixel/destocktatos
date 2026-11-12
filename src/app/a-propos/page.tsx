@@ -107,7 +107,7 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      <StoreLocation settings={settings} title="Venir au magasin" />
+      <StoreLocation settings={settings} title="So kommen Sie zu uns" />
     </>
   );
 }

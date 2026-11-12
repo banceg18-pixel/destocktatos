@@ -1,90 +1,85 @@
 {
  "slug": "categorie",
- "title": "Modèle de page catégorie",
+ "title": "Vorlage Kategorieseite",
  "data": {
   "descriptions": {
-   "aspirateur": "Aspirateurs et robots aspirateurs",
-   "autres": null,
-   "climatiseur": "Climatiseurs et ventilateurs",
-   "congelateur": "Congélateurs et freezers",
-   "cuisiniere": "Cuisinières et plaques de cuisson",
-   "four": "Fours et micro-ondes",
-   "hotte": "Hottes aspirantes et décoratives",
-   "lave-linge": "Machines à laver le linge",
-   "lave-vaisselle": "Lave-vaisselle et accessoires",
-   "micro-ondes": "Micro-ondes et fours combinés",
-   "plaque-a-gaz": null,
-   "plaque-de-cuisson": null,
-   "refrigerateur": "Réfrigérateurs et combinés frigorifiques",
-   "robot-de-cuisine": "Robots culinaires et accessoires",
-   "seche-linge": "Sèche-linge et sèche-linge pompe à chaleur",
-   "television": null
+   "aspirateur": "Staubsauger und Roboterstaubsauger",
+   "autres": "Kleingeräte und Haushaltshelfer",
+   "climatiseur": "Klimageräte und Ventilatoren",
+   "congelateur": "Gefrierschränke und Gefriertruhen",
+   "cuisiniere": "Herde und Kochfelder",
+   "four": "Backöfen und Mikrowellen",
+   "hotte": "Dunstabzugshauben und Decorhauben",
+   "lave-linge": "Waschmaschinen",
+   "lave-vaisselle": "Geschirrspüler und Zubehör",
+   "micro-ondes": "Mikrowellen und Kombinationsgeräte",
+   "plaque-a-gaz": "Gaskochfelder",
+   "plaque-de-cuisson": "Induktions- und Glaskeramikkochfelder",
+   "refrigerateur": "Kühlschränke und Kühl-Gefrier-Kombis",
+   "robot-de-cuisine": "Küchenmaschinen und Zubehör",
+   "seche-linge": "Wäschetrockner und Wärmepumpentrockner",
+   "television": "Fernseher"
   },
   "guide": [
    {
     "type": "heading",
     "level": 3,
-    "text": "1. Types et usages"
+    "text": "1. Typen und Verwendung"
    },
    {
     "type": "paragraph",
-    "text": "Choisissez selon vos besoins: encastrable vs pose libre, capacités, technologies utiles, et contraintes d'espace."
+    "text": "Wählen Sie nach Ihrem Bedarf: Einbaugerät oder Freistehend, Kapazitäten, hilfreiche Technologien und Platzverhältnisse."
    },
    {
-    "type": "heading",
-    "level": 3,
-    "text": "2. Critères clés"
+    "type": "paragraph",
+    "text": "2. Wichtige Kriterien"
    },
    {
     "type": "list",
     "items": [
-     "Capacité et dimensions: assurez la compatibilité avec votre cuisine.",
-     "Efficacité énergétique: privilégiez A à C pour réduire la consommation.",
-     "Niveau sonore: essentiel pour cuisines ouvertes.",
-     "Fonctionnalités: programmes rapides, connectivité, sécurité enfant."
+     "Kapazität und Maße: auf die Kompatibilität mit Ihrer Küche achten.",
+     "Energieeffizienz: eher Klasse A bis C wählen, um den Verbrauch zu senken.",
+     "Funktionen: Schnellprogramme, Konnektivität, Kindersicherung."
     ]
    },
    {
-    "type": "heading",
-    "level": 3,
-    "text": "3. Budget et garanties"
+    "type": "paragraph",
+    "text": "3. Budget und Gesamtkosten"
    },
    {
     "type": "paragraph",
-    "text": "Comparez le coût total: prix d'achat, consommation, entretien. Optez pour des garanties étendues selon l'usage."
+    "text": "Vergleichen Sie die Gesamtkosten: Anschaffungspreis, Verbrauch, Wartung. Je nach Nutzung lohnen sich erweiterte Garantien."
    },
    {
-    "type": "heading",
-    "level": 3,
-    "text": "4. Comparatifs rapides"
+    "type": "paragraph",
+    "text": "4. Preisklassen"
    },
    {
     "type": "list",
     "items": [
-     "Entrée de gamme: bon rapport qualité-prix pour usage modéré.",
-     "Milieu de gamme: meilleures performances et options.",
-     "Haut de gamme: silence, efficacité, durabilité renforcée."
+     "Einstiegsklasse: gutes Preis-Leistungs-Verhältnis für gelegentliche Nutzung.",
+     "Oberklasse: leise, effizient und langlebiger verarbeitet."
     ]
    }
   ],
   "faq": [
    {
-    "question": "Quel délai de livraison pour cette catégorie ?",
-    "answer": "En général 3 à 5 jours ouvrables, selon disponibilité et adresse."
+    "question": "Wie lange dauert die Lieferung dieser Kategorie?",
+    "answer": "In der Regel 3–5 Werktage, je nach Verfügbarkeit und Lieferadresse."
    },
    {
-    "question": "Quelle classe énergétique privilégier ?",
-    "answer": "Visez A à C; l'économie d'énergie compense souvent l'écart de prix."
+    "question": "Welche Energieklasse ist zu bevorzugen?",
+    "answer": "A bis C; die Energieeinsparung macht den Preisaufwand oft wett."
    },
    {
-    "question": "L'installation est-elle comprise ?",
-    "answer": "Selon l'offre. Vérifiez la fiche produit ou contactez notre support."
+    "question": "Gibt es linksdrehende Modelle im Angebot?",
+    "answer": "Je nach Angebot. Prüfen Sie das Produktdetail oder kontaktieren Sie unseren Support."
    },
    {
-    "question": "Combien de décibels pour un usage confortable ?",
-    "answer": "Moins de 45 dB pour une cuisine ouverte, 45–50 dB pour une cuisine fermée."
+    "question": "Wie viele Dezibel sind für angenehme Nutzung passend?",
+    "answer": "Unter 45 dB für eine offene Küche, 45–50 dB für eine geschlossene Küche."
    }
   ],
-  "metaDescriptionTemplate": "Découvrez notre sélection {nom} au meilleur prix: grandes marques, livraison rapide, garanties et SAV."
+  "metaDescriptionTemplate": "Entdecken Sie unsere Auswahl {nom} zum besten Preis: große Marken, schnelle Lieferung, Garantie und Kundendienst."
  }
 }

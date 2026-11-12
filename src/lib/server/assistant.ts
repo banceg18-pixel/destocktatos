@@ -5,9 +5,9 @@ import { getFaq, getSiteSettings, type SiteSettings } from "@/lib/cms";
 import { memo } from "./memo";
 import { syncCaches } from "./sync-version";
 
-export const DEFAULT_ASSISTANT_NAME = "Assistant Destocktatos";
+export const DEFAULT_ASSISTANT_NAME = "Destocktatos Assistent";
 export const DEFAULT_ASSISTANT_WELCOME =
-  "Bonjour ! Je suis l'assistant de Destocktatos. Posez-moi vos questions : livraison, paiement, suivi de commande, retours, garantie…";
+  "Guten Tag! Ich bin der Destocktatos-Assistent. Stellen Sie mir Ihre Fragen: Lieferung, Zahlung, Bestellstatus, Rückgabe, Garantie…";
 
 const KEY = "wp:assistant";
 const TTL_MS = 5 * 60_000;

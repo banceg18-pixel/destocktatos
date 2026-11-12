@@ -129,7 +129,7 @@ export function StockBadge({ stock, className }: { stock: number; className?: st
         className={cn("size-2 rounded-full", state === "in" && "bg-success", state === "low" && "bg-warning", state === "out" && "bg-danger")}
         aria-hidden="true"
       />
-      {state === "out" ? "Rupture de stock" : state === "low" ? `Plus que ${stock} en stock` : "En stock"}
+      {state === "out" ? "Nicht vorrätig" : state === "low" ? `Nur noch ${stock} auf Lager` : "Auf Lager"}
     </span>
   );
 }

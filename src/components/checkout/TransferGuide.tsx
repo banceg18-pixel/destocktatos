@@ -44,7 +44,7 @@ export function TransferGuide({ amount, orderNumber, bank, className }: { amount
       <p className="mt-2 text-sm text-graphite">Kopieren Sie die Daten und fügen Sie sie in Ihre Banking-App ein.</p>
       <ol className="mt-7">
         <Step n={1} title="Banking-App oder Online-Banking öffnen">
-          Öffnen Sie Ihre Banking-App (Sparkasse, Deutsche Bank, Commerzbank, ING, etc.) und wählen Sie « Überweisung » oder « Neuer Empfänger ».
+          Öffnen Sie Ihre Banking-App (Sparkasse, Deutsche Bank, Commerzbank, ING, etc.) und wählen Sie „Überweisung“ oder „Neuer Empfänger“.
         </Step>
         <Step n={2} title="Empfängerdaten eingeben">
           <div className="mt-1 bg-mist p-4">

@@ -33,10 +33,10 @@ export function handleError(err: unknown, context: string) {
   }
   if (err instanceof ZodError) {
     const details = err.issues.map((i) => ({ champ: i.path.join("."), message: i.message }));
-    return NextResponse.json({ error: details[0]?.message || "Données invalides", details }, { status: 400 });
+    return NextResponse.json({ error: details[0]?.message || "Ungültige Daten", details }, { status: 400 });
   }
   console.error(`[api] ${context}:`, err);
-  return NextResponse.json({ error: "Une erreur interne est survenue. Veuillez réessayer." }, { status: 500 });
+  return NextResponse.json({ error: "Ein interner Fehler ist aufgetreten. Bitte versuchen Sie es erneut." }, { status: 500 });
 }
 
 /** Enveloppe un handler : gestion d'erreurs uniforme. */
@@ -55,7 +55,7 @@ export async function parseBody<S extends ZodTypeAny>(req: Request, schema: S): 
   try {
     body = await req.json();
   } catch {
-    throw new ApiError(400, "Corps de requête JSON invalide");
+    throw new ApiError(400, "Ungültiger JSON-Request-Body");
   }
   return schema.parse(body);
 }
@@ -63,13 +63,13 @@ export async function parseBody<S extends ZodTypeAny>(req: Request, schema: S): 
 /** Exige un utilisateur connecté ; renvoie son identifiant. */
 export async function requireUser() {
   const session = await getSession();
-  if (!session?.user?.id) throw new ApiError(401, "Vous devez être connecté");
+  if (!session?.user?.id) throw new ApiError(401, "Sie müssen angemeldet sein");
   return session.user;
 }
 
 export async function requireAdmin() {
   const user = await requireUser();
-  if (user.role !== "ADMIN") throw new ApiError(403, "Accès refusé");
+  if (user.role !== "ADMIN") throw new ApiError(403, "Zugriff verweigert");
   return user;
 }
 
@@ -80,5 +80,5 @@ export function clientIp(req: Request) {
 /** Limitation de débit par IP pour les formulaires publics. */
 export function limitByIp(req: Request, bucket: string, limit = 10, windowMs = 10 * 60 * 1000) {
   const r = rateLimit(`${bucket}:${clientIp(req)}`, limit, windowMs);
-  if (!r.ok) throw new ApiError(429, `Trop de requêtes. Réessayez dans ${r.retryAfter} secondes.`);
+  if (!r.ok) throw new ApiError(429, `Zu viele Anfragen. Versuchen Sie es in ${r.retryAfter} Sekunden erneut.`);
 }

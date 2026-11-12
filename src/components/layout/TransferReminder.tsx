@@ -130,8 +130,8 @@ export function TransferReminder() {
             <dt className="text-xs text-graphite">{label}</dt>
             <dd className={mono ? "t-spec !text-sm text-ink" : "font-medium"}>{value}</dd>
           </div>
-          {(mono || label === "Montant") && (
-            <CopyButton value={label === "IBAN" ? value.replace(/\s+/g, "") : label === "Montant" ? value.replace(/[^\d,.]/g, "") : value} label={label} />
+          {(mono || label === "Betrag") && (
+            <CopyButton value={label === "IBAN" ? value.replace(/\s+/g, "") : label === "Betrag" ? value.replace(/[^\d,.]/g, "") : value} label={label} />
           )}
         </div>
       ))}

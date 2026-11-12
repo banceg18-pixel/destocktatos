@@ -45,7 +45,7 @@ export async function requireBuyer(): Promise<{ userId: string | null; guestOrde
   const session = await getSession();
   if (session?.user?.id) return { userId: session.user.id, guestOrderId: null, email: session.user.email ?? null };
   const id = await guestOrderId();
-  if (!id) throw new ApiError(401, "Votre session a expiré : revenez au panier pour finaliser votre commande.");
+  if (!id) throw new ApiError(401, "Ihre Sitzung ist abgelaufen: Kehren Sie zum Warenkorb zurück, um Ihre Bestellung abzuschließen.");
   return { userId: null, guestOrderId: id, email: null };
 }
 
@@ -60,9 +60,9 @@ export async function getBuyerOrder(orderId: string) {
       if ((await guestOrderId()) !== orderId) throw e;
     }
   } else if ((await guestOrderId()) !== orderId) {
-    throw new ApiError(404, "Commande introuvable");
+    throw new ApiError(404, "Bestellung nicht gefunden");
   }
   const o = await prisma.order.findUnique({ where: { id: orderId }, include: { items: { include: { product: { select: { prixCents: true, slug: true } } } }, payments: true } });
-  if (!o) throw new ApiError(404, "Commande introuvable");
+  if (!o) throw new ApiError(404, "Bestellung nicht gefunden");
   return o;
 }

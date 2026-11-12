@@ -10,10 +10,10 @@ describe("montants", () => {
     expect(toEuros(toCents(1234.56))).toBe(1234.56);
   });
 
-  it("format unique des prix : deux décimales, séparateurs français", () => {
+  it("format unique des prix : deux décimales, deutsche Trennzeichen", () => {
     // Espace fine insécable (U+202F) pour les milliers, espace insécable (U+00A0) avant l'euro.
     expect(formatEuros(379)).toBe("379,00 €");
-    expect(formatEuros(1234.5)).toBe("1 234,50 €");
+    expect(formatEuros(1234.5)).toBe("1.234,50 €");
     expect(formatEuros(0)).toBe("0,00 €");
   });
 

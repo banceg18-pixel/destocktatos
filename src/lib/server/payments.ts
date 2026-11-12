@@ -38,7 +38,7 @@ const stripeProvider = (stripe: Stripe): PaymentProvider => ({
         currency: "eur",
         automatic_payment_methods: { enabled: true },
         receipt_email: email ?? undefined,
-        description: `Commande ${order.number}`,
+        description: `Bestellung ${order.number}`,
         metadata: { orderId: order.id, orderNumber: order.number },
       },
       // Idempotence : une seule intention par commande et par montant.

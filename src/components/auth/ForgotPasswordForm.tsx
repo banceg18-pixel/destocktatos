@@ -27,7 +27,7 @@ export function ForgotPasswordForm() {
     if (res.ok) {
       setSentTo(email);
       setEmail("");
-    } else setError(res.error || "La demande n'a pas abouti. Réessayez dans un instant.");
+    } else setError(res.error || "Die Anfrage ist fehlgeschlagen. Versuchen Sie es gleich erneut.");
   };
 
   if (sentTo) {

@@ -38,7 +38,7 @@ SOURCE_PATTERNS = re.compile("|".join(json.loads((ROOT / "scripts/audit-patterns
 
 # Produits du catalogue d'origine utilisés par les parcours (en stock dans le seed).
 CHEAP = "aspirateur-voiture-twc01-thisworx"  # 20 €, 1,1 kg
-STORE_ADDRESS = "15 Rue Paul Langevin 93270 Sevran"
+STORE_ADDRESS = "Friedrichstraße 176-179 10117 Berlin"
 
 VIEWPORTS = {
     "desktop-1440": (1440, 900),
@@ -268,8 +268,8 @@ def add_to_cart(page: Page, slug: str, quantity=1):
     before = cart_count(page)
     # Le premier bouton est celui de la fiche ; les suivants appartiennent aux suggestions.
     for _ in range(quantity - 1):
-        page.get_by_role("button", name="Augmenter la quantité").first.click()
-    page.get_by_role("button", name=re.compile("Ajouter au panier")).first.click()
+        page.get_by_role("button", name="Menge erhöhen").first.click()
+    page.get_by_role("button", name=re.compile("In den Warenkorb")).first.click()
     page.wait_for_function(
         "n => { const b = document.querySelector('[data-cy=\"nav-panier\"] span'); return !!b && parseInt(b.textContent, 10) >= n; }",
         arg=before + quantity,
@@ -369,12 +369,12 @@ def _():
     from datetime import date, timedelta
 
     devis = {
-        "name": "Client Devis", "email": "devis@tatos.test", "phone": "06 12 34 56 78", "address": "15 Rue Paul Langevin, 93270 Sevran",
-        "product": "Lave-linge LG F94N15WHS", "date": (date.today() + timedelta(days=3)).isoformat(), "timeSlot": "matin", "notes": "2e étage",
+        "name": "Kunde Angebot", "email": "devis@tatos.test", "phone": "030 12345678", "address": "Friedrichstraße 176-179, 10117 Berlin",
+        "product": "Waschmaschine LG F94N15WHS", "date": (date.today() + timedelta(days=3)).isoformat(), "timeSlot": "matin", "notes": "2e étage",
     }
     eq(req.post("/api/contact/services", data=devis).status, 201, "demande de devis d'installation")
     past = req.post("/api/contact/services", data={**devis, "date": (date.today() - timedelta(days=1)).isoformat()})
-    eq((past.status, past.json()["error"]), (400, "La date ne peut pas être dans le passé"), "date passée refusée")
+    eq((past.status, past.json()["error"]), (400, "Das Datum darf nicht in der Vergangenheit liegen"), "date passée refusée")
     eq(req.post("/api/contact/services", data={**devis, "timeSlot": "nuit"}).status, 400, "créneau inconnu refusé")
     email = f"news-{int(time.time())}@tatos.test"
     eq(req.post("/api/newsletter/subscribe", data={"email": email}).status, 201, "newsletter")
@@ -399,7 +399,7 @@ def _():
     a, b = register_user("adr-a"), register_user("adr-b")
     ra, rb = api(a), api(b)
     eq(ra.get("/api/users/me").json()["email"], a["email"], "profil")
-    addr = {"fullName": "Client A", "address": "15 Rue Paul Langevin", "city": "Sevran", "postalCode": "93270", "phone": "0612345678", "floor": 2}
+    addr = {"fullName": "Kunde A", "address": "Friedrichstraße 176-179", "city": "Berlin", "postalCode": "10117", "phone": "03012345678", "floor": 2}
     c = ra.post("/api/user/addresses", data=addr)
     check(c.status in (200, 201), f"création d'adresse ({c.status} {c.text()[:200]})")
     created = c.json().get("address") or c.json()
@@ -434,7 +434,7 @@ def _():
     eq(r.get("/api/orders/latest").json()["_id"], order["_id"], "commande en cours")
     intent = r.post("/api/checkout/create-payment-intent").json()
     eq((intent["provider"], intent["mode"], intent["bankTransfer"]), ("virement", "live", True), "virement bancaire proposé sans clé Stripe")
-    billing = {"name": "Client Cmd", "email": buyer["email"], "address": "1 rue Test", "postalCode": "93270", "city": "Sevran", "phone": "0612345678"}
+    billing = {"name": "Kunde Best", "email": buyer["email"], "address": "Friedrichstraße 15", "postalCode": "10117", "city": "Berlin", "phone": "03012345678"}
     o = api(other)
     eq(o.get(f"/api/orders/{order['_id']}").status, 404, "commande d'un autre client invisible")
     eq(o.post("/api/checkout/test-payment", data={"orderId": order["_id"], "outcome": "success", "billingAddress": billing}).status, 404, "paiement de la commande d'autrui refusé")
@@ -473,7 +473,7 @@ def _():
     eq(c.status, 201, "création de commande")
     order = c.json()["order"]
     check(r.post("/api/checkout/create-payment-intent").json()["bankTransfer"] is True, "virement bancaire proposé")
-    billing = {"name": "Client Livr", "email": buyer["email"], "address": "1 rue Test", "postalCode": "93270", "city": "Sevran", "phone": "0612345678"}
+    billing = {"name": "Kunde Liefer", "email": buyer["email"], "address": "Friedrichstraße 15", "postalCode": "10117", "city": "Berlin", "phone": "03012345678"}
     url = "/api/checkout/bank-transfer"
     eq(o.post(url, data={"orderId": order["_id"], "billingAddress": billing}).status, 404, "confirmation de la commande d'autrui refusée")
     eq(r.post(url, data={"orderId": order["_id"], "billingAddress": {**billing, "postalCode": "93"}}).status, 400, "adresse de facturation invalide")
@@ -546,7 +546,7 @@ def _():
     page.locator('[data-cy="email-input"]:visible').fill(user["email"])
     page.locator('[data-cy="password-input"]:visible').fill("MauvaisMotDePasse1")
     page.locator('[data-cy="login-submit"]:visible').click()
-    page.get_by_text("Email ou mot de passe incorrect.").first.wait_for()
+    page.get_by_text(re.compile("E-Mail-Adresse oder Passwort ungültig")).first.wait_for()
     ui_login(page, user)
     page.get_by_text(user["email"]).first.wait_for()
     # Une page protégée ouverte sans session renvoie vers la connexion avec retour prévu.
@@ -564,8 +564,8 @@ def _():
     page = new_page(ctx)
     go(page, "/connexion/mot-de-passe-oublie")
     page.locator("#email").fill(user["email"])
-    page.get_by_role("button", name=re.compile("Envoyer|Réinitialiser|lien", re.I)).click()
-    page.get_by_text(re.compile("email de réinitialisation a été envoyé")).first.wait_for()
+    page.get_by_role("button", name=re.compile("Senden|Zurücksetzen|Link", re.I)).click()
+    page.get_by_text(re.compile("E-Mail zum Zurücksetzen")).first.wait_for()
     token = None
     for _ in range(20):
         token = outbox_reset_token()
@@ -578,7 +578,7 @@ def _():
     page.locator("#mdp").fill(new_password)
     page.locator("#mdpv").fill(new_password)
     page.locator('main form button[type="submit"]').click()
-    page.get_by_text("Votre mot de passe a été modifié").first.wait_for()
+    page.get_by_text("Passwort geändert").first.wait_for()
     page.wait_for_url(re.compile(r"/connexion(\?|$)"))
     ui_login(page, {**user, "password": new_password})
     reuse = api().post("/api/auth/reset-password", data={"token": token, "mdp": "EncoreUn2026"})
@@ -596,16 +596,16 @@ def _():
     open_cart(page)
     total = page.get_by_test_id("cart-total").inner_text()
     # Plus de retrait en magasin : livraison seulement (adresse via la Base Adresse Nationale).
-    check(page.get_by_text("Retrait en magasin", exact=True).count() == 0, "retrait en magasin non proposé")
-    page.locator("#ship-fullName").fill("Client Démo")
+    check(page.get_by_text("Selbstabholung", exact=True).count() == 0, "retrait en magasin non proposé")
+    page.locator("#ship-fullName").fill("Kunde Demo")
     page.locator("#ship-phone").fill("0612345678")
     page.locator("#ship-address").fill(STORE_ADDRESS)
     try:
         page.get_by_role("option").first.wait_for(timeout=15_000)
     except Exception:
         raise Skip("API Base Adresse Nationale injoignable depuis cet environnement")
-    page.get_by_role("option").filter(has_text="Sevran").first.click()
-    page.get_by_text("Adresse de livraison complète", exact=True).wait_for(timeout=20_000)
+    page.get_by_role("option").filter(has_text="Berlin").first.click()
+    page.get_by_text("Lieferadresse vollständig", exact=True).wait_for(timeout=20_000)
     page.get_by_role("radiogroup", name="Options de livraison").wait_for(timeout=20_000)
     page.locator("#termsCheckbox").check(force=True)
     page.get_by_test_id("checkout-button").click()
@@ -616,19 +616,19 @@ def _():
     # Formats d'origine différents (« 40 € » au panier, « 40.00€ » au paiement) : on compare les montants.
     amount = lambda t: float(re.sub(r"[^\d,.]", "", t).replace(",", "."))
     eq(amount(page.get_by_test_id("payment-total").inner_text()), amount(total), "total identique panier / paiement")
-    for label, value in [("Nom complet", "Client Démo"), ("Adresse", "15 Rue Paul Langevin"), ("Code postal", "93270"), ("Ville", "Sevran"), ("Téléphone", "0612345678")]:
+    for label, value in [("Vollständiger Name", "Kunde Demo"), ("Straße & Hausnummer", "Friedrichstraße 176-179"), ("Postleitzahl", "10117"), ("Stadt / Ort", "Berlin"), ("Telefonnummer", "03012345678")]:
         field = page.get_by_label(label, exact=True)
         if not field.input_value():
             field.fill(value)
     page.get_by_test_id("bank-transfer").click()
     page.wait_for_url(re.compile(r"/confirmation\?status=success&order="), timeout=30_000)
-    page.get_by_text("Merci pour votre commande !").wait_for()
-    check("par virement bancaire" in page.locator("main").inner_text(), "virement bancaire annoncé")
+    page.get_by_text(re.compile("Vielen Dank für Ihre Bestellung")).first.wait_for()
+    check("Banküberweisung" in page.locator("main").inner_text(), "virement bancaire annoncé")
     check(page.get_by_test_id("transfer-guide").count() == 1, "procédure de virement pas à pas affichée")
     account = page.get_by_test_id("transfer-account").inner_text()
     check("DE53 3101 0833 9914 0820 74" in account, "coordonnées du compte dans « Et maintenant ? »")
     check(page.get_by_role("button", name=re.compile("IBAN kopieren|Copier IBAN", re.I)).count() >= 1, "IBAN copiable")
-    check(page.get_by_role("link", name=re.compile("Continuer mes achats", re.I)).count() == 0, "plus de bouton « Continuer mes achats »")
+    check(page.get_by_role("link", name=re.compile("Weiter einkaufen", re.I)).count() == 0, "plus de bouton « Weiter einkaufen »")
     number = re.search(r"TAT-\d{8}-[0-9A-F]{6}", page.content()).group(0)
     order_id = re.search(r"order=([A-Za-z0-9]+)", page.url).group(1)
     # Fenêtre de paiement dès la confirmation, impossible à fermer tant que le paiement n'est pas reçu.
@@ -636,16 +636,16 @@ def _():
     modal.wait_for(timeout=10_000)
     text = modal.inner_text()
     check("DE53 3101 0833 9914 0820 74" in text and number in text, "fenêtre de paiement : IBAN et numéro de commande")
-    check(modal.get_by_role("button", name=re.compile("Fermer|Plus tard", re.I)).count() == 0, "fenêtre de paiement impossible à fermer avant le paiement")
+    check(modal.get_by_role("button", name=re.compile("Schließen|Später", re.I)).count() == 0, "fenêtre de paiement impossible à fermer avant le paiement")
     eq(page.request.get(f"/api/orders/{order_id}/invoice?type=devis").status, 200, "devis disponible avant le paiement")
     eq(page.request.get(f"/api/orders/{order_id}/invoice").status, 409, "pas de facture avant le paiement")
     go(page, "/compte/commandes")
-    page.get_by_role("heading", name=f"Commande {number}", exact=True).wait_for()
+    page.get_by_role("heading", name=re.compile(f"Bestellung {number}"), exact=False).first.wait_for()
     page.locator('[data-testid="transfer-reminder"][data-state="pending"]').wait_for(timeout=10_000)
-    row = page.locator("article").filter(has=page.get_by_role("heading", name=f"Commande {number}"))
+    row = page.locator("article").filter(has=page.get_by_role("heading", name=re.compile(f"Bestellung {number}")))
     # Le libellé est affiché en capitales (CSS) : comparaison sans casse.
     text = row.inner_text().lower()
-    check("en attente de virement" in text and "facture vous sera envoyée" in text and "télécharger" not in text, "commande en attente de virement, sans bouton de téléchargement")
+    check("warten auf überweisung" in text and "rechnung" in text and "herunterladen" not in text.lower(), "commande en attente de virement, sans bouton de téléchargement")
     # Le magasin marque le virement reçu : la fenêtre l'annonce, le client continue ; la facture est disponible.
     adm = ENV.pw.request.new_context(base_url=ENV.base, extra_http_headers={"Authorization": f"Bearer {ADMIN_SECRET}"})
     eq(adm.patch(f"/api/admin/orders/{order_id}", data={"status": "PAYEE", "notify": True}).status, 200, "virement marqué reçu par le magasin")
@@ -659,7 +659,7 @@ def _():
     go(page, f"/confirmation?status=success&order={order_id}")
     page.get_by_test_id("confirmation-done").wait_for()
     check(page.get_by_test_id("transfer-guide").count() == 0 and page.get_by_test_id("transfer-account").count() == 0, "plus d'informations de paiement une fois payée")
-    check(page.get_by_text(re.compile("Télécharger", re.I)).count() == 0, "aucun bouton de téléchargement")
+    check(page.get_by_text(re.compile("Herunterladen|Download", re.I)).count() == 0, "aucun bouton de téléchargement")
     # Le panier est vidé après paiement.
     page.goto("/panier")
     page.locator("main").get_by_text("Votre panier est vide").wait_for()
@@ -676,28 +676,28 @@ def _():
     add_to_cart(page, CHEAP)
     go(page, "/panier")
     # Livraison à domicile seule proposée (plus de retrait en magasin).
-    page.get_by_text("Livraison à domicile, offerte", exact=True).wait_for()
-    page.locator("#ship-fullName").fill("Client Invité")
+    page.get_by_text(re.compile("Lieferung in den Raum")).first.wait_for()
+    page.locator("#ship-fullName").fill("Kunde Gast")
     page.locator("#ship-phone").fill("0612345678")
     page.locator("#ship-address").fill(STORE_ADDRESS)
     try:
         page.get_by_role("option").first.wait_for(timeout=15_000)
     except Exception:
         raise Skip("API Base Adresse Nationale injoignable depuis cet environnement")
-    page.get_by_role("option").filter(has_text="Sevran").first.click()
-    eq(page.locator("#ship-postalCode").input_value(), "93270", "code postal rempli par l'autocomplétion")
-    eq(page.locator("#ship-city").input_value(), "Sevran", "ville remplie par l'autocomplétion")
+    page.get_by_role("option").filter(has_text="Berlin").first.click()
+    eq(page.locator("#ship-postalCode").input_value(), "10117", "code postal rempli par l'autocomplétion")
+    eq(page.locator("#ship-city").input_value(), "Berlin", "ville remplie par l'autocomplétion")
     page.locator("#ship-floor").select_option("4")
-    page.get_by_text("Adresse de livraison complète", exact=True).wait_for(timeout=20_000)
-    group = page.get_by_role("radiogroup", name="Options de livraison")
+    page.get_by_text("Lieferadresse vollständig", exact=True).wait_for(timeout=20_000)
+    group = page.get_by_role("radiogroup", name="Versandoptionen")
     group.wait_for(timeout=20_000)
     text = group.inner_text()
-    check(text.count("Offert") == 3 and "€" not in text, f"trois modes de livraison offerts : {text!r}")
+    check(text.count("Kostenlos") == 3 and "€" not in text, f"trois modes de livraison offerts : {text!r}")
     group.get_by_text("Installation", exact=True).click()
     page.locator("#termsCheckbox").check(force=True)
     page.get_by_test_id("checkout-button").click()
     # Panneau « Dernière étape : vos coordonnées » : email seul, sans compte.
-    panel = page.get_by_role("dialog", name="Dernière étape : vos coordonnées")
+    panel = page.get_by_role("dialog", name="Letzter Schritt: Ihre Angaben")
     panel.wait_for(timeout=10_000)
     check(page.url.endswith("/panier"), "toujours sur le panier")
     email = f"invite-{int(time.time())}@tatos.test"
@@ -712,7 +712,7 @@ def _():
     eq(page.get_by_label("Email", exact=True).input_value(), email, "email de facturation pré-rempli")
     page.get_by_test_id("bank-transfer").click()
     page.wait_for_url(re.compile(r"/confirmation\?status=success&order="), timeout=30_000)
-    page.get_by_text("Merci pour votre commande !").wait_for()
+    page.get_by_text(re.compile("Vielen Dank für Ihre Bestellung")).first.wait_for()
     check(page.get_by_test_id("transfer-guide").count() == 1, "procédure de virement affichée")
     check(page.get_by_test_id("confirmation-quote").count() == 0 and page.get_by_test_id("confirmation-invoice").count() == 0, "pas de document à télécharger avant le paiement")
     page.locator('[data-testid="transfer-reminder"][data-state="pending"]').wait_for(timeout=10_000)
@@ -746,11 +746,11 @@ def _():
         time.sleep(0.25)
     check(mail is not None, "email de confirmation envoyé")
     eq([a["filename"].split("_")[0] for a in mail["attachments"]], ["devis"], "devis joint (facture à réception du paiement)")
-    check("Créer mon compte" in mail["html"] and "Virement bancaire à effectuer" in mail["html"], "email mis en forme : virement et création du compte")
+    check("Bestellung" in mail["html"] and "Banküberweisung" in mail["html"], "email mis en forme : virement et compte")
     link = re.search(r"/connexion/reinitialiser\?token=[a-f0-9]{64}&creation=1", mail["text"]).group(0)
     # Création du compte depuis le lien, puis connexion : la commande et ses factures sont là.
     go(page, link)
-    page.get_by_role("heading", name="Créez votre compte").wait_for()
+    page.get_by_role("heading", name=re.compile("Konto erstellen|Passwort")).first.wait_for()
     password = f"Essai{int(time.time())}2026x"
     page.get_by_label("Nouveau mot de passe", exact=True).fill(password)
     page.get_by_label("Confirmez le mot de passe", exact=True).fill(password)
@@ -763,7 +763,7 @@ def _():
     go(page, "/compte/commandes")
     row = page.locator("article").filter(has=page.get_by_role("heading", name=f"Commande {latest['number']}"))
     row.wait_for()
-    check("en attente de virement" in row.inner_text().lower(), "commande retrouvée dans le compte créé")
+    check("warten auf überweisung" in row.inner_text().lower(), "commande retrouvée dans le compte créé")
     check(not errors, f"erreurs pendant le parcours : {errors}")
     ctx.close()
 
@@ -833,21 +833,21 @@ def _():
     form.locator("select").select_option("produit")
     form.locator("textarea").first.fill("Message de test du formulaire de contact.")
     form.get_by_role("button", name=re.compile("Envoyer", re.I)).click()
-    page.get_by_text(re.compile("envoyé avec succès", re.I)).first.wait_for()
+    page.get_by_text(re.compile("erfolgreich gesendet", re.I)).first.wait_for()
 
     go(page, "/promotions")
     nl = page.locator("form").filter(has=page.locator('input[type="email"]')).last
     nl.locator('input[type="email"]').fill(f"nl-{int(time.time())}@tatos.test")
     nl.get_by_role("button").first.click()
-    page.get_by_text(re.compile("Inscription réussie", re.I)).first.wait_for()
+    page.get_by_text(re.compile("Anmeldung erfolgreich", re.I)).first.wait_for()
 
     go(page, "/signaler-bug")
     page.locator("#titre").fill("Affichage décalé")
-    page.locator("#description").fill("Le bloc se décale sur mobile.")
+    page.locator("#description").fill("Der Block verschiebt sich auf dem Handy.")
     page.locator("#email").fill("bug@tatos.test")
     page.locator('input[type="file"]').set_input_files({"name": "capture.png", "mimeType": "image/png", "buffer": TINY_PNG})
     page.get_by_role("button", name=re.compile("Envoyer|Signaler|Soumettre", re.I)).last.click()
-    page.get_by_text(re.compile(r"TCK-[0-9A-F]{8}|ticket.*(créé|envoyé|enregistré)", re.I)).first.wait_for(timeout=20_000)
+    page.get_by_text(re.compile(r"TCK-[0-9A-F]{8}|Ticket.*((?i)erstellt|gesendet)", re.I)).first.wait_for(timeout=20_000)
     check(not errors, f"erreurs : {errors}")
     ctx.close()
 

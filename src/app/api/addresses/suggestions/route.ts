@@ -11,6 +11,6 @@ export const GET = route("GET /api/addresses/suggestions", async (req: Request) 
     return json({ suggestions: await suggestAddresses(q) });
   } catch (e) {
     console.warn("[addresses] BAN indisponible:", (e as Error).message);
-    throw new ApiError(503, "Service d'adresses momentanément indisponible");
+    throw new ApiError(503, "Adressdienst ist vorübergehend nicht verfügbar");
   }
 });

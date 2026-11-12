@@ -10,7 +10,7 @@ import { getStripe } from "@/lib/server/payments";
 export async function POST(req: Request) {
   const stripe = getStripe();
   const secret = process.env.STRIPE_WEBHOOK_SECRET;
-  if (!stripe || !secret) return NextResponse.json({ error: "Webhook Stripe non configuré" }, { status: 503 });
+  if (!stripe || !secret) return NextResponse.json({ error: "Stripe-Webhook nicht konfiguriert" }, { status: 503 });
   const signature = req.headers.get("stripe-signature");
   if (!signature) return NextResponse.json({ error: "Signature manquante" }, { status: 400 });
   let event: Stripe.Event;

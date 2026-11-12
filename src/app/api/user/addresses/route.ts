@@ -13,5 +13,5 @@ export const POST = route("POST /api/user/addresses", async (req: Request) => {
   const user = await requireUser();
   const input = await parseBody(req, addressSchema);
   const address = await createAddress(user.id, input);
-  return json({ address, message: "Adresse sauvegardée avec succès" }, 201);
+  return json({ address, message: "Adresse erfolgreich gespeichert" }, 201);
 });

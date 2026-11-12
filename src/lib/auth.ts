@@ -9,7 +9,7 @@ import { rateLimit } from "@/lib/server/rate-limit";
 
 const googleEnabled = !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
 if (!googleEnabled && (process.env.GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_SECRET)) {
-  console.warn("[auth] Connexion Google désactivée : GOOGLE_CLIENT_ID et GOOGLE_CLIENT_SECRET doivent être renseignés tous les deux.");
+  console.warn("[auth] Google-Anmeldung deaktiviert: GOOGLE_CLIENT_ID und GOOGLE_CLIENT_SECRET müssen beide gesetzt sein.");
 }
 
 /**

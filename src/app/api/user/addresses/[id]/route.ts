@@ -13,11 +13,11 @@ export const PUT = route("PUT /api/user/addresses/:id", async (req: Request, ctx
   const user = await requireUser();
   const id = objectId.parse((await ctx.params).id);
   const input = await parseBody(req, addressSchema);
-  return json({ address: await updateAddress(user.id, id, input), message: "Adresse modifiée avec succès" });
+  return json({ address: await updateAddress(user.id, id, input), message: "Adresse erfolgreich geändert" });
 });
 
 export const DELETE = route("DELETE /api/user/addresses/:id", async (_req: Request, ctx: Ctx) => {
   const user = await requireUser();
   await deleteAddress(user.id, objectId.parse((await ctx.params).id));
-  return json({ message: "Adresse supprimée avec succès" });
+  return json({ message: "Adresse erfolgreich gelöscht" });
 });

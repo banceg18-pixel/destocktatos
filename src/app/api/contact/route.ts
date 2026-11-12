@@ -4,13 +4,13 @@ import { json, limitByIp, parseBody, route } from "@/lib/server/api";
 import { sendMail, STORE_EMAIL } from "@/lib/server/mailer";
 import { emailSchema } from "@/lib/validation";
 
-const SUBJECTS = { commande: "Question sur une commande", produit: "Renseignement sur un produit", service: "Service après-vente", autre: "Autre demande" } as const;
+const SUBJECTS = { commande: "Frage zu einer Bestellung", produit: "Frage zu einem Produkt", service: "Kundendienst", autre: "Sonstige Anfrage" } as const;
 
 const schema = z.object({
-  name: z.string().trim().min(1, "Tous les champs sont obligatoires").max(120),
+  name: z.string().trim().min(1, "Alle Felder sind erforderlich").max(120),
   email: emailSchema,
-  subject: z.enum(["commande", "produit", "service", "autre"], { errorMap: () => ({ message: "Sujet invalide" }) }),
-  message: z.string().trim().min(1, "Tous les champs sont obligatoires").max(5000, "Message trop long"),
+  subject: z.enum(["commande", "produit", "service", "autre"], { errorMap: () => ({ message: "Ungültiges Anliegen" }) }),
+  message: z.string().trim().min(1, "Alle Felder sind erforderlich").max(5000, "Nachricht zu lang"),
 });
 
 /** POST /api/contact — enregistre le message et notifie le magasin. */
@@ -25,7 +25,7 @@ export const POST = route("POST /api/contact", async (req: Request) => {
     tag: "contact",
     replyTo: body.email,
     subject: `[Contact] ${SUBJECTS[body.subject]} — ${body.name}`,
-    text: `De : ${body.name} <${body.email}>\nSujet : ${SUBJECTS[body.subject]}\n\n${body.message}`,
+    text: `Von: ${body.name} <${body.email}>\nAnliegen: ${SUBJECTS[body.subject]}\n\n${body.message}`,
   });
-  return json({ message: "Votre message a été envoyé avec succès !", id: msg.id }, 201);
+  return json({ message: "Ihre Nachricht wurde erfolgreich gesendet!", id: msg.id }, 201);
 });

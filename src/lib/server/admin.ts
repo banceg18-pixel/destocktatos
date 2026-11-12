@@ -140,15 +140,15 @@ async function listOrders(url: URL) {
 
 async function getOrder(id: string) {
   const o = await prisma.order.findUnique({ where: { id }, include: { items: true, payments: { orderBy: { createdAt: "asc" } }, user: { select: { id: true, name: true, email: true } } } });
-  if (!o) throw new ApiError(404, "Commande introuvable");
+  if (!o) throw new ApiError(404, "Bestellung nicht gefunden");
   return json(o);
 }
 
 /** Facture PDF (commande payée) ou devis (paiement attendu), pour le magasin (ouvert depuis l'administration). */
 async function orderInvoice(id: string) {
   const o = await prisma.order.findUnique({ where: { id }, include: { items: true, user: { select: { name: true, email: true } } } });
-  if (!o) throw new ApiError(404, "Commande introuvable");
-  if (!quoteAvailable(o)) throw new ApiError(409, "Le devis est disponible une fois la commande confirmée");
+  if (!o) throw new ApiError(404, "Bestellung nicht gefunden");
+  if (!quoteAvailable(o)) throw new ApiError(409, "Das Angebot ist nach Bestellbestätigung verfügbar");
   const kind = documentKind(o);
   const s = await getSiteSettings();
   const pdf = buildInvoicePdf(o, o.user, invoiceStore(s), bankDetailsOf(s), kind);

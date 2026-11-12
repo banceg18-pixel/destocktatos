@@ -1,34 +1,34 @@
 import { z } from "zod";
-import { FR_PHONE_HINT, isFrPhone, normalizeFrPhone } from "./phone";
+import { DE_PHONE_HINT, isDePhone, normalizeDePhone } from "./phone";
 
 /** Schémas de validation partagés (serveur, et réutilisables côté client). */
 
-export const objectId = z.string().trim().min(1, "Identifiant requis").max(64);
+export const objectId = z.string().trim().min(1, "Kennung erforderlich").max(64);
 
 export const reviewSchema = z.object({
   produit: objectId,
-  note: z.coerce.number().int("La note doit être un entier").min(1, "Veuillez attribuer une note").max(5, "Note maximale : 5"),
-  commentaire: z.string().trim().max(2000, "Commentaire trop long (2000 caractères max)").default(""),
+  note: z.coerce.number().int("Die Bewertung muss eine ganze Zahl sein").min(1, "Bitte vergeben Sie eine Bewertung").max(5, "Höchstbewertung: 5"),
+  commentaire: z.string().trim().max(2000, "Kommentar zu lang (maximal 2000 Zeichen)").default(""),
 });
 
 export const reviewUpdateSchema = reviewSchema.omit({ produit: true });
 
 
 export const addressSchema = z.object({
-  fullName: z.string().trim().min(1, "Le nom complet est requis").max(120),
-  address: z.string().trim().min(1, "L'adresse est requise").max(250),
-  city: z.string().trim().min(1, "La ville est requise").max(120),
+  fullName: z.string().trim().min(1, "Der vollständige Name ist erforderlich").max(120),
+  address: z.string().trim().min(1, "Die Adresse ist erforderlich").max(250),
+  city: z.string().trim().min(1, "Die Stadt ist erforderlich").max(120),
   postalCode: z
     .string()
     .trim()
-    .min(1, "Le code postal est requis")
-    .regex(/^\d{5}$/, "Le code postal doit contenir 5 chiffres"),
+    .min(1, "Die Postleitzahl ist erforderlich")
+    .regex(/^\d{5}$/, "Die Postleitzahl muss 5 Stellen haben"),
   phone: z
     .string()
     .trim()
-    .min(1, "Le téléphone est requis")
-    .refine(isFrPhone, FR_PHONE_HINT)
-    .transform(normalizeFrPhone),
+    .min(1, "Die Telefonnummer ist erforderlich")
+    .refine(isDePhone, DE_PHONE_HINT)
+    .transform(normalizeDePhone),
   additionalInfo: z.string().trim().max(500).default(""),
   floor: z.coerce.number().int().min(0).max(10).default(0),
   isDefault: z.boolean().optional().default(false),
@@ -38,9 +38,9 @@ export type AddressInput = z.infer<typeof addressSchema>;
 
 export const passwordSchema = z
   .string()
-  .min(8, "Le mot de passe doit contenir au moins 8 caractères")
-  .max(128, "Mot de passe trop long")
-  .regex(/[A-Za-z]/, "Le mot de passe doit contenir au moins une lettre")
-  .regex(/[0-9]/, "Le mot de passe doit contenir au moins un chiffre");
+  .min(8, "Das Passwort muss mindestens 8 Zeichen enthalten")
+  .max(128, "Passwort zu lang")
+  .regex(/[A-Za-z]/, "Das Passwort muss mindestens einen Buchstaben enthalten")
+  .regex(/[0-9]/, "Das Passwort muss mindestens eine Ziffer enthalten");
 
-export const emailSchema = z.string().trim().toLowerCase().email("Adresse email invalide").max(254);
+export const emailSchema = z.string().trim().toLowerCase().email("Ungültige E-Mail-Adresse").max(254);

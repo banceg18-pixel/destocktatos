@@ -41,7 +41,7 @@ export async function createReview(userId: string, productId: string, note: numb
   const product = await prisma.product.findUnique({ where: { id: productId }, select: { id: true } });
   if (!product) throw new ApiError(404, "Produit introuvable");
   const check = await canUserReview(userId, productId);
-  if (!check.ok) throw new ApiError(check.raison?.includes("bereits") || check.raison?.startsWith("Vous avez déjà") ? 409 : 403, check.raison!);
+  if (!check.ok) throw new ApiError(check.raison?.includes("bereits") ? 409 : 403, check.raison!);
   const r = await prisma.review.create({
     data: { productId, userId, note, commentaire },
     include: { user: { select: { id: true, name: true, image: true } } },

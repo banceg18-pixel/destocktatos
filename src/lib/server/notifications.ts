@@ -183,7 +183,7 @@ ${await signature()}`;
   });
   const storeAction = awaitingTransfer
     ? `, ausstehend (Referenz ${o.number}).
-Sobald die Überweisung eingegangen ist, markieren Sie die Bestellung bitte als « Bezahlt »: Der Kunde wird automatisch benachrichtigt.${
+Sobald die Überweisung eingegangen ist, markieren Sie die Bestellung bitte als „Bezahlt“: Der Kunde wird automatisch benachrichtigt.${
         bank
           ? ""
           : "\n\nACHTUNG: Bankdaten nicht hinterlegt."

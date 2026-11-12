@@ -76,7 +76,7 @@ export function HeroSlider({ slides, siteName }: { slides: HeroSlide[]; siteName
     <section
       ref={section}
       aria-roledescription="carrousel"
-      aria-label="À la une"
+      aria-label="Highlights"
       className="on-dark relative isolate flex h-[100svh] min-h-[620px] max-h-[1080px] flex-col overflow-hidden bg-ink text-paper"
     >
       {slides.map((s, i) => (
@@ -97,7 +97,7 @@ export function HeroSlider({ slides, siteName }: { slides: HeroSlide[]; siteName
       <div className="absolute inset-0 -z-10 bg-gradient-to-b from-ink/55 via-ink/25 to-ink/80" aria-hidden="true" />
 
       <h1 className="sr-only">
-        {siteName} — électroménager livré, installé et garanti
+        {siteName} — Haushaltsgeräte geliefert, installiert und garanti
       </h1>
       <div className="shell pt-[calc(var(--header-h)+clamp(12px,3vw,40px))] [container-type:inline-size]">
         <Wordmark name={siteName} animated />
@@ -140,10 +140,10 @@ export function HeroSlider({ slides, siteName }: { slides: HeroSlide[]; siteName
               {String(index + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
             </span>
             <div className="flex gap-2">
-              <IconButton label={stopped ? "Reprendre le défilement" : "Mettre le défilement en pause"} tone="dark" onClick={() => setStopped((s) => !s)}>
+              <IconButton label={stopped ? "Bildwechsel fortsetzen" : "Bildwechsel anhalten"} tone="dark" onClick={() => setStopped((s) => !s)}>
                 {stopped ? <IconPlay /> : <IconPause />}
               </IconButton>
-              <IconButton label="Diapositive précédente" tone="dark" onClick={() => go(index - 1)}>
+              <IconButton label="Vorherige Folie" tone="dark" onClick={() => go(index - 1)}>
                 <Arrow direction="left" />
               </IconButton>
               <IconButton label="Diapositive suivante" tone="dark" onClick={() => go(index + 1)}>

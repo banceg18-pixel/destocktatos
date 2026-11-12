@@ -6,5 +6,5 @@ import { objectId } from "@/lib/validation";
 export const POST = route("POST /api/orders/:id/cancel", async (_req: Request, ctx: { params: Promise<{ id: string }> }) => {
   const user = await requireUser();
   await cancelPendingOrder(user.id, objectId.parse((await ctx.params).id));
-  return json({ success: true, message: "Commande annulée" });
+  return json({ success: true, message: "Bestellung storniert" });
 });

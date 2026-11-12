@@ -155,7 +155,7 @@ export function Header({ menu, categories, settings }: { menu: MenuItem[]; categ
           </div>
         </div>
 
-        {/* Menu déroulant « Boutique » (bureau). */}
+        {/* Menu déroulant „Boutique“ (bureau). */}
         <div
           id="menu-categories"
           onMouseEnter={openMega}

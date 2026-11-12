@@ -1,10 +1,11 @@
-/** Normalisation pour les recherches : minuscules, sans accents. */
+/** Normalisation pour les recherches : minuscules, sans accents (ö→o, ß→ss compris). */
 export function normalize(value: string | null | undefined): string {
-  return (value ?? "")
+  return ((value ?? "")
+    .replace(/ß/g, "ss")
     .normalize("NFKD")
     .replace(/[̀-ͯ]/g, "")
     .toLowerCase()
-    .trim();
+    .trim());
 }
 
 /** Slug d'URL (catégories) : "plaque à gaz" -> "plaque-a-gaz". */
@@ -27,7 +28,7 @@ export function displayTitle(title: string, brand?: string): string {
     ? t
         .split(" ")
         .map((w, i) => {
-          if (/\d/.test(w)) return w; // référence ou mesure : « F94N15WHS », « 13KG »
+          if (/\d/.test(w)) return w; // référence ou mesure : „F94N15WHS“, „13KG“
           if (brand && w.toUpperCase() === brand.toUpperCase()) return w; // marque
           const lower = w.toLowerCase();
           return i === 0 ? lower.charAt(0).toUpperCase() + lower.slice(1) : lower;

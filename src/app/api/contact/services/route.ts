@@ -1,11 +1,11 @@
 import { z } from "zod";
-import { FR_PHONE_HINT, isFrPhone, normalizeFrPhone } from "@/lib/phone";
+import { DE_PHONE_HINT, isDePhone, normalizeDePhone } from "@/lib/phone";
 import { prisma } from "@/lib/prisma";
 import { json, limitByIp, parseBody, route } from "@/lib/server/api";
 import { sendMail, STORE_EMAIL } from "@/lib/server/mailer";
 import { emailSchema } from "@/lib/validation";
 
-const SLOTS = { matin: "Matin (9h-12h)", "apres-midi": "Après-midi (14h-17h)", soire: "Soirée (17h-19h)" } as const;
+const SLOTS = { matin: "Vormittag (9-12 Uhr)", "apres-midi": "Nachmittag (14-17 Uhr)", soire: "Abend (17-19 Uhr)" } as const;
 
 const today = () => {
   const d = new Date();
@@ -13,16 +13,16 @@ const today = () => {
 };
 
 const schema = z.object({
-  name: z.string().trim().min(1, "Le nom est requis").max(120),
+  name: z.string().trim().min(1, "Der Name ist erforderlich").max(120),
   email: emailSchema,
-  phone: z.string().trim().min(1, "Le téléphone est requis").max(30).refine(isFrPhone, FR_PHONE_HINT).transform(normalizeFrPhone),
-  address: z.string().trim().min(1, "L'adresse est requise").max(250),
-  product: z.string().trim().min(1, "Le produit à installer est requis").max(200),
+  phone: z.string().trim().min(1, "Die Telefonnummer ist erforderlich").max(30).refine(isDePhone, DE_PHONE_HINT).transform(normalizeDePhone),
+  address: z.string().trim().min(1, "Die Adresse ist erforderlich").max(250),
+  product: z.string().trim().min(1, "Das zu installierende Gerät ist erforderlich").max(200),
   date: z
     .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "La date est requise")
-    .refine((d) => d >= today(), "La date ne peut pas être dans le passé"),
-  timeSlot: z.enum(["matin", "apres-midi", "soire"], { errorMap: () => ({ message: "Le créneau horaire est requis" }) }),
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Das Datum ist erforderlich")
+    .refine((d) => d >= today(), "Das Datum darf nicht in der Vergangenheit liegen"),
+  timeSlot: z.enum(["matin", "apres-midi", "soire"], { errorMap: () => ({ message: "Das Zeitfenster ist erforderlich" }) }),
   notes: z.string().trim().max(2000).default(""),
 });
 
@@ -44,11 +44,11 @@ export const POST = route("POST /api/contact/services", async (req: Request) => 
     to: STORE_EMAIL,
     tag: "devis-installation",
     replyTo: b.email,
-    subject: `[Devis installation] ${b.product} — ${b.name}`,
-    text: `Client : ${b.name} <${b.email}> — ${b.phone}\nAdresse : ${b.address}\nProduit : ${b.product}\nDate souhaitée : ${b.date} (${SLOTS[b.timeSlot]})\n\n${b.notes}`,
+    subject: `[Installationsangebot] ${b.product} — ${b.name}`,
+    text: `Kunde: ${b.name} <${b.email}> — ${b.phone}\nAdresse: ${b.address}\nGerät: ${b.product}\nGewünschtes Datum: ${b.date} (${SLOTS[b.timeSlot]})\n\n${b.notes}`,
   });
   return json(
-    { message: "Votre demande de devis a bien été envoyée. Nous vous recontacterons rapidement pour confirmer le rendez-vous.", id: reqRow.id },
+    { message: "Ihre Anfrage wurde gesendet. Wir melden uns schnell bei Ihnen, um den Termin zu bestätigen.", id: reqRow.id },
     201,
   );
 });

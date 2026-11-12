@@ -16,12 +16,12 @@ export interface LegalData {
 export function LegalPage({ page }: { page: PageContent<LegalData> }) {
   const sections = page.sections ?? [];
   const title = [page.data?.titlePrefix, page.data?.titleHighlight].filter(Boolean).join(" ") || page.title;
-  const updated = page.updatedAt ? new Date(page.updatedAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : null;
+  const updated = page.updatedAt ? new Date(page.updatedAt).toLocaleDateString("de-DE", { day: "numeric", month: "long", year: "numeric" }) : null;
   return (
     <>
-      <PageHeader title={title} meta={updated ? <p className="t-spec text-graphite">Mise à jour le {updated}</p> : undefined} />
+      <PageHeader title={title} meta={updated ? <p className="t-spec text-graphite">Aktualisiert am {updated}</p> : undefined} />
       <div className="shell grid gap-12 pb-24 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-20">
-        <nav aria-label="Sommaire" className="hidden lg:sticky lg:top-[calc(var(--header-h)+28px)] lg:block lg:max-h-[calc(100dvh-var(--header-h)-56px)] lg:self-start lg:overflow-y-auto">
+        <nav aria-label="Inhaltsverzeichnis" className="hidden lg:sticky lg:top-[calc(var(--header-h)+28px)] lg:block lg:max-h-[calc(100dvh-var(--header-h)-56px)] lg:self-start lg:overflow-y-auto">
           <ol className="flex flex-col gap-2 text-sm">
             {sections.map((s) => (
               <li key={s.title}>

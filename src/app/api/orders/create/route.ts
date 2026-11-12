@@ -19,7 +19,7 @@ const guestSchema = z.object({ guest: z.object({ email: emailSchema }).optional(
 export const POST = route("POST /api/orders/create", async (req: Request) => {
   limitByIp(req, "order-create", 20);
   const raw: unknown = await req.json().catch(() => {
-    throw new ApiError(400, "Requête invalide.");
+    throw new ApiError(400, "Ungültige Anfrage.");
   });
   const b = createOrderSchema.parse(raw);
   const session = await getSession();
@@ -27,7 +27,7 @@ export const POST = route("POST /api/orders/create", async (req: Request) => {
   const guest = !userId;
   if (!userId) {
     const email = guestSchema.parse(raw).guest?.email;
-    if (!email) throw new ApiError(400, "Indiquez votre adresse email pour recevoir la confirmation et la facture.", { field: "email" });
+    if (!email) throw new ApiError(400, "Geben Sie Ihre E-Mail-Adresse an, um die Bestätigung und die Rechnung zu erhalten.", { field: "email" });
     const name = b.shippingAddress?.fullName?.trim() || email.split("@")[0];
     const user = await prisma.user.upsert({ where: { email }, update: {}, create: { email, name } });
     userId = user.id;

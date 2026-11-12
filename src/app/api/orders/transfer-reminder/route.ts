@@ -63,10 +63,10 @@ export const POST = route("POST /api/orders/transfer-reminder", async (req: Requ
     to: STORE_EMAIL,
     replyTo: user?.email,
     tag: "virement-signale",
-    subject: `Virement signalé — commande ${o.number} — ${toEuros(o.totalCents).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}`,
-    text: `Le client ${user?.name ?? ""} <${user?.email ?? ""}> indique avoir effectué le virement de la commande ${o.number}.
+    subject: `Überweisung gemeldet — Bestellung ${o.number} — ${toEuros(o.totalCents).toLocaleString("de-DE", { style: "currency", currency: "EUR" })}`,
+    text: `Der Kunde ${user?.name ?? ""} <${user?.email ?? ""}> gibt an, die Überweisung für die Bestellung ${o.number} ausgeführt zu haben.
 
-Vérifiez sa réception sur le compte bancaire, puis passez la commande à « Payée (virement reçu) » dans WordPress → Boutique → Commandes : le client reçoit alors sa facture.`,
+Prüfen Sie den Zahlungseingang auf dem Bankkonto und setzen Sie die Bestellung in WordPress → Shop → Bestellungen auf „Bezahlt (Überweisung erhalten)“: Der Kunde erhält daraufhin seine Rechnung.`,
   });
   return json({ ok: true, status: o.status, declaredAt });
 });

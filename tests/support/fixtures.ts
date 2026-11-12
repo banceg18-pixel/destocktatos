@@ -58,11 +58,11 @@ export async function makeUser(email = `client-${++seq}@tatos.test`) {
 }
 
 export const ADDRESS = {
-  fullName: "Jean Test",
-  address: "1 Rue de Test",
-  city: "Sevran",
-  postalCode: "93270",
-  phone: "0612345678",
+  fullName: "Kunde Test",
+  address: "Friedrichstraße 15",
+  city: "Berlin",
+  postalCode: "10117",
+  phone: "03012345678",
   additionalInfo: "",
   floor: 0,
 };

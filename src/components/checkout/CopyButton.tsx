@@ -44,7 +44,7 @@ export function CopyButton({ value, label, className }: { value: string; label: 
         "Copier"
       )}
       <span className="sr-only" role="status">
-        {copied ? `${label} copié` : ""}
+        {copied ? `${label} kopiert` : ""}
       </span>
     </button>
   );

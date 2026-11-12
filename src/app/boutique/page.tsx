@@ -8,7 +8,7 @@ type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
   const q = parseCatalogQuery(await searchParams);
-  const title = q.recherche ? `Suche « ${q.recherche} »` : "Sortiment";
+  const title = q.recherche ? `Suche „${q.recherche}“` : "Sortiment";
   return {
     title,
     description: "Unser gesamtes Sortiment an Haushaltsgeräten: Kühlschränke, Waschmaschinen, Backöfen und mehr. Kostenlose Lieferung in ganz Deutschland, Installation und Altgeräterücknahme.",
@@ -37,7 +37,7 @@ export default async function BoutiquePage({ searchParams }: { searchParams: Sea
   return (
     <>
       <PageHeader
-        title={q.recherche ? `« ${q.recherche} »` : "Sortiment"}
+        title={q.recherche ? `„${q.recherche}“` : "Sortiment"}
         intro={
           q.recherche
             ? `${result.total} ${result.total === 1 ? "Ergebnis" : "Ergebnisse"} gefunden.`

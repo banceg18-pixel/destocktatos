@@ -85,7 +85,7 @@ describe("devis serveur (quoteOrder)", () => {
     const previous = process.env.STORE_PICKUP_ENABLED;
     delete process.env.STORE_PICKUP_ENABLED;
     try {
-      await expectApiError(quoteOrder(prisma, user.id, orderRequest([{ _id: p.id, quantity: 1 }], 0)), 422, /retrait en magasin/);
+      await expectApiError(quoteOrder(prisma, user.id, orderRequest([{ _id: p.id, quantity: 1 }], 0)), 422, /Selbstabholung/);
     } finally {
       process.env.STORE_PICKUP_ENABLED = previous;
     }
@@ -172,7 +172,7 @@ describe("création de commande", () => {
       geocoderAt(15),
     );
     expect(order).toMatchObject({ deliveryFeeCents: 0, deliveryDistanceKm: 15, deliveryMethod: "livraisonPiece", isPickupInStore: false });
-    expect(order.shippingAddress).toMatchObject({ city: "Sevran", postalCode: "93270" });
+    expect(order.shippingAddress).toMatchObject({ city: "Berlin", postalCode: "10117" });
   });
 });
 
@@ -224,7 +224,7 @@ describe("cycle de vie", () => {
     expect(await prisma.couponRedemption.count()).toBe(1);
     expect((await prisma.coupon.findUniqueOrThrow({ where: { code: "BIENVENUE10" } })).usedCount).toBe(1);
     // Le coupon ne peut plus être réutilisé par ce client.
-    await expectApiError(createOrder(user.id, orderRequest([{ _id: p.id, quantity: 1 }], 900, { couponCode: "BIENVENUE10" })), 409, /déjà utilisé/);
+    await expectApiError(createOrder(user.id, orderRequest([{ _id: p.id, quantity: 1 }], 900, { couponCode: "BIENVENUE10" })), 409, /bereits verwendet/);
   });
 
   it("paiement reçu après expiration : le stock est réservé à nouveau", async () => {

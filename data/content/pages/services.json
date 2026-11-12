@@ -2,54 +2,54 @@
   "slug": "services",
   "title": "Services",
   "data": {
-    "intro": "Choisir un appareil n'est que la première étape. Nous le livrons, l'installons, reprenons l'ancien et restons votre interlocuteur ensuite.",
+    "intro": "Ein Gerät auszuwählen ist nur der erste Schritt. Wir liefern es, installieren es, nehmen das Altgerät mit und sind danach Ihr Ansprechpartner.",
     "services": [
       {
         "id": "livraison",
         "image": "/assets/images/libres/service-livraison.jpg",
-        "imageAlt": "Camion de livraison garé devant un immeuble, un livreur porte un appareil emballé",
-        "title": "Lieferung nach Hause",
-        "text": "Kostenlos in ganz Deutschland, zuverlässig und sicher direkt zu Ihnen, unabhängig von der gewählten Lieferoption.",
+        "imageAlt": "Lieferwagen vor einem Gebäude geparkt, ein Zusteller trägt ein verpacktes Gerät",
+        "title": "Lieferung bis zu Ihnen nach Hause",
+        "text": "Kostenlos in ganz Deutschland, zuverlässig und sicher direkt zu Ihnen – unabhängig von der gewählten Lieferoption.",
         "points": [
           "Bis zur Bordsteinkante, in den gewünschten Raum oder inklusive Installation",
-          "Liefertermin telefonisch abgestimmt nach der Bestellung",
-          "Kein Etagenzuschlag"
+          "Liefertermin nach der Bestellung telefonisch abgestimmt",
+          "Kein Aufpreis für Etagen"
         ]
       },
       {
         "id": "installation",
         "image": "/assets/images/libres/service-installation.jpg",
-        "imageAlt": "Perceuse, clés et mètre posés au sol avant une installation",
-        "title": "Installation et mise en service",
-        "text": "Nos techniciens raccordent l'appareil, le mettent à niveau, vérifient son fonctionnement et vous montrent les réglages utiles.",
+        "imageAlt": "Bohrmaschine, Schraubenschlüssel und Maßband liegen vor einer Installation bereit",
+        "title": "Installation und Inbetriebnahme",
+        "text": "Unsere Techniker schließen das Gerät an, richten es ein, prüfen seine Funktion und zeigen Ihnen die nützlichen Einstellungen.",
         "points": [
-          "Raccordement à l'eau et à l'électricité existants",
-          "Démonstration des programmes principaux",
-          "Emballages repartis avec nous"
+          "Anschluss an bestehende Wasser- und Stromversorgung",
+          "Vorführung der wichtigsten Programme",
+          "Verpackungen kommen mit uns wieder mit"
         ]
       },
       {
         "id": "reprise",
         "image": "/assets/images/libres/service-magasin.jpg",
-        "imageAlt": "Intérieur d'un magasin d'électroménager avec appareils de cuisine exposés",
-        "title": "Reprise de l'ancien appareil",
-        "text": "Avec l'installation, nous reprenons gratuitement votre ancien appareil et le confions à la filière de recyclage.",
+        "imageAlt": "Innenansicht eines Haushaltsgerätegeschäfts mit Küchengeräten",
+        "title": "Altgeräteabholung",
+        "text": "Mit der Installation holen wir Ihr Altgerät kostenlos ab und geben es dem Recycling-Verbund.",
         "points": [
-          "Reprise de l'ancien appareil le jour de l'installation",
-          "Collecte gratuite, sans démarche de votre part",
-          "Recyclage dans la filière agréée"
+          "Abholung des Altgeräts am Installationstag",
+          "Kostenlose Abholung, ohne dass Sie etwas tun müssen",
+          "Recycling im zugelassenen Verbund"
         ]
       },
       {
         "id": "garantie",
         "image": "/assets/images/libres/service-sav.jpg",
-        "imageAlt": "Technicien réparant un appareil dans son atelier",
-        "title": "Garantie et après-vente",
-        "text": "Chaque fiche produit indique la durée de garantie constructeur. En cas de panne, nous gérons les démarches avec le fabricant pour vous.",
+        "imageAlt": "Techniker repariert ein Gerät in seiner Werkstatt",
+        "title": "Garantie und Kundendienst",
+        "text": "Jedes Produktdetail nennt die Dauer der Herstellergarantie. Bei einem Defekt übernehmen wir die Formalitäten mit dem Hersteller für Sie.",
         "points": [
-          "Un interlocuteur unique au magasin",
-          "Diagnostic par téléphone avant tout déplacement",
-          "Suivi de vos commandes et factures dans votre compte"
+          "Ein einziger Ansprechpartner im Geschäft",
+          "Fern diagnose am Telefon, bevor wir anfahren",
+          "Verfolgung Ihrer Bestellungen und Rechnungen in Ihrem Konto"
         ]
       }
     ],
@@ -58,13 +58,13 @@
       "text": "Die Lieferung ist in ganz Deutschland für alle Versandarten kostenlos."
     },
     "quote": {
-      "title": "Faire installer un appareil",
-      "text": "Vous avez déjà l'appareil, ou vous préférez convenir d'un créneau avant de commander ? Indiquez-nous la date et le moment qui vous arrangent : un technicien vous rappelle pour confirmer."
+      "title": "Ein Gerät installieren lassen",
+      "text": "Sie haben das Gerät schon, oder möchten lieber vor der Bestellung einen Termin vereinbaren? Nennen Sie uns Datum und Zeitpunkt, der Ihnen passt: Ein Techniker ruft Sie zur Bestätigung zurück."
     },
     "location": {
       "title": "Unsere Filiale in Berlin besuchen"
     }
   },
-  "metaTitle": "Lieferung, Montage und Altgeräterücknahme",
-  "metaDescription": "Kostenlose Lieferung in ganz Deutschland, Montage und Inbetriebnahme, Altgeräterücknahme, Herstellergarantie und Kundenservice."
+  "metaTitle": "Lieferung, Montage und Altgeräteabholung",
+  "metaDescription": "Kostenlose Lieferung in ganz Deutschland, Montage und Inbetriebnahme, Altgeräteabholung, Herstellergarantie und Kundendienst."
 }
