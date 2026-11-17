@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Destocktatos — Administration du site
  * Description: Espace d'administration complet du site Destocktatos (Next.js) : produits, catégories, pages, articles, FAQ, menus, réglages, et gestion de la boutique (commandes, clients, codes promo, avis, messages, newsletter, stock).
- * Version: 2.13.1
+ * Version: 2.14.0
  * Requires PHP: 8.1
  * License: GPL-2.0-or-later
  * Text Domain: tatos-headless
@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('TATOS_HEADLESS_VERSION', '2.13.1');
+define('TATOS_HEADLESS_VERSION', '2.14.0');
 
 /* -------------------------------------------------------------------------
  * Types de contenu et taxonomies
@@ -158,6 +158,32 @@ const TATOS_BANK_DEFAULTS = ['bankService' => 'Finanzabteilung', 'bankHolder' =>
 const TATOS_LEGAL_FIELDS = ['legalName', 'legalForm', 'legalSiret', 'legalNaf', 'legalHeadOffice', 'legalDirector', 'legalAccountant', 'legalMediatorName', 'legalMediatorUrl'];
 /** Assistant du site : bulle de questions-réponses en bas à droite (réponses tirées de la FAQ et des coordonnées). */
 const TATOS_CHAT_FIELDS = ['chatEnabled', 'chatBotName', 'chatWelcome'];
+/** Réglages à la mise à jour 2.14.0 : coordonnées affichées et textes du site en allemand (le site sert le contenu allemand du dépôt tant que ces textes sont en français). */
+const TATOS_GERMAN_SETTINGS = [
+    'description' => 'Hochwertige Haushaltsgeräte zum besten Preis - Filiale Berlin',
+    'hours' => 'Kundenservice Mo - So 10:00 - 20:00 Uhr',
+    'storeHours' => 'Geöffnet Montag bis Sonntag von 10:00 bis 20:00 Uhr',
+    'bannerMessage1' => 'RIESIGER LAGERABVERKAUF: Auslaufmodelle & Haushaltsgeräte-Räumungsverkauf bis zu -80%.',
+    'bannerMessage2' => 'Kostenlose Lieferung in ganz Deutschland direkt bis zu Ihnen nach Hause',
+    'chatBotName' => 'Destocktatos Assistent',
+    'chatWelcome' => 'Guten Tag! Ich bin der Destocktatos-Assistent. Haben Sie Fragen zu Lieferung, Zahlung per Überweisung, Bestellstatus, Garantie oder Rückgabe?',
+    'country' => 'Deutschland',
+    'addressLine' => 'Friedrichstraße 176-179',
+    'postalCode' => '10117',
+    'city' => 'Berlin',
+    'mapQuery' => 'Friedrichstraße 176-179, 10117 Berlin, Deutschland',
+    'phone' => '+49 179 3516849',
+    'phoneIntl' => '+491793516849',
+];
+const TATOS_GERMAN_LEGAL = [
+    'legalName' => 'Destocktatos GmbH',
+    'legalForm' => 'Gesellschaft mit beschränkter Haftung',
+    'legalSiret' => 'DE310108339',
+    'legalNaf' => 'Groß- und Einzelhandel mit Haushaltsgeräten',
+    'legalHeadOffice' => 'Friedrichstraße 176-179, 10117 Berlin, Deutschland',
+    'legalDirector' => 'Bernard Alexis Chabaud',
+    'legalAccountant' => 'Finanzabteilung',
+];
 const TATOS_LEGAL_DEFAULTS = [
     'legalName' => 'Destocktatos',
     'legalForm' => 'société par actions simplifiée',
@@ -499,12 +525,15 @@ function tatos_rebrand_text(string $s): string
         $s
     );
     $s = str_replace('Example Hosting', 'Hostinger International Ltd', $s);
-    // Adresse du magasin (15 Rue Paul Langevin, 93270 Sevran) et numéro unique 07 80 96 12 16.
+    // Adresse du magasin et numéro unique +49 179 3516849.
     $s = preg_replace('/\b1[25] rue paul l(?:angevin|evangin)\b/iu', '15 Rue Paul Langevin', $s);
     $s = preg_replace('/3 Rue Émile Zola,?\s*51100 Reims(?:,\s*France)?/iu', '15 Rue Paul Langevin, 93270 Sevran, France', $s);
-    $s = preg_replace('/\+33-[16]-(?:51-64-41-84|83-75-01-21)/', '+33-7-80-96-12-16', $s);
-    $s = preg_replace('/\+33(?:651644184|183750121)/', '+33780961216', $s);
-    return preg_replace('/(?:\+33[\s.-]*\(?0?[16]\)?|\b0[16])[\s.-]?(?:51[\s.-]?64[\s.-]?41[\s.-]?84|83[\s.-]?75[\s.-]?01[\s.-]?21)\b/', '07 80 96 12 16', $s);
+    $s = preg_replace('/\+33-[16]-(?:51-64-41-84|83-75-01-21)/', '+49-179-3516-849', $s);
+    $s = preg_replace('/\+33(?:651644184|183750121)/', '+491793516849', $s);
+    $s = preg_replace('/\+33-7-80-96-12-16/', '+49-179-35-16-84-9', $s);
+    $s = preg_replace('/\+33780961216/', '+491793516849', $s);
+    $s = preg_replace('/(?:\+33[\s.-]*\(?7\)?|\b07)[\s.-]?(?:80[\s.-]?96[\s.-]?12[\s.-]?16)\b/', '+49 179 3516849', $s);
+    return preg_replace('/(?:\+33[\s.-]*\(?0?[16]\)?|\b0[16])[\s.-]?(?:51[\s.-]?64[\s.-]?41[\s.-]?84|83[\s.-]?75[\s.-]?01[\s.-]?21)\b/', '+49 179 3516849', $s);
 }
 
 function tatos_rebrand_value($v)
@@ -531,10 +560,10 @@ function tatos_rebrand_settings(): bool
     if (trim((string) ($fixed['bankIban'] ?? '')) === '') {
         $fixed = array_merge($fixed, TATOS_BANK_DEFAULTS);
     }
-    // Coordonnées du magasin : 15 Rue Paul Langevin, 93270 Sevran, France ; 07 80 96 12 16 ; titulaire du compte.
+    // Coordonnées du magasin : 15 Rue Paul Langevin, 93270 Sevran, France ; +49 179 3516849 ; titulaire du compte.
     $fixed = array_merge($fixed, [
-        'phone' => '07 80 96 12 16',
-        'phoneIntl' => '+33-7-80-96-12-16',
+        'phone' => '+49 179 3516849',
+        'phoneIntl' => '+491793516849',
         'addressLine' => '15 Rue Paul Langevin',
         'postalCode' => '93270',
         'city' => 'Sevran',
@@ -637,6 +666,28 @@ add_action('admin_init', function () {
  * réponse déjà réécrite ici n'est pas touchée.
  * ---------------------------------------------------------------------- */
 const TATOS_FAQ_OBSOLETE = '/PayPal|Visa|Mastercard|livraison express|24-48 ?h|30 jours|étiquette de retour|numéro de suivi|prestataires de paiement certifiés|automatiquement envoyée par email après la validation|réception de votre retour en nos locaux|Remplissez le formulaire avec vos informations personnelles/iu';
+
+/** Migration 2.14.0 : réglages allemands une seule fois (avant : la garde de langue du site servait le contenu du dépôt et ignorait les modifications faites ici). */
+add_action('admin_init', function () {
+    if (get_option('tatos_settings_german') === TATOS_HEADLESS_VERSION || !current_user_can('manage_options')) {
+        return;
+    }
+    $settings = (array) get_option('tatos_settings', []);
+    $fixed = array_merge($settings, TATOS_GERMAN_SETTINGS, TATOS_GERMAN_LEGAL);
+    if ($fixed !== $settings) {
+        update_option('tatos_settings', $fixed);
+        tatos_notify_frontend('settings.updated');
+        set_transient('tatos_german_notice', 1, 300);
+    }
+    update_option('tatos_settings_german', TATOS_HEADLESS_VERSION, false);
+});
+
+add_action('admin_notices', function () {
+    if (get_transient('tatos_german_notice')) {
+        delete_transient('tatos_german_notice');
+        printf('<div class="notice notice-success is-dismissible"><p>Réglages du site mis en allemand (coordonnées, bandeau, adresse, informations légales) : téléphone +49 179 3516849. Vérifiez Réglages → Site et magasin.</p></div>');
+    }
+});
 
 add_action('admin_init', function () {
     if (get_option('tatos_faq_fixed') === '2.13.1' || !current_user_can('manage_options')) {
