@@ -37,3 +37,8 @@ export function displayTitle(title: string, brand?: string): string {
     : t;
   return out.charAt(0).toUpperCase() + out.slice(1);
 }
+
+/** Les fichiers de /public (/assets/…) restent en chemin relatif, quel que soit le domaine enregistré (sinon next/image les refuse). */
+export function localAsset<T extends string | null | undefined>(url: T): T {
+  return (url?.replace(/^https?:\/\/[^/]+(?=\/assets\/)/, "") ?? url) as T;
+}

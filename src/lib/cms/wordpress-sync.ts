@@ -2,7 +2,7 @@ import "server-only";
 import { rebrandText } from "@/lib/brand";
 import { categoryNameOf, germanProductTexts } from "@/lib/catalog/de-labels";
 import { prisma } from "@/lib/prisma";
-import { slugify } from "@/lib/text";
+import { slugify, localAsset } from "@/lib/text";
 
 /**
  * Synchronisation WordPress -> base locale (catalogue).
@@ -49,9 +49,7 @@ class WpNotFound extends Error {}
 
 /** Les médias servis par le frontend local sont ramenés en chemins relatifs. */
 function localize(url: string | null): string | null {
-  if (!url) return null;
-  const site = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
-  return url.startsWith(site) ? url.slice(site.length) : url;
+  return localAsset(url);
 }
 
 async function wp<T>(endpoint: string): Promise<{ data: T; totalPages: number }> {

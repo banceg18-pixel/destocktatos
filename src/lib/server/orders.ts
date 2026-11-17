@@ -1,4 +1,5 @@
 import "server-only";
+import { localAsset } from "@/lib/text";
 import crypto from "node:crypto";
 import type { Order, OrderItem, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
@@ -251,7 +252,7 @@ export function toOrderDTO(o: OrderWithItems) {
       slug: i.product?.slug ?? null,
       title: i.titre,
       marque: i.marque,
-      imagePrincipale: { url: i.imagePrincipale ?? "" },
+      imagePrincipale: { url: localAsset(i.imagePrincipale) ?? "" },
       quantity: i.quantity,
       price: toEuros(i.unitPriceCents),
       originalPrice: i.product ? toEuros(i.product.prixCents) : toEuros(i.unitPriceCents),

@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { invalidateMemo, memo } from "@/lib/server/memo";
 import { bumpVersion, syncCaches } from "@/lib/server/sync-version";
 import { toEuros } from "@/lib/money";
-import { normalize } from "@/lib/text";
+import { localAsset, normalize } from "@/lib/text";
 import type { Category, Product, ProductFilters, ProductListResult } from "@/types/catalog";
 import sousCategoriesData from "../../../data/content/sous-categories.json";
 
@@ -35,9 +35,9 @@ export function mapProduct(p: DbProduct, resume?: { nombreAvis: number; noteMoye
     promotionPrix: p.promotionPrixCents != null ? toEuros(p.promotionPrixCents) : null,
     caracteristiques: asObject(p.caracteristiques) ?? {},
     description: p.description,
-    imagePrincipale: p.imagePrincipale ? { url: p.imagePrincipale } : null,
-    images: p.images.map((i) => ({ url: i.url, _id: i.id })),
-    etiquetteEnergie: p.etiquetteEnergie ? { url: p.etiquetteEnergie } : null,
+    imagePrincipale: p.imagePrincipale ? { url: localAsset(p.imagePrincipale) } : null,
+    images: p.images.map((i) => ({ url: localAsset(i.url), _id: i.id })),
+    etiquetteEnergie: p.etiquetteEnergie ? { url: localAsset(p.etiquetteEnergie) } : null,
     stock: p.stock,
     categorie: p.category.nom,
     sousCategorie: asArray(p.sousCategories),
@@ -96,13 +96,13 @@ function buildCategories(cats: DbCategory[], products: Product[]): Category[] {
   }
   return cats.map((c) => {
     // Badges du carrousel : état du produit représentatif (même image que la catégorie).
-    const rep = c.image ? products.find((p) => p.imagePrincipale?.url === c.image && p.categorie === c.nom) : undefined;
+    const rep = c.image ? products.find((p) => p.imagePrincipale?.url === localAsset(c.image) && p.categorie === c.nom) : undefined;
     const s = stats.get(c.nom);
     return {
       slug: c.slug,
       nom: c.nom,
       ordre: c.ordre,
-      image: c.image,
+      image: localAsset(c.image),
       vedette: rep?.vedette ?? false,
       promotion: rep ? hasPromotion(rep) : false,
       imageAlt: rep ? `${c.nom} - ${rep.titre}` : c.nom,
